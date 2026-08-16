@@ -1,4 +1,4 @@
-// BOS LIGHT V0.4 — assistant de puissance/exposition pour le tournage
+// BOS LIGHT V0.5 — assistant de puissance/exposition pour le tournage
 // Données constructeur : Aputure/amaran Halo.
 // Conversion d'exposition incidente : constante C = 340 (Lumisphere Sekonic).
 
@@ -82,7 +82,7 @@ const els = {
   isoSelect: $('#isoSelect'), shutterSelect: $('#shutterSelect'), apertureSelect: $('#apertureSelect'),
   maxDistance: $('#maxDistance'), heroSummary: $('#heroSummary'),
   testDistanceSlider: $('#testDistanceSlider'), testDistanceValue: $('#testDistanceValue'),
-  statusBox: $('#statusBox'), statusTitle: $('#statusTitle'), statusText: $('#statusText'), solutions: $('#solutions'),
+  statusBox: $('#statusBox'), statusTitle: $('#statusTitle'), statusText: $('#statusText'), solutionIntro: $('#solutionIntro'), solutions: $('#solutions'),
   testLux: $('#testLux'), stopMargin: $('#stopMargin'), requiredIso: $('#requiredIso'), possibleAperture: $('#possibleAperture'),
   sourceDescriptor: $('#sourceDescriptor'), measurementRow: $('#measurementRow'), dataNote: $('#dataNote'), dimmerNote: $('#dimmerNote'),
   resetBtn: $('#resetBtn')
@@ -222,13 +222,21 @@ function updateDistanceStatus(reqLux, maxD) {
   els.statusBox.classList.remove('comfortable','just','insufficient');
   let title, text, cls;
   if (state.intensityPct <= 0 || lux <= 0) {
-    cls = 'insufficient'; title = 'SOURCE ÉTEINTE'; text = 'Monte la puissance du projecteur pour commencer.';
+    cls = 'insufficient';
+    title = 'SOURCE ÉTEINTE';
+    text = 'Le projecteur est à 0 %. Monte sa puissance pour commencer le calcul.';
   } else if (margin >= 0.7) {
-    cls = 'comfortable'; title = 'CONFORTABLE'; text = `À ${formatDistance(d)} m, tu as de la marge. Tu peux dimmer ou éloigner la source.`;
+    cls = 'comfortable';
+    title = 'CONFORTABLE';
+    text = `À ${formatDistance(d)} m, la quantité de lumière reçue au niveau du sujet est suffisante avec tes réglages caméra, avec encore de la marge.`;
   } else if (margin >= 0) {
-    cls = 'just'; title = 'ÇA PASSE'; text = `À ${formatDistance(d)} m, ça fonctionne mais tu es proche de la limite choisie.`;
+    cls = 'just';
+    title = 'ÇA PASSE';
+    text = `À ${formatDistance(d)} m, tu atteins l’exposition de référence avec tes réglages caméra, mais avec peu de marge.`;
   } else {
-    cls = 'insufficient'; title = 'TROP LOIN'; text = `À ${formatDistance(d)} m, cette configuration ne suffit plus avec ton ISO max et ton ouverture.`;
+    cls = 'insufficient';
+    title = 'PAS ASSEZ DE LUMIÈRE';
+    text = `À ${formatDistance(d)} m, la quantité de lumière reçue au niveau du sujet est insuffisante pour tes réglages caméra.`;
   }
   els.statusBox.classList.add(cls);
   els.statusTitle.textContent = title;
@@ -236,23 +244,50 @@ function updateDistanceStatus(reqLux, maxD) {
 
   const solutions = [];
   if (state.intensityPct <= 0) {
-    solutions.push(['SOLUTION','Monte la puissance']);
+    els.solutionIntro.textContent = 'Pour obtenir une exposition de référence, commence par :';
+    solutions.push(['MONTE LA PUISSANCE','au-dessus de 0 %']);
   } else if (margin >= 0) {
+    els.solutionIntro.textContent = 'Tu es dans la bonne zone. Si tu veux modifier ton installation :';
     if (maxD > d + 0.1) solutions.push(['TU PEUX RECULER',`jusqu’à ${formatDistance(maxD)} m`]);
     const targetPct = state.intensityPct * reqLux / lux;
-    if (targetPct < state.intensityPct - 3 && targetPct >= 1) solutions.push(['OU DIMMER',`environ ${Math.max(1,Math.round(targetPct))} %`]);
-    if (possibleF > state.aperture * 1.05) solutions.push(['OU FERMER',`jusqu’à f/${formatAperture(possibleF)}`]);
+    if (targetPct < state.intensityPct - 3 && targetPct >= 1) solutions.push(['TU PEUX DIMMER',`vers ${Math.max(1,Math.round(targetPct))} %`]);
+    const closeF = snapApertureForClosing(possibleF, state.aperture);
+    if (closeF) solutions.push(['TU PEUX FERMER',`jusqu’à environ f/${formatAperture(closeF)}`]);
   } else {
-    if (maxD > 0) solutions.push(['RAPPROCHE LA SOURCE',`${formatDistance(maxD)} m max`]);
+    els.solutionIntro.textContent = `Pour obtenir une bonne exposition à ${formatDistance(d)} m, change au moins un de ces réglages :`;
+    if (maxD > 0) {
+      if (maxD >= 1) solutions.push(['RAPPROCHE TA SOURCE',`place-la à ${formatDistance(maxD)} m ou moins`]);
+      else solutions.push(['RAPPROCHE TA SOURCE','il faudrait moins de 1 m']);
+    }
     const neededPct = lux > 0 ? state.intensityPct * reqLux / lux : Infinity;
     if (state.intensityPct < 100 && neededPct <= 100) solutions.push(['MONTE LA PUISSANCE',`vers ${Math.ceil(neededPct)} %`]);
-    if (possibleF > 0 && possibleF < state.aperture) solutions.push(['OUVRE LE DIAPH',`vers f/${formatAperture(possibleF)}`]);
-    if (Number.isFinite(reqIso) && reqIso > state.iso) solutions.push(['SI TU ACCEPTES PLUS D’ISO',`environ ISO ${formatIso(reqIso)}`]);
+    const openF = snapApertureForOpening(possibleF, state.aperture);
+    if (openF) solutions.push(['OUVRE TON DIAPH',`passe à f/${formatAperture(openF)} ou plus ouvert`]);
+    if (Number.isFinite(reqIso) && reqIso > state.iso) {
+      const isoStep = snapIsoUp(reqIso);
+      solutions.push(['MONTE TON ISO', isoStep ? `passe à environ ISO ${isoStep}` : `il faudrait environ ISO ${formatIso(reqIso)}`]);
+    }
     const stronger = findStrongerFixture(reqLux, d);
-    if (stronger) solutions.push(['PLUS DE PUISSANCE',`passe au ${fixtures[stronger].label}`]);
+    if (stronger) solutions.push(['PRENDS PLUS PUISSANT',`passe au ${fixtures[stronger].label}`]);
   }
 
   els.solutions.innerHTML = solutions.slice(0,4).map(([label,value]) => `<div class="solution"><span>${label}</span><strong>${value}</strong></div>`).join('');
+}
+
+function snapApertureForOpening(maxF, currentF) {
+  if (!Number.isFinite(maxF) || maxF <= 0 || maxF >= currentF) return null;
+  const valid = APERTURES.filter(f => f <= maxF && f < currentF);
+  return valid.length ? valid[valid.length - 1] : null;
+}
+
+function snapApertureForClosing(maxF, currentF) {
+  if (!Number.isFinite(maxF) || maxF <= currentF) return null;
+  const valid = APERTURES.filter(f => f <= maxF && f > currentF);
+  return valid.length ? valid[valid.length - 1] : null;
+}
+
+function snapIsoUp(requiredIso) {
+  return ISO_VALUES.find(v => v >= requiredIso) || null;
 }
 
 function findStrongerFixture(reqLux, distance) {

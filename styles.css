@@ -38,7 +38,9 @@ button, select { -webkit-tap-highlight-color: transparent; }
 .setup-track { height:2px; background:rgba(255,255,255,.13); position:relative; overflow:visible; }
 .setup-fill { position:absolute; inset:0; background:linear-gradient(90deg,rgba(42,168,255,.3),rgba(42,168,255,.9)); }
 .hero-summary { margin:10px auto 0; max-width:600px; color:#a9b4c1; font-size:11.5px; line-height:1.45; }
-.hero-note { margin-top:5px; color:#657180; font-size:9.5px; }
+.exposure-explainer { margin:12px auto 0; max-width:610px; padding:10px 12px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.16); text-align:left; }
+.exposure-explainer strong { display:block; color:#dce4ed; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; }
+.exposure-explainer span { display:block; margin-top:4px; color:#7d8999; font-size:9.5px; line-height:1.45; }
 
 .distance-card,.controls-card,.advanced-card { margin-top:12px; border:1px solid var(--line); border-radius:20px; background:var(--panel); overflow:hidden; }
 .distance-card { padding:17px 16px 16px; }
@@ -56,7 +58,8 @@ input[type="range"] { width:100%; margin:17px 0 6px; accent-color:var(--blue); }
 .status-box.just .status-dot { background:var(--amber); box-shadow:0 0 0 5px rgba(243,187,88,.08); }
 .status-box.insufficient { border-color:rgba(255,109,120,.25); background:rgba(255,109,120,.045); }
 .status-box.insufficient .status-dot { background:var(--red); box-shadow:0 0 0 5px rgba(255,109,120,.08); }
-.solutions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin-top:9px; }
+.solution-intro { margin-top:12px; color:#cbd4df; font-size:10.5px; line-height:1.45; font-weight:700; }
+.solutions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin-top:8px; }
 .solution { min-width:0; border:1px solid var(--line); border-radius:11px; padding:10px 11px; background:#0d1219; }
 .solution span { display:block; color:#707c8b; font-size:8.5px; letter-spacing:.09em; font-weight:850; }
 .solution strong { display:block; margin-top:4px; color:#dbe3ec; font-size:11.5px; line-height:1.3; }

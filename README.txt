@@ -1,4 +1,4 @@
-BOS LIGHT — V0.4
+BOS LIGHT — V0.5
 ================
 
 Objectif
@@ -41,8 +41,11 @@ Sous 100 %, l'app estime pour l'instant les lux proportionnellement au pourcenta
 Exposition incidente
 --------------------
 Relation utilisée : E = C × N² / (ISO × t), avec C = 340, correspondant à la constante Lumisphere indiquée par Sekonic.
-La V0.3 utilisait C = 250 (Lumidisc) : ce point est corrigé dans la V0.4.
+La V0.3 utilisait C = 250 (Lumidisc) : ce point est corrigé dans la V0.5.
 
 Cache navigateur
 ----------------
 Les fichiers CSS et JS sont appelés avec ?v=0.4 afin d'éviter qu'un ancien fichier reste affiché après remplacement sur GitHub Pages.
+
+
+V0.5 : interface clarifiée pour débutants, explication de la référence d’exposition, solutions reformulées et distance de test minimale 1 m.
