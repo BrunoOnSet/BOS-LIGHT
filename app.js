@@ -1,4 +1,4 @@
-// BOS LIGHT V0.6 — assistant de puissance/exposition pour le tournage
+// BOS LIGHT V0.7 — assistant de puissance/exposition pour le tournage
 // Mesures constructeur Aputure/amaran. Exposition incidente : C = 340 (Lumisphere Sekonic).
 
 const INCIDENT_C = 340;
@@ -77,13 +77,27 @@ const FAMILY_ORDER = {
   cob:['cob100xs','cob200xs']
 };
 
+const UI_GROUPS = {
+  halo:['halo60x','halo100x','halo200x','halo300x','halo600x'],
+  ray:['ray60c','ray120c','ray360c','ray660c'],
+  cob:['cob100xs','cob200xs']
+};
+const POWER_LABELS = {
+  halo60x:'60X',halo100x:'100X',halo200x:'200X',halo300x:'300X',halo600x:'600X',
+  ray60c:'60C',ray120c:'120C',ray360c:'360C',ray660c:'660C',
+  cob100xs:'100X S',cob200xs:'200X S'
+};
+function uiGroupForFixture(key=state.fixture){if(key.startsWith('halo'))return'halo';if(key.startsWith('ray'))return'ray';return'cob';}
+
+
 const ISO_VALUES=[100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800];
 const SHUTTER_DENOMS=[24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,500,640,800,1000];
 const APERTURES=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
 
 const $=sel=>document.querySelector(sel);
 const els={
-  fixtureGrid:$('#fixtureGrid'),accessoryGrid:$('#accessoryGrid'),accessoryNote:$('#accessoryNote'),cctGrid:$('#cctGrid'),cctSection:$('#cctSection'),cctValue:$('#cctValue'),
+  brandGrid:$('#brandGrid'),familyGrid:$('#familyGrid'),powerGrid:$('#powerGrid'),accessoryGrid:$('#accessoryGrid'),accessoryNote:$('#accessoryNote'),
+  cctGrid:$('#cctGrid'),cctSection:$('#cctSection'),cctValue:$('#cctValue'),cctNote:$('#cctNote'),
   intensitySlider:$('#intensitySlider'),intensityValue:$('#intensityValue'),isoSelect:$('#isoSelect'),shutterSelect:$('#shutterSelect'),apertureSelect:$('#apertureSelect'),cameraSummary:$('#cameraSummary'),
   maxDistance:$('#maxDistance'),heroSummary:$('#heroSummary'),testDistanceSlider:$('#testDistanceSlider'),testDistanceValue:$('#testDistanceValue'),statusBox:$('#statusBox'),statusTitle:$('#statusTitle'),statusText:$('#statusText'),solutionIntro:$('#solutionIntro'),solutions:$('#solutions'),
   testLux:$('#testLux'),stopMargin:$('#stopMargin'),requiredIso:$('#requiredIso'),possibleAperture:$('#possibleAperture'),sourceDescriptor:$('#sourceDescriptor'),measurementRow:$('#measurementRow'),dataNote:$('#dataNote'),dimmerNote:$('#dimmerNote'),labBadge:$('#labBadge'),resetBtn:$('#resetBtn')
@@ -99,7 +113,9 @@ function init(){
 }
 function populateSelect(select,values,labelFn,selected){select.innerHTML='';values.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=labelFn(v);if(Number(v)===Number(selected))o.selected=true;select.appendChild(o);});}
 function bindUI(){
-  els.fixtureGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-fixture]');if(!b)return;state.fixture=b.dataset.fixture;ensureAccessoryAndCct();update();});
+  els.brandGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-brand]');if(!b)return;});
+  els.familyGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-family]');if(!b)return;const group=b.dataset.family;if(group===uiGroupForFixture())return;state.fixture=UI_GROUPS[group][0];state.accessory=fixtures[state.fixture].defaultAccessory;ensureAccessoryAndCct();update();});
+  els.powerGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-fixture]');if(!b)return;state.fixture=b.dataset.fixture;ensureAccessoryAndCct();update();});
   els.accessoryGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-accessory]');if(!b)return;state.accessory=b.dataset.accessory;ensureAccessoryAndCct();update();});
   els.cctGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-cct]');if(!b)return;state.cct=Number(b.dataset.cct);update();});
   els.intensitySlider.addEventListener('input',()=>{state.intensityPct=Number(els.intensitySlider.value);update();});
@@ -121,22 +137,32 @@ function getPoints(fixtureKey=state.fixture,accessoryKey=state.accessory,cct=sta
   const a=accessory(fixtureKey,accessoryKey); const keys=Object.keys(a.data).map(Number); const use=keys.includes(Number(cct))?Number(cct):(keys.includes(5600)?5600:keys[0]); return a.data[use];
 }
 function update(){
-  ensureAccessoryAndCct(); renderAccessoryButtons(); renderCctButtons(); syncActiveButtons();
+  ensureAccessoryAndCct(); renderFixtureHierarchy(); renderAccessoryButtons(); renderCctButtons(); syncActiveButtons();
   const reqLux=requiredLux(state.iso,state.shutterDenom,state.aperture); const maxD=state.intensityPct<=0?0:solveDistanceForLux(reqLux);
   els.intensityValue.textContent=`${state.intensityPct} %`; els.testDistanceValue.textContent=`${formatDistance(state.testDistance)} m`; els.maxDistance.textContent=maxD>0?formatDistance(maxD):'0,0';
   els.cameraSummary.textContent=`ISO ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
   els.heroSummary.textContent=`${fixture().label} · ${accessory().label} · ${state.intensityPct} % · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
   updateDistanceStatus(reqLux,maxD); updateAdvanced(reqLux,maxD,getPoints());
 }
+function renderFixtureHierarchy(){
+  const group=uiGroupForFixture();
+  els.familyGrid.querySelectorAll('[data-family]').forEach(b=>b.classList.toggle('active',b.dataset.family===group));
+  const keys=UI_GROUPS[group];
+  els.powerGrid.style.gridTemplateColumns=`repeat(${Math.min(keys.length,5)},minmax(0,1fr))`;
+  els.powerGrid.innerHTML=keys.map(key=>`<button data-fixture="${key}" class="${key===state.fixture?'active':''}" type="button">${POWER_LABELS[key]}</button>`).join('');
+}
+
 function renderAccessoryButtons(){
   const entries=Object.entries(fixture().accessories); els.accessoryGrid.style.gridTemplateColumns=`repeat(${Math.min(entries.length,3)},minmax(0,1fr))`;
   els.accessoryGrid.innerHTML=entries.map(([key,a])=>`<button data-accessory="${key}" class="${key===state.accessory?'active':''}" type="button">${a.label.toUpperCase()}</button>`).join('');
   const a=accessory(); els.accessoryNote.textContent=a.quality==='single'?'Ce mode repose sur un seul point constructeur : la distance est donc une estimation plus large.':'';
 }
 function renderCctButtons(){
-  const keys=Object.keys(accessory().data).map(Number).sort((a,b)=>a-b); const isSingle=keys.length===1 && accessory().quality==='single';
-  els.cctSection.hidden=isSingle; els.cctValue.textContent=isSingle?'—':`${state.cct} K`;
-  els.cctGrid.innerHTML=isSingle?'':keys.map(k=>`<button data-cct="${k}" class="${k===state.cct?'active':''}" type="button">${k}</button>`).join('');
+  const keys=Object.keys(accessory().data).map(Number).sort((a,b)=>a-b); const isSingle=keys.length===1;
+  els.cctSection.hidden=false; els.cctValue.textContent=`${state.cct} K`;
+  els.cctGrid.style.gridTemplateColumns=`repeat(${Math.min(keys.length,6)},minmax(0,1fr))`;
+  els.cctGrid.innerHTML=keys.map(k=>`<button data-cct="${k}" class="${k===state.cct?'active':''}" type="button">${k}</button>`).join('');
+  els.cctNote.textContent=isSingle?'Une seule température de référence est disponible dans les données publiées pour cette configuration.':'';
 }
 function syncActiveButtons(){document.querySelectorAll('[data-fixture]').forEach(b=>b.classList.toggle('active',b.dataset.fixture===state.fixture));}
 function requiredLux(iso,shutterDenom,aperture){const t=1/shutterDenom;return INCIDENT_C*aperture*aperture/(iso*t);}

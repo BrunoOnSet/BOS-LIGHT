@@ -159,3 +159,33 @@ footer { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; 
   .ray-grid { grid-template-columns:repeat(2,1fr); }
   .cob-grid { grid-template-columns:repeat(2,1fr); }
 }
+
+/* V0.7 — hiérarchie visuelle : caméra > marque > gamme > puissance > réglages */
+.first-card { margin-top:12px; }
+.light-card { margin-top:12px; }
+.result-card { margin-top:12px; }
+.compact-block { padding-top:12px; padding-bottom:12px; }
+.brand-grid,.family-grid,.power-grid { display:grid; gap:7px; margin-top:9px; }
+.brand-grid { grid-template-columns:minmax(0,1fr); max-width:180px; }
+.family-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.power-grid { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.brand-grid button,.family-grid button,.power-grid button {
+  min-width:0; border:1px solid var(--line); background:var(--panel-2); color:var(--muted);
+  border-radius:10px; padding:11px 8px; font-size:9px; font-weight:850; cursor:pointer;
+}
+.brand-grid button.active,.family-grid button.active,.power-grid button.active {
+  color:var(--blue); border-color:rgba(42,168,255,.48); background:var(--blue-soft);
+}
+.brand-choice { text-transform:none; font-size:11px !important; letter-spacing:.01em; }
+.light-card .cct-grid { margin-top:9px; }
+.tech-card { margin-top:12px; }
+@media (max-width:520px) {
+  .brand-grid { max-width:none; grid-template-columns:1fr; }
+  .family-grid { grid-template-columns:repeat(3,1fr); }
+  .power-grid { grid-template-columns:repeat(3,1fr) !important; }
+  .light-card .cct-grid { grid-template-columns:repeat(3,1fr) !important; }
+}
+@media (max-width:380px) {
+  .family-grid { grid-template-columns:1fr; }
+  .power-grid { grid-template-columns:repeat(2,1fr) !important; }
+}

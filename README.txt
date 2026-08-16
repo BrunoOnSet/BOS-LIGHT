@@ -1,4 +1,4 @@
-BOS LIGHT — V0.6
+BOS LIGHT — V0.7
 ================
 
 Nouveautés
