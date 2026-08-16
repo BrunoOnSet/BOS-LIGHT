@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#07090d" />
+  <title>BOS Light — Prototype V0</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-badge">BOS</span>
+        <div>
+          <div class="brand-title">LIGHT</div>
+          <div class="brand-subtitle">Prototype V0 · Key light</div>
+        </div>
+      </div>
+      <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
+    </header>
+
+    <section class="mode-row segmented" aria-label="Mode d'affichage">
+      <button class="segment" data-view="setup" type="button">SETUP</button>
+      <button class="segment active" data-view="preview" type="button">PREVIEW</button>
+    </section>
+
+    <section class="viewport-card">
+      <div id="previewView" class="view active">
+        <canvas id="threeCanvas"></canvas>
+        <div id="loading" class="loading-card">
+          <div class="spinner"></div>
+          <strong>Chargement du visage…</strong>
+          <span>Connexion internet nécessaire pour ce prototype.</span>
+        </div>
+        <div id="loadError" class="error-card hidden">
+          <strong>Le modèle 3D n’a pas pu être chargé.</strong>
+          <span>Vérifie la connexion internet puis recharge la page.</span>
+        </div>
+        <div class="preview-hud">
+          <span id="hudPattern">REMBRANDT</span>
+          <span id="hudStats">120 cm · 1.2 m</span>
+        </div>
+      </div>
+
+      <div id="setupView" class="view setup-view">
+        <div class="setup-stage" id="setupStage">
+          <div class="setup-grid"></div>
+          <div class="subject-node">
+            <div class="subject-head"></div>
+            <div class="subject-label">SUJET</div>
+          </div>
+          <div class="camera-node" id="cameraNode">
+            <div class="camera-icon"></div>
+            <span>CAMÉRA</span>
+          </div>
+          <div class="light-ray" id="lightRay"></div>
+          <div class="light-node" id="lightNode">
+            <div class="light-panel" id="lightPanel"></div>
+            <span>KEY</span>
+          </div>
+          <div class="setup-readout" id="setupReadout"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls-card">
+      <div class="control-block">
+        <label class="control-label">PLACEMENT KEY</label>
+        <div class="pattern-grid" id="patternGrid">
+          <button data-pattern="paramount" type="button">PARAMOUNT</button>
+          <button data-pattern="loop" type="button">LOOP</button>
+          <button class="active" data-pattern="rembrandt" type="button">REMBRANDT</button>
+          <button data-pattern="split" type="button">SPLIT</button>
+        </div>
+      </div>
+
+      <div class="control-block slider-block">
+        <div class="control-head">
+          <label for="sizeSlider">TAILLE SOURCE</label>
+          <output id="sizeValue">120 cm</output>
+        </div>
+        <input id="sizeSlider" type="range" min="20" max="200" value="120" step="5" />
+        <div class="range-labels"><span>20 cm</span><span>200 cm</span></div>
+      </div>
+
+      <div class="control-block slider-block">
+        <div class="control-head">
+          <label for="distanceSlider">DISTANCE SOURCE</label>
+          <output id="distanceValue">1.2 m</output>
+        </div>
+        <input id="distanceSlider" type="range" min="0.5" max="4" value="1.2" step="0.1" />
+        <div class="range-labels"><span>0.5 m</span><span>4 m</span></div>
+      </div>
+
+      <div class="control-block slider-block">
+        <div class="control-head">
+          <label for="cameraSlider">DISTANCE CAMÉRA</label>
+          <output id="cameraValue">1.5 m</output>
+        </div>
+        <input id="cameraSlider" type="range" min="0.8" max="3" value="1.5" step="0.1" />
+        <div class="range-labels"><span>0.8 m</span><span>3 m</span></div>
+      </div>
+
+      <div class="control-block">
+        <div class="control-head exposure-head">
+          <div>
+            <label>EXPOSITION</label>
+            <p>Auto compare la qualité de lumière. Physique laisse chuter l’intensité avec la distance.</p>
+          </div>
+          <div class="mini-segmented" id="exposureToggle">
+            <button class="active" data-exposure="auto" type="button">AUTO</button>
+            <button data-exposure="physical" type="button">PHYSIQUE</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>Prototype technique — rendu temps réel WebGL.</span>
+      <span>Head scan: Lee Perry‑Smith · CC BY 3.0.</span>
+    </footer>
+  </main>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

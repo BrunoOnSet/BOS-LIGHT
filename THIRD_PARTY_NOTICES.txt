@@ -1,0 +1,11 @@
+BOS Light Prototype V0 — Third-party notices
+
+Three.js
+JavaScript 3D library by mrdoob and contributors.
+Loaded at runtime from jsDelivr. MIT licensed.
+
+Lee Perry-Smith Head Scan
+"Infinite, 3D Head Scan" by Lee Perry-Smith.
+Creative Commons Attribution 3.0 Unported (CC BY 3.0).
+Model and texture files are loaded at runtime from the three.js examples website.
+See LeePerrySmith_License.txt.
