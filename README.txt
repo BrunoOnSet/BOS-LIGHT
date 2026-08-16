@@ -1,4 +1,9 @@
-BOS LIGHT — Prototype V0
+BOS LIGHT — V0.1
+
+CORRECTIONS V0.1
+- Placement de la Key verrouillé en azimut + élévation : la distance déplace maintenant la source exactement sur le même axe depuis le visage.
+- Compensation AUTO recalculée à partir de la distance virtuelle réelle et volontairement partielle : la lumière baisse légèrement quand la source recule.
+
 ========================
 
 But du prototype
@@ -19,7 +24,8 @@ Puis ouvrir : http://localhost:8080
 
 Précision physique
 La distance/intensité utilise un comportement inverse-square (decay=2).
-Le mode AUTO compense l'intensité proportionnellement au carré de la distance.
+Le mode AUTO applique une compensation partielle (exposant 1,6) calculée sur la distance virtuelle réelle :
+la luminosité baisse encore légèrement lorsque la source recule, au lieu d'être totalement neutralisée.
 La douceur des ombres est une approximation temps réel par PCFSoftShadowMap + shadow.radius.
 Ce n'est PAS encore un rendu path-tracé d'une vraie surface émissive.
 

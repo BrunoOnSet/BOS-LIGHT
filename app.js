@@ -170,17 +170,21 @@ function updateThree() {
   camera.position.set(0, 0.08, camZ);
   camera.lookAt(faceCenter);
 
-  // Light position around face. Camera looks from +Z toward origin.
+  // Light placement is expressed as a fixed direction (azimuth + elevation) from the face.
+  // Changing distance ONLY moves the source along that ray, so Paramount stays Paramount,
+  // Loop stays Loop, etc. Camera looks from +Z toward the face.
   const p = patternData[state.pattern];
   const az = THREE.MathUtils.degToRad(p.azimuth);
   const el = THREE.MathUtils.degToRad(p.elevation);
-  const d = mapRange(state.sourceDistanceM, 0.5, 4, 2.35, 8.9);
-  const horizontal = Math.cos(el) * d;
+  const d = sourceWorldDistance(state.sourceDistanceM);
 
-  const x = Math.sin(az) * horizontal;
-  const z = Math.cos(az) * horizontal;
-  const y = Math.sin(el) * d + 0.32;
-  keyLight.position.set(x, y, z);
+  const lightDirection = new THREE.Vector3(
+    Math.sin(az) * Math.cos(el),
+    Math.sin(el),
+    Math.cos(az) * Math.cos(el)
+  ).normalize();
+
+  keyLight.position.copy(faceCenter).addScaledVector(lightDirection, d);
   keyTarget.position.copy(faceCenter);
 
   // Soft-shadow proxy for apparent source size. This is intentionally calibrated for visual teaching,
@@ -188,10 +192,14 @@ function updateThree() {
   const apparentSize = (state.sourceSizeCm / 100) / state.sourceDistanceM;
   keyLight.shadow.radius = THREE.MathUtils.clamp(apparentSize * 8.5, 0.7, 16);
 
-  // In AUTO, compensate inverse-square falloff relative to 1.2 m.
+  // AUTO is now a PARTIAL compensation based on the real virtual distance used by the renderer.
+  // With a decay of 2, exponent 2 would fully cancel inverse-square falloff. 1.6 deliberately
+  // leaves a gentle falloff: at long distance the face remains readable, but gets slightly darker.
   const baseIntensity = 48;
+  const referenceDistance = sourceWorldDistance(1.2);
+  const autoCompensationExponent = 1.6;
   keyLight.intensity = state.exposure === 'auto'
-    ? baseIntensity * Math.pow(state.sourceDistanceM / 1.2, 2)
+    ? baseIntensity * Math.pow(d / referenceDistance, autoCompensationExponent)
     : baseIntensity;
 
   // Make the virtual panel visible only as a faint spatial reference reflected nowhere.
@@ -295,6 +303,10 @@ function updateSetup() {
 
   const cameraY = mapRange(state.cameraDistanceM, 0.8, 3, 75, 91);
   els.cameraNode.style.top = `${cameraY}%`;
+}
+
+function sourceWorldDistance(distanceM) {
+  return mapRange(distanceM, 0.5, 4, 2.35, 8.9);
 }
 
 function mapRange(v, a, b, c, d) {
