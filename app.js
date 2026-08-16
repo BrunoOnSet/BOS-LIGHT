@@ -1,8 +1,8 @@
-// BOS LIGHT V0.3 — photometric calculator
-// Manufacturer illuminance data from Aputure/amaran Halo specification pages.
-// Exposure relation: E = C * N^2 / (ISO * t), incident-meter calibration constant C = 250.
+// BOS LIGHT V0.4 — assistant de puissance/exposition pour le tournage
+// Données constructeur : Aputure/amaran Halo.
+// Conversion d'exposition incidente : constante C = 340 (Lumisphere Sekonic).
 
-const INCIDENT_C = 250;
+const INCIDENT_C = 340;
 
 const state = {
   fixture: 'halo60x',
@@ -72,18 +72,19 @@ const accessoryLabels = { bare: 'Nu', reflector: 'Réflecteur', softbox: 'Softbo
 const ISO_VALUES = [100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800];
 const SHUTTER_DENOMS = [24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,500,640,800,1000];
 const APERTURES = [1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
+const FIXTURE_ORDER = ['halo60x','halo100x','halo200x','halo300x','halo600x'];
 
 const $ = sel => document.querySelector(sel);
 const els = {
   fixtureGrid: $('#fixtureGrid'), accessoryGrid: $('#accessoryGrid'), cctGrid: $('#cctGrid'),
   softboxButtonLabel: $('#softboxButtonLabel'), cctValue: $('#cctValue'),
-  intensitySlider: $('#intensitySlider'), intensityValue: $('#intensityValue'), intensityWarning: $('#intensityWarning'),
+  intensitySlider: $('#intensitySlider'), intensityValue: $('#intensityValue'),
   isoSelect: $('#isoSelect'), shutterSelect: $('#shutterSelect'), apertureSelect: $('#apertureSelect'),
-  maxDistance: $('#maxDistance'), requiredLux: $('#requiredLux'), cameraSummary: $('#cameraSummary'),
-  resultSentence: $('#resultSentence'), dataStatus: $('#dataStatus'), dimmerStatus: $('#dimmerStatus'),
-  sourceDescriptor: $('#sourceDescriptor'), measurementRow: $('#measurementRow'),
+  maxDistance: $('#maxDistance'), heroSummary: $('#heroSummary'),
   testDistanceSlider: $('#testDistanceSlider'), testDistanceValue: $('#testDistanceValue'),
-  testLux: $('#testLux'), requiredIso: $('#requiredIso'), possibleAperture: $('#possibleAperture'), stopMargin: $('#stopMargin'), testMessage: $('#testMessage'),
+  statusBox: $('#statusBox'), statusTitle: $('#statusTitle'), statusText: $('#statusText'), solutions: $('#solutions'),
+  testLux: $('#testLux'), stopMargin: $('#stopMargin'), requiredIso: $('#requiredIso'), possibleAperture: $('#possibleAperture'),
+  sourceDescriptor: $('#sourceDescriptor'), measurementRow: $('#measurementRow'), dataNote: $('#dataNote'), dimmerNote: $('#dimmerNote'),
   resetBtn: $('#resetBtn')
 };
 
@@ -91,8 +92,8 @@ init();
 
 function init() {
   populateSelect(els.isoSelect, ISO_VALUES, v => `ISO ${v}`, state.iso);
-  populateSelect(els.shutterSelect, SHUTTER_DENOMS, v => `1/${v}`, state.shutterDenom);
   populateSelect(els.apertureSelect, APERTURES, v => `f/${formatAperture(v)}`, state.aperture);
+  populateSelect(els.shutterSelect, SHUTTER_DENOMS, v => `1/${v}`, state.shutterDenom);
   bindUI();
   update();
 }
@@ -123,8 +124,8 @@ function bindUI() {
   });
   els.intensitySlider.addEventListener('input', () => { state.intensityPct = Number(els.intensitySlider.value); update(); });
   els.isoSelect.addEventListener('change', () => { state.iso = Number(els.isoSelect.value); update(); });
-  els.shutterSelect.addEventListener('change', () => { state.shutterDenom = Number(els.shutterSelect.value); update(); });
   els.apertureSelect.addEventListener('change', () => { state.aperture = Number(els.apertureSelect.value); update(); });
+  els.shutterSelect.addEventListener('change', () => { state.shutterDenom = Number(els.shutterSelect.value); update(); });
   els.testDistanceSlider.addEventListener('input', () => { state.testDistance = Number(els.testDistanceSlider.value); update(); });
   els.resetBtn.addEventListener('click', reset);
 }
@@ -133,8 +134,8 @@ function reset() {
   Object.assign(state, { fixture:'halo60x', accessory:'softbox', cct:5600, intensityPct:100, iso:800, shutterDenom:50, aperture:2.8, testDistance:2.0 });
   els.intensitySlider.value = state.intensityPct;
   els.isoSelect.value = state.iso;
-  els.shutterSelect.value = state.shutterDenom;
   els.apertureSelect.value = state.aperture;
+  els.shutterSelect.value = state.shutterDenom;
   els.testDistanceSlider.value = state.testDistance;
   update();
 }
@@ -142,41 +143,19 @@ function reset() {
 function update() {
   syncActiveButtons();
   const fixture = fixtures[state.fixture];
-  els.softboxButtonLabel.textContent = fixture.softboxLabel.toUpperCase();
-  els.cctValue.textContent = `${state.cct} K`;
-  els.intensityValue.textContent = `${state.intensityPct} %`;
-  els.testDistanceValue.textContent = `${state.testDistance.toFixed(1)} m`;
-
   const points = getPoints();
   const reqLux = requiredLux(state.iso, state.shutterDenom, state.aperture);
   const maxD = state.intensityPct <= 0 ? 0 : solveDistanceForLux(reqLux);
 
-  els.requiredLux.textContent = `${formatLux(reqLux)} lux`;
-  els.cameraSummary.textContent = `ISO ${state.iso} · 1/${state.shutterDenom} · f/${formatAperture(state.aperture)}`;
-  els.maxDistance.textContent = maxD > 0 ? formatDistance(maxD) : '0.0';
+  els.softboxButtonLabel.textContent = fixture.softboxLabel.toUpperCase();
+  els.cctValue.textContent = `${state.cct} K`;
+  els.intensityValue.textContent = `${state.intensityPct} %`;
+  els.testDistanceValue.textContent = `${state.testDistance.toFixed(1).replace('.', ',')} m`;
+  els.maxDistance.textContent = maxD > 0 ? formatDistance(maxD) : '0,0';
+  els.heroSummary.textContent = `${fixture.label} · ${currentAccessoryLabel()} · ${state.intensityPct} % · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
 
-  const rangeState = classifyDistance(maxD, points);
-  els.dataStatus.textContent = rangeState.label;
-  els.dataStatus.classList.toggle('warning', rangeState.warning);
-
-  if (state.intensityPct === 100) {
-    els.dimmerStatus.textContent = '100 % · MESURE CONSTRUCTEUR';
-    els.intensityWarning.textContent = 'À 100 %, le calcul utilise directement les mesures constructeur.';
-    els.intensityWarning.classList.remove('warning');
-  } else {
-    els.dimmerStatus.textContent = `${state.intensityPct} % · DIMMER ESTIMÉ`;
-    els.intensityWarning.textContent = 'Sous 100 %, les lux sont estimés proportionnellement au dimmer : amaran ne publie pas de courbe complète par pourcentage.';
-    els.intensityWarning.classList.add('warning');
-  }
-
-  if (maxD <= 0) {
-    els.resultSentence.textContent = 'Projecteur à 0 % : aucun éclairement disponible.';
-  } else {
-    els.resultSentence.textContent = `${fixture.label} · ${currentAccessoryLabel()} · ${state.cct} K · ${state.intensityPct} % peut atteindre environ ${formatDistance(maxD)} m avant de passer sous l'exposition cible.`;
-  }
-
-  renderMeasurements(points);
-  updateTestDistance(reqLux);
+  updateDistanceStatus(reqLux, maxD);
+  updateAdvanced(reqLux, maxD, points);
 }
 
 function syncActiveButtons() {
@@ -185,13 +164,13 @@ function syncActiveButtons() {
   document.querySelectorAll('[data-cct]').forEach(b => b.classList.toggle('active', Number(b.dataset.cct) === state.cct));
 }
 
-function currentAccessoryLabel() {
-  if (state.accessory === 'softbox') return fixtures[state.fixture].softboxLabel;
+function currentAccessoryLabel(fixtureKey = state.fixture) {
+  if (state.accessory === 'softbox') return fixtures[fixtureKey].softboxLabel;
   return accessoryLabels[state.accessory];
 }
 
-function getPoints() {
-  return fixtures[state.fixture].data[state.cct][state.accessory];
+function getPoints(fixtureKey = state.fixture) {
+  return fixtures[fixtureKey].data[state.cct][state.accessory];
 }
 
 function requiredLux(iso, shutterDenom, aperture) {
@@ -199,20 +178,18 @@ function requiredLux(iso, shutterDenom, aperture) {
   return INCIDENT_C * aperture * aperture / (iso * t);
 }
 
-function estimatedLuxAtDistance(distance) {
-  if (state.intensityPct <= 0) return 0;
-  const fullPower = curveLux(distance, getPoints());
-  return fullPower * (state.intensityPct / 100);
+function estimatedLuxAtDistance(distance, fixtureKey = state.fixture, intensityPct = state.intensityPct) {
+  if (intensityPct <= 0) return 0;
+  const fullPower = curveLux(distance, getPoints(fixtureKey));
+  return fullPower * (intensityPct / 100);
 }
 
 function curveLux(distance, points) {
   const d = Math.max(0.05, distance);
   let a, b;
-  if (d <= points[0][0]) {
-    [a,b] = [points[0], points[1]];
-  } else if (d >= points[points.length - 1][0]) {
-    [a,b] = [points[points.length - 2], points[points.length - 1]];
-  } else {
+  if (d <= points[0][0]) [a,b] = [points[0], points[1]];
+  else if (d >= points[points.length - 1][0]) [a,b] = [points[points.length - 2], points[points.length - 1]];
+  else {
     for (let i=0;i<points.length-1;i++) {
       if (d >= points[i][0] && d <= points[i+1][0]) { a=points[i]; b=points[i+1]; break; }
     }
@@ -224,8 +201,7 @@ function curveLux(distance, points) {
 
 function solveDistanceForLux(targetLux) {
   if (state.intensityPct <= 0) return 0;
-  const nearLux = estimatedLuxAtDistance(0.1);
-  if (nearLux < targetLux) return 0;
+  if (estimatedLuxAtDistance(0.1) < targetLux) return 0;
   let lo = 0.1, hi = 1;
   while (estimatedLuxAtDistance(hi) > targetLux && hi < 200) hi *= 2;
   if (hi >= 200 && estimatedLuxAtDistance(hi) > targetLux) return 200;
@@ -236,65 +212,114 @@ function solveDistanceForLux(targetLux) {
   return (lo+hi)/2;
 }
 
-function classifyDistance(distance, points) {
-  if (distance <= 0) return {label:'SOURCE ÉTEINTE', warning:true};
-  const min = points[0][0], max = points[points.length-1][0];
-  if (distance < min) return {label:`EXTRAPOLATION < ${min} m`, warning:true};
-  if (distance > max) return {label:`EXTRAPOLATION > ${max} m`, warning:true};
-  const atPoint = points.some(([d]) => Math.abs(d-distance) < 0.02);
-  return {label: atPoint ? 'POINT CONSTRUCTEUR' : 'INTERPOLATION CONSTRUCTEUR', warning:false};
-}
-
-function renderMeasurements(points) {
-  const fixture = fixtures[state.fixture];
-  els.sourceDescriptor.textContent = `${fixture.label} · ${currentAccessoryLabel()} · ${state.cct} K · mesures à 100 %`;
-  els.measurementRow.innerHTML = points.map(([d,lux]) => `<div class="measure-chip"><span>${d} m</span><strong>${formatLux(lux)} lux</strong></div>`).join('');
-}
-
-function updateTestDistance(reqLux) {
+function updateDistanceStatus(reqLux, maxD) {
   const d = state.testDistance;
   const lux = estimatedLuxAtDistance(d);
+  const margin = lux > 0 ? Math.log2(lux / reqLux) : -Infinity;
   const reqIso = lux > 0 ? INCIDENT_C * state.aperture * state.aperture / (lux * (1/state.shutterDenom)) : Infinity;
   const possibleF = lux > 0 ? Math.sqrt(lux * state.iso * (1/state.shutterDenom) / INCIDENT_C) : 0;
-  const margin = lux > 0 && reqLux > 0 ? Math.log2(lux/reqLux) : -Infinity;
-  const rangeState = classifyDistance(d, getPoints());
+
+  els.statusBox.classList.remove('comfortable','just','insufficient');
+  let title, text, cls;
+  if (state.intensityPct <= 0 || lux <= 0) {
+    cls = 'insufficient'; title = 'SOURCE ÉTEINTE'; text = 'Monte la puissance du projecteur pour commencer.';
+  } else if (margin >= 0.7) {
+    cls = 'comfortable'; title = 'CONFORTABLE'; text = `À ${formatDistance(d)} m, tu as de la marge. Tu peux dimmer ou éloigner la source.`;
+  } else if (margin >= 0) {
+    cls = 'just'; title = 'ÇA PASSE'; text = `À ${formatDistance(d)} m, ça fonctionne mais tu es proche de la limite choisie.`;
+  } else {
+    cls = 'insufficient'; title = 'TROP LOIN'; text = `À ${formatDistance(d)} m, cette configuration ne suffit plus avec ton ISO max et ton ouverture.`;
+  }
+  els.statusBox.classList.add(cls);
+  els.statusTitle.textContent = title;
+  els.statusText.textContent = text;
+
+  const solutions = [];
+  if (state.intensityPct <= 0) {
+    solutions.push(['SOLUTION','Monte la puissance']);
+  } else if (margin >= 0) {
+    if (maxD > d + 0.1) solutions.push(['TU PEUX RECULER',`jusqu’à ${formatDistance(maxD)} m`]);
+    const targetPct = state.intensityPct * reqLux / lux;
+    if (targetPct < state.intensityPct - 3 && targetPct >= 1) solutions.push(['OU DIMMER',`environ ${Math.max(1,Math.round(targetPct))} %`]);
+    if (possibleF > state.aperture * 1.05) solutions.push(['OU FERMER',`jusqu’à f/${formatAperture(possibleF)}`]);
+  } else {
+    if (maxD > 0) solutions.push(['RAPPROCHE LA SOURCE',`${formatDistance(maxD)} m max`]);
+    const neededPct = lux > 0 ? state.intensityPct * reqLux / lux : Infinity;
+    if (state.intensityPct < 100 && neededPct <= 100) solutions.push(['MONTE LA PUISSANCE',`vers ${Math.ceil(neededPct)} %`]);
+    if (possibleF > 0 && possibleF < state.aperture) solutions.push(['OUVRE LE DIAPH',`vers f/${formatAperture(possibleF)}`]);
+    if (Number.isFinite(reqIso) && reqIso > state.iso) solutions.push(['SI TU ACCEPTES PLUS D’ISO',`environ ISO ${formatIso(reqIso)}`]);
+    const stronger = findStrongerFixture(reqLux, d);
+    if (stronger) solutions.push(['PLUS DE PUISSANCE',`passe au ${fixtures[stronger].label}`]);
+  }
+
+  els.solutions.innerHTML = solutions.slice(0,4).map(([label,value]) => `<div class="solution"><span>${label}</span><strong>${value}</strong></div>`).join('');
+}
+
+function findStrongerFixture(reqLux, distance) {
+  const currentIndex = FIXTURE_ORDER.indexOf(state.fixture);
+  for (let i=currentIndex+1; i<FIXTURE_ORDER.length; i++) {
+    const key = FIXTURE_ORDER[i];
+    if (estimatedLuxAtDistance(distance, key, 100) >= reqLux) return key;
+  }
+  return null;
+}
+
+function updateAdvanced(reqLux, maxD, points) {
+  const d = state.testDistance;
+  const lux = estimatedLuxAtDistance(d);
+  const margin = lux > 0 ? Math.log2(lux / reqLux) : -Infinity;
+  const reqIso = lux > 0 ? INCIDENT_C * state.aperture * state.aperture / (lux * (1/state.shutterDenom)) : Infinity;
+  const possibleF = lux > 0 ? Math.sqrt(lux * state.iso * (1/state.shutterDenom) / INCIDENT_C) : 0;
+  const rangeAtTest = classifyDistance(d, points);
+  const rangeAtMax = classifyDistance(maxD, points);
 
   els.testLux.textContent = `${formatLux(lux)} lux`;
+  els.stopMargin.textContent = Number.isFinite(margin) ? `${margin >= 0 ? '+' : ''}${margin.toFixed(1).replace('.', ',')} stop${Math.abs(margin)>=1.5?'s':''}` : '—';
   els.requiredIso.textContent = Number.isFinite(reqIso) ? `ISO ${formatIso(reqIso)}` : '—';
   els.possibleAperture.textContent = possibleF > 0 ? `f/${formatAperture(possibleF)}` : '—';
-  els.stopMargin.textContent = Number.isFinite(margin) ? `${margin >= 0 ? '+' : ''}${margin.toFixed(1)} stop${Math.abs(margin) >= 1.5 ? 's' : ''}` : '—';
+  els.sourceDescriptor.textContent = `${fixtures[state.fixture].label} · ${currentAccessoryLabel()} · ${state.cct} K · à 100 %`;
+  els.measurementRow.innerHTML = points.map(([md,mlux]) => `<div class="measure-chip"><span>${md} m</span><strong>${formatLux(mlux)} lux</strong></div>`).join('');
 
-  const enough = lux >= reqLux && lux > 0;
-  els.testMessage.classList.toggle('negative', !enough);
-  const confidenceText = rangeState.warning ? ` ${rangeState.label.toLowerCase()}.` : '';
-  if (lux <= 0) {
-    els.testMessage.textContent = 'Source à 0 % : pas d’exposition disponible.';
-  } else if (enough) {
-    els.testMessage.textContent = `À ${d.toFixed(1)} m, la source suffit pour ISO ${state.iso} / 1/${state.shutterDenom} / f/${formatAperture(state.aperture)} avec ${Math.abs(margin).toFixed(1)} stop${Math.abs(margin)>=1.5?'s':''} de marge.${confidenceText}`;
+  const confidence = rangeAtTest.warning || rangeAtMax.warning
+    ? `Une partie du calcul sort de la plage mesurée par le constructeur (${rangeAtTest.label.toLowerCase()} / distance max : ${rangeAtMax.label.toLowerCase()}).`
+    : 'La distance testée et la distance max restent dans la plage de mesures constructeur ; LIGHT interpole entre les points publiés.';
+  els.dataNote.textContent = confidence;
+  els.dataNote.classList.toggle('warning', rangeAtTest.warning || rangeAtMax.warning);
+
+  if (state.intensityPct === 100) {
+    els.dimmerNote.textContent = 'Puissance 100 % : les points de départ sont les mesures laboratoire publiées.';
+    els.dimmerNote.classList.remove('warning');
   } else {
-    els.testMessage.textContent = `À ${d.toFixed(1)} m, il manque ${Math.abs(margin).toFixed(1)} stop${Math.abs(margin)>=1.5?'s':''}. Il faudrait environ ISO ${formatIso(reqIso)} à 1/${state.shutterDenom} et f/${formatAperture(state.aperture)}.${confidenceText}`;
+    els.dimmerNote.textContent = 'Sous 100 %, LIGHT estime les lux proportionnellement au dimmer. Cette partie est moins fiable faute de courbe constructeur détaillée par pourcentage.';
+    els.dimmerNote.classList.add('warning');
   }
+}
+
+function classifyDistance(distance, points) {
+  if (!Number.isFinite(distance) || distance <= 0) return {label:'source éteinte', warning:true};
+  const min = points[0][0], max = points[points.length-1][0];
+  if (distance < min) return {label:`extrapolation < ${min} m`, warning:true};
+  if (distance > max) return {label:`extrapolation > ${max} m`, warning:true};
+  return {label:'interpolation constructeur', warning:false};
 }
 
 function formatLux(v) {
   if (!Number.isFinite(v)) return '—';
-  if (v >= 10000) return Math.round(v).toLocaleString('fr-FR');
-  if (v >= 1000) return Math.round(v).toLocaleString('fr-FR');
-  if (v >= 100) return Math.round(v).toString();
+  if (v >= 100) return Math.round(v).toLocaleString('fr-FR');
   if (v >= 10) return v.toFixed(1).replace('.', ',');
   return v.toFixed(2).replace('.', ',');
 }
 function formatDistance(v) {
-  if (v >= 20) return v.toFixed(0);
-  if (v >= 10) return v.toFixed(1);
-  return v.toFixed(1);
+  if (!Number.isFinite(v)) return '—';
+  if (v >= 20) return v.toFixed(0).replace('.', ',');
+  return v.toFixed(1).replace('.', ',');
 }
 function formatAperture(v) {
-  if (v >= 10) return v.toFixed(1).replace(/\.0$/,'');
-  return v.toFixed(1).replace(/\.0$/,'');
+  if (!Number.isFinite(v)) return '—';
+  return v.toFixed(1).replace(/\.0$/,'').replace('.', ',');
 }
 function formatIso(v) {
   if (!Number.isFinite(v)) return '—';
   if (v >= 1000) return Math.round(v/10)*10;
-  return Math.max(1, Math.round(v));
+  return Math.max(1,Math.round(v));
 }

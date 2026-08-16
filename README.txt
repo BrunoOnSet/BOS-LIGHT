@@ -1,19 +1,30 @@
-BOS LIGHT — V0.3
+BOS LIGHT — V0.4
 ================
 
-Pivot du prototype : BOS Light ne simule plus le rendu d'un visage.
-Il devient un calculateur photométrique de préparation de tournage.
+Objectif
+--------
+LIGHT est désormais pensé comme une aide simple de préparation et de tournage :
+"Est-ce que ma lumière va suffire avec mes réglages ?"
 
-Fonctions
----------
-- amaran Halo 60x / 100x / 200x / 300x / 600x
-- Nu / Réflecteur / Softbox 60 ou 90 selon le modèle
-- 2700 / 3200 / 4300 / 5600 / 6500 K
-- Intensité 0–100 %
-- ISO max / shutter / diaphragme
-- Calcul de distance maximale
-- Test d'une distance donnée : lux, ISO requis, diaph possible, marge en stops
-- Indication claire interpolation / extrapolation
+Écran principal
+---------------
+- Distance maximale immédiatement lisible
+- Curseur "Ma lumière est à"
+- Statut simple : CONFORTABLE / ÇA PASSE / TROP LOIN
+- Suggestions concrètes : rapprocher, dimmer, ouvrir, monter l'ISO ou choisir un projecteur plus puissant
+
+Réglages principaux
+-------------------
+- Halo 60x / 100x / 200x / 300x / 600x
+- Nu / Réflecteur / Softbox 60 ou 90 selon le projecteur
+- Puissance 0–100 %
+- ISO max accepté
+- Ouverture
+- Vitesse
+
+Détails techniques
+------------------
+Les lux, marges en stops, température de couleur et points de mesure constructeur sont cachés dans "Détails techniques" afin de garder l'écran principal lisible pour un débutant.
 
 Données photométriques
 ----------------------
@@ -21,23 +32,17 @@ Sources constructeur officielles :
 https://help.amarancreators.com/en/amaran-halo-60x-100x/specifications
 https://help.amarancreators.com/en/amaran-halo-200x-300x-600x/specifications
 
-Les valeurs 100 % passent exactement par les points de mesure Aputure Lab.
-Entre deux points, l'app fait une interpolation logarithmique (loi de puissance locale).
-Hors de la plage de mesure, elle extrapole la pente locale et le signale.
+Les valeurs à 100 % passent par les points de mesure Aputure Lab. Entre les points, l'app interpole en échelle logarithmique. En dehors de la plage mesurée, elle extrapole et le signale dans les détails techniques.
 
 Dimmer
 ------
-Aucune table constructeur complète par pourcentage n'est publiée dans les pages utilisées.
-Sous 100 %, la V0.3 suppose donc une variation linéaire des lux avec le pourcentage.
-Le résultat est explicitement marqué "DIMMER ESTIMÉ".
+Sous 100 %, l'app estime pour l'instant les lux proportionnellement au pourcentage de dimmer. Cette partie est explicitement indiquée comme moins fiable.
 
-Exposition
-----------
-Relation posemètre incident utilisée : E = C * N² / (ISO * t), avec C = 250.
-Cette relation permet de convertir l'éclairement en exposition théorique.
-Les EI réels des caméras, les tolérances des projecteurs et les méthodes de mesure peuvent créer un écart pratique.
+Exposition incidente
+--------------------
+Relation utilisée : E = C × N² / (ISO × t), avec C = 340, correspondant à la constante Lumisphere indiquée par Sekonic.
+La V0.3 utilisait C = 250 (Lumidisc) : ce point est corrigé dans la V0.4.
 
-Plan Feu
---------
-Les placements Paramount / Loop / Rembrandt / Split et la construction de schémas lumière sont volontairement retirés de LIGHT.
-Ils sont réservés à l'application séparée "Plan Feu".
+Cache navigateur
+----------------
+Les fichiers CSS et JS sont appelés avec ?v=0.4 afin d'éviter qu'un ancien fichier reste affiché après remplacement sur GitHub Pages.
