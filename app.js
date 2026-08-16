@@ -1,509 +1,300 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// BOS LIGHT V0.3 — photometric calculator
+// Manufacturer illuminance data from Aputure/amaran Halo specification pages.
+// Exposure relation: E = C * N^2 / (ISO * t), incident-meter calibration constant C = 250.
 
-const MODEL_BASE = 'https://threejs.org/examples/models/gltf/LeePerrySmith/';
-const MODEL_URL = MODEL_BASE + 'LeePerrySmith.glb';
-const COLOR_URL = MODEL_BASE + 'Map-COL.jpg';
-const NORMAL_URL = MODEL_BASE + 'Infinite-Level_02_Tangent_SmoothUV.jpg';
-
-// Exposure calibration: standard incident meter relationship
-// N² / t = E * ISO / C, with C = 250.
-// This is used for the stop readout and for relative camera exposure in the preview.
-const INCIDENT_METER_C = 250;
-const REFERENCE_CAMERA = { iso: 800, shutter: 1 / 50, aperture: 5.6 };
-const REFERENCE_LUX = requiredLuxForCamera(REFERENCE_CAMERA.iso, REFERENCE_CAMERA.shutter, REFERENCE_CAMERA.aperture);
-const BASE_LIGHT_INTENSITY = 48;
-const BASE_TONE_EXPOSURE = 1.05;
+const INCIDENT_C = 250;
 
 const state = {
-  pattern: 'rembrandt',
-  fixture: 'halo200x',
+  fixture: 'halo60x',
   accessory: 'softbox',
-  intensityPct: 10,
-  sourceDistanceM: 1.2,
-  cameraDistanceM: 1.5,
+  cct: 5600,
+  intensityPct: 100,
   iso: 800,
-  shutter: 1 / 50,
-  aperture: 5.6,
-  view: 'preview'
+  shutterDenom: 50,
+  aperture: 2.8,
+  testDistance: 2.0
 };
 
-const patternData = {
-  paramount: { label: 'PARAMOUNT', azimuth: 0, elevation: 32 },
-  loop: { label: 'LOOP', azimuth: 28, elevation: 26 },
-  rembrandt: { label: 'REMBRANDT', azimuth: 48, elevation: 28 },
-  split: { label: 'SPLIT', azimuth: 88, elevation: 18 }
-};
-
-// Manufacturer lab photometrics at 5600 K.
-// 60x / 100x: official measurements at 1 m and 3 m.
-// 200x / 300x / 600x: official measurements at 1 m, 3 m and 5 m.
-// Accessory labels match the families published by amaran:
-// - 60x/100x: Mini Reflector, Light Dome 60
-// - 200x/300x/600x: Reflector, Light Dome 90
 const fixtures = {
   halo60x: {
-    label: 'Halo 60x', softboxLabel: 'Softbox 60', softboxCm: 60,
-    photometrics: {
-      bare: [[1, 3240], [3, 372]],
-      reflector: [[1, 27520], [3, 2777]],
-      softbox: [[1, 2255], [3, 169]]
+    label: 'Halo 60x', softboxLabel: 'Softbox 60', maxMeasuredM: 3,
+    data: {
+      2700:{bare:[[1,2570],[3,295]],softbox:[[1,1760],[3,133]],reflector:[[1,21440],[3,2164]]},
+      3200:{bare:[[1,2800],[3,321]],softbox:[[1,1927],[3,145]],reflector:[[1,23530],[3,2372]]},
+      4300:{bare:[[1,3070],[3,353]],softbox:[[1,2129],[3,160]],reflector:[[1,26000],[3,2622]]},
+      5600:{bare:[[1,3240],[3,372]],softbox:[[1,2255],[3,169]],reflector:[[1,27520],[3,2777]]},
+      6500:{bare:[[1,3270],[3,375]],softbox:[[1,2285],[3,171]],reflector:[[1,27890],[3,2812]]}
     }
   },
   halo100x: {
-    label: 'Halo 100x', softboxLabel: 'Softbox 60', softboxCm: 60,
-    photometrics: {
-      bare: [[1, 4860], [3, 547]],
-      reflector: [[1, 38400], [3, 3700]],
-      softbox: [[1, 3290], [3, 248]]
+    label: 'Halo 100x', softboxLabel: 'Softbox 60', maxMeasuredM: 3,
+    data: {
+      2700:{bare:[[1,3670],[3,414]],softbox:[[1,2417],[3,182]],reflector:[[1,27910],[3,2690]]},
+      3200:{bare:[[1,4360],[3,492]],softbox:[[1,2892],[3,218]],reflector:[[1,33500],[3,3230]]},
+      4300:{bare:[[1,4890],[3,551]],softbox:[[1,3280],[3,247]],reflector:[[1,38100],[3,3670]]},
+      5600:{bare:[[1,4860],[3,547]],softbox:[[1,3290],[3,248]],reflector:[[1,38400],[3,3700]]},
+      6500:{bare:[[1,4630],[3,521]],softbox:[[1,3140],[3,237]],reflector:[[1,36700],[3,3540]]}
     }
   },
   halo200x: {
-    label: 'Halo 200x', softboxLabel: 'Softbox 90', softboxCm: 90,
-    photometrics: {
-      bare: [[1, 10530], [3, 1187], [5, 503]],
-      reflector: [[1, 29980], [3, 2901], [5, 1054]],
-      softbox: [[1, 9670], [3, 666], [5, 248]]
+    label: 'Halo 200x', softboxLabel: 'Softbox 90', maxMeasuredM: 5,
+    data: {
+      2700:{bare:[[1,7800],[3,881],[5,358]],softbox:[[1,7090],[3,489],[5,175]],reflector:[[1,22000],[3,2136],[5,746]]},
+      3200:{bare:[[1,9460],[3,1066],[5,441]],softbox:[[1,8620],[3,595],[5,216]],reflector:[[1,26730],[3,2594],[5,921]]},
+      4300:{bare:[[1,10500],[3,1184],[5,495]],softbox:[[1,9620],[3,662],[5,244]],reflector:[[1,29800],[3,2889],[5,1038]]},
+      5600:{bare:[[1,10530],[3,1187],[5,503]],softbox:[[1,9670],[3,666],[5,248]],reflector:[[1,29980],[3,2901],[5,1054]]},
+      6500:{bare:[[1,9800],[3,1104],[5,471]],softbox:[[1,9010],[3,621],[5,233]],reflector:[[1,27930],[3,2705],[5,988]]}
     }
   },
   halo300x: {
-    label: 'Halo 300x', softboxLabel: 'Softbox 90', softboxCm: 90,
-    photometrics: {
-      bare: [[1, 16120], [3, 1819], [5, 763]],
-      reflector: [[1, 52600], [3, 5000], [5, 1796]],
-      softbox: [[1, 15890], [3, 1111], [5, 408]]
+    label: 'Halo 300x', softboxLabel: 'Softbox 90', maxMeasuredM: 5,
+    data: {
+      2700:{bare:[[1,11850],[3,1335],[5,554]],softbox:[[1,11530],[3,808],[5,293]],reflector:[[1,38100],[3,3630],[5,1292]]},
+      3200:{bare:[[1,14600],[3,1647],[5,685]],softbox:[[1,14250],[3,999],[5,364]],reflector:[[1,47200],[3,4480],[5,1602]]},
+      4300:{bare:[[1,16200],[3,1827],[5,768]],softbox:[[1,15850],[3,1113],[5,410]],reflector:[[1,52600],[3,5000],[5,1803]]},
+      5600:{bare:[[1,16120],[3,1819],[5,763]],softbox:[[1,15890],[3,1111],[5,408]],reflector:[[1,52600],[3,5000],[5,1796]]},
+      6500:{bare:[[1,14360],[3,1515],[5,683]],softbox:[[1,14140],[3,989],[5,366]],reflector:[[1,46800],[3,4450],[5,1610]]}
     }
   },
   halo600x: {
-    label: 'Halo 600x', softboxLabel: 'Softbox 90', softboxCm: 90,
-    photometrics: {
-      bare: [[1, 32500], [3, 3610], [5, 1494]],
-      reflector: [[1, 102100], [3, 9680], [5, 3480]],
-      softbox: [[1, 30300], [3, 2087], [5, 782]]
+    label: 'Halo 600x', softboxLabel: 'Softbox 90', maxMeasuredM: 5,
+    data: {
+      2700:{bare:[[1,23600],[3,2627],[5,1094]],softbox:[[1,21590],[3,1485],[5,566]],reflector:[[1,72500],[3,6900],[5,2519]]},
+      3200:{bare:[[1,27920],[3,3100],[5,1280]],softbox:[[1,25590],[3,1767],[5,662]],reflector:[[1,86400],[3,8200],[5,2948]]},
+      4300:{bare:[[1,32000],[3,3550],[5,1475]],softbox:[[1,29700],[3,2042],[5,768]],reflector:[[1,99900],[3,9480],[5,3420]]},
+      5600:{bare:[[1,32500],[3,3610],[5,1494]],softbox:[[1,30300],[3,2087],[5,782]],reflector:[[1,102100],[3,9680],[5,3480]]},
+      6500:{bare:[[1,31200],[3,3460],[5,1461]],softbox:[[1,29300],[3,2012],[5,766]],reflector:[[1,98400],[3,9340],[5,3410]]}
     }
   }
 };
 
-const accessoryData = {
-  bare: { label: 'Nu', effectiveSourceCm: 8, shadowGain: 7.0, spotHalfAngleDeg: 42.5, penumbra: 0.42 },
-  reflector: { label: 'Réflecteur', effectiveSourceCm: 8, shadowGain: 6.0, spotHalfAngleDeg: 28, penumbra: 0.30 },
-  softbox: { label: 'Softbox', effectiveSourceCm: null, shadowGain: 10.5, spotHalfAngleDeg: 47, penumbra: 0.70 }
-};
-
+const accessoryLabels = { bare: 'Nu', reflector: 'Réflecteur', softbox: 'Softbox' };
 const ISO_VALUES = [100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800];
-const SHUTTER_DENOMINATORS = [25,30,40,50,60,80,100,125,160,200,250,320,400,500,640,800,1000];
-const APERTURE_VALUES = [1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
+const SHUTTER_DENOMS = [24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,500,640,800,1000];
+const APERTURES = [1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
 
+const $ = sel => document.querySelector(sel);
 const els = {
-  canvas: document.querySelector('#threeCanvas'),
-  loading: document.querySelector('#loading'),
-  loadError: document.querySelector('#loadError'),
-  patternGrid: document.querySelector('#patternGrid'),
-  fixtureGrid: document.querySelector('#fixtureGrid'),
-  accessoryGrid: document.querySelector('#accessoryGrid'),
-  softboxButtonLabel: document.querySelector('#softboxButtonLabel'),
-  intensitySlider: document.querySelector('#intensitySlider'),
-  distanceSlider: document.querySelector('#distanceSlider'),
-  cameraSlider: document.querySelector('#cameraSlider'),
-  intensityValue: document.querySelector('#intensityValue'),
-  distanceValue: document.querySelector('#distanceValue'),
-  cameraValue: document.querySelector('#cameraValue'),
-  isoSelect: document.querySelector('#isoSelect'),
-  shutterSelect: document.querySelector('#shutterSelect'),
-  apertureSelect: document.querySelector('#apertureSelect'),
-  luxValue: document.querySelector('#luxValue'),
-  exposureDelta: document.querySelector('#exposureDelta'),
-  hudPattern: document.querySelector('#hudPattern'),
-  hudStats: document.querySelector('#hudStats'),
-  setupReadout: document.querySelector('#setupReadout'),
-  lightNode: document.querySelector('#lightNode'),
-  lightNodeLabel: document.querySelector('#lightNodeLabel'),
-  lightPanel: document.querySelector('#lightPanel'),
-  lightRay: document.querySelector('#lightRay'),
-  cameraNode: document.querySelector('#cameraNode'),
-  resetBtn: document.querySelector('#resetBtn')
+  fixtureGrid: $('#fixtureGrid'), accessoryGrid: $('#accessoryGrid'), cctGrid: $('#cctGrid'),
+  softboxButtonLabel: $('#softboxButtonLabel'), cctValue: $('#cctValue'),
+  intensitySlider: $('#intensitySlider'), intensityValue: $('#intensityValue'), intensityWarning: $('#intensityWarning'),
+  isoSelect: $('#isoSelect'), shutterSelect: $('#shutterSelect'), apertureSelect: $('#apertureSelect'),
+  maxDistance: $('#maxDistance'), requiredLux: $('#requiredLux'), cameraSummary: $('#cameraSummary'),
+  resultSentence: $('#resultSentence'), dataStatus: $('#dataStatus'), dimmerStatus: $('#dimmerStatus'),
+  sourceDescriptor: $('#sourceDescriptor'), measurementRow: $('#measurementRow'),
+  testDistanceSlider: $('#testDistanceSlider'), testDistanceValue: $('#testDistanceValue'),
+  testLux: $('#testLux'), requiredIso: $('#requiredIso'), possibleAperture: $('#possibleAperture'), stopMargin: $('#stopMargin'), testMessage: $('#testMessage'),
+  resetBtn: $('#resetBtn')
 };
 
-let renderer, scene, camera, keyLight, keyTarget, head, panelMesh;
-let faceCenter = new THREE.Vector3(0, 0.1, 0);
+init();
 
-populateCameraControls();
-initThree();
-bindUI();
-updateAll();
-
-async function initThree() {
-  renderer = new THREE.WebGLRenderer({ canvas: els.canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = BASE_TONE_EXPOSURE;
-
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x020305);
-
-  camera = new THREE.PerspectiveCamera(34, 1, 0.05, 100);
-  scene.add(camera);
-
-  // Faint room ambience only. It stays constant so the key remains the dominant exposure source.
-  const ambient = new THREE.HemisphereLight(0x51647a, 0x08090b, 0.055);
-  scene.add(ambient);
-
-  keyTarget = new THREE.Object3D();
-  keyTarget.position.copy(faceCenter);
-  scene.add(keyTarget);
-
-  keyLight = new THREE.SpotLight(0xffffff, BASE_LIGHT_INTENSITY, 0, THREE.MathUtils.degToRad(47), 0.62, 2);
-  keyLight.castShadow = true;
-  keyLight.target = keyTarget;
-  keyLight.shadow.mapSize.set(2048, 2048);
-  keyLight.shadow.camera.near = 0.1;
-  keyLight.shadow.camera.far = 35;
-  keyLight.shadow.bias = -0.00018;
-  keyLight.shadow.normalBias = 0.018;
-  scene.add(keyLight);
-
-  const panelGeo = new THREE.PlaneGeometry(1, 1);
-  const panelMat = new THREE.MeshBasicMaterial({ color: 0xcbeaff, transparent: true, opacity: 0.42, side: THREE.DoubleSide });
-  panelMesh = new THREE.Mesh(panelGeo, panelMat);
-  scene.add(panelMesh);
-
-  const loader = new GLTFLoader();
-  const textureLoader = new THREE.TextureLoader();
-
-  try {
-    const [gltf, colorMap, normalMap] = await Promise.all([
-      loader.loadAsync(MODEL_URL),
-      textureLoader.loadAsync(COLOR_URL),
-      textureLoader.loadAsync(NORMAL_URL)
-    ]);
-
-    colorMap.colorSpace = THREE.SRGBColorSpace;
-    colorMap.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    normalMap.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-    const original = gltf.scene.children.find(o => o.isMesh) || gltf.scene.children[0];
-    head = new THREE.Mesh(original.geometry, new THREE.MeshPhysicalMaterial({
-      map: colorMap,
-      normalMap,
-      normalScale: new THREE.Vector2(0.72, 0.72),
-      roughness: 0.48,
-      metalness: 0,
-      clearcoat: 0.03,
-      clearcoatRoughness: 0.75,
-      sheen: 0.08,
-      sheenRoughness: 0.8,
-      sheenColor: new THREE.Color(0x7d2c20)
-    }));
-
-    head.castShadow = true;
-    head.receiveShadow = true;
-
-    head.geometry.computeBoundingBox();
-    const box = head.geometry.boundingBox.clone();
-    const size = new THREE.Vector3();
-    const center = new THREE.Vector3();
-    box.getSize(size);
-    box.getCenter(center);
-    const targetHeight = 3.4;
-    const scale = targetHeight / size.y;
-    head.scale.setScalar(scale);
-    head.position.set(-center.x * scale, -center.y * scale - 0.05, -center.z * scale);
-    scene.add(head);
-
-    faceCenter.set(0, 0.15, 0.12);
-    keyTarget.position.copy(faceCenter);
-    els.loading.classList.add('hidden');
-    updateThree();
-  } catch (err) {
-    console.error(err);
-    els.loading.classList.add('hidden');
-    els.loadError.classList.remove('hidden');
-  }
-
-  window.addEventListener('resize', resizeRenderer);
-  const observer = new ResizeObserver(resizeRenderer);
-  observer.observe(els.canvas.parentElement);
-  resizeRenderer();
-  renderer.setAnimationLoop(render);
+function init() {
+  populateSelect(els.isoSelect, ISO_VALUES, v => `ISO ${v}`, state.iso);
+  populateSelect(els.shutterSelect, SHUTTER_DENOMS, v => `1/${v}`, state.shutterDenom);
+  populateSelect(els.apertureSelect, APERTURES, v => `f/${formatAperture(v)}`, state.aperture);
+  bindUI();
+  update();
 }
 
-function resizeRenderer() {
-  if (!renderer || !camera) return;
-  const rect = els.canvas.parentElement.getBoundingClientRect();
-  const w = Math.max(1, Math.floor(rect.width));
-  const h = Math.max(1, Math.floor(rect.height));
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-
-function updateThree() {
-  if (!renderer || !camera || !keyLight) return;
-
-  const camZ = mapRange(state.cameraDistanceM, 0.8, 3, 4.25, 8.9);
-  camera.position.set(0, 0.08, camZ);
-  camera.lookAt(faceCenter);
-
-  const p = patternData[state.pattern];
-  const az = THREE.MathUtils.degToRad(p.azimuth);
-  const el = THREE.MathUtils.degToRad(p.elevation);
-  const d = sourceWorldDistance(state.sourceDistanceM);
-
-  const lightDirection = new THREE.Vector3(
-    Math.sin(az) * Math.cos(el),
-    Math.sin(el),
-    Math.cos(az) * Math.cos(el)
-  ).normalize();
-
-  keyLight.position.copy(faceCenter).addScaledVector(lightDirection, d);
-  keyTarget.position.copy(faceCenter);
-
-  const fixture = fixtures[state.fixture];
-  const accessory = accessoryData[state.accessory];
-  const effectiveSourceCm = state.accessory === 'softbox' ? fixture.softboxCm : accessory.effectiveSourceCm;
-  const apparentSize = (effectiveSourceCm / 100) / state.sourceDistanceM;
-
-  // Visual proxy for source softness. Softbox size and distance both alter apparent source size.
-  // Bare and reflector remain intentionally hard.
-  keyLight.shadow.radius = THREE.MathUtils.clamp(apparentSize * accessory.shadowGain, state.accessory === 'softbox' ? 1.1 : 0.45, state.accessory === 'softbox' ? 16 : 2.4);
-  keyLight.angle = THREE.MathUtils.degToRad(accessory.spotHalfAngleDeg);
-  keyLight.penumbra = accessory.penumbra;
-
-  const currentLux = getCurrentLux();
-  const referenceWorldDistance = sourceWorldDistance(1.2);
-
-  // We first compute target illuminance from manufacturer data, then compensate the renderer's
-  // own inverse-square falloff so that illuminance at the face follows that target value.
-  // Relative brightness therefore tracks lux while placement distance remains geometrically correct.
-  keyLight.intensity = BASE_LIGHT_INTENSITY
-    * (currentLux / REFERENCE_LUX)
-    * Math.pow(d / referenceWorldDistance, 2);
-
-  // Camera settings are applied as a relative exposure multiplier.
-  renderer.toneMappingExposure = BASE_TONE_EXPOSURE * cameraExposureFactor();
-
-  // Keep a hidden world panel for potential future reflections / visualization.
-  const panelSizeM = state.accessory === 'softbox' ? fixture.softboxCm / 100 : 0.12;
-  const panelWorldSize = THREE.MathUtils.clamp(panelSizeM * 0.8, 0.12, 1.2);
-  panelMesh.scale.set(panelWorldSize, panelWorldSize * 0.75, 1);
-  panelMesh.position.copy(keyLight.position);
-  panelMesh.lookAt(faceCenter);
-  panelMesh.visible = false;
-}
-
-function render() {
-  if (!renderer || !scene || !camera) return;
-  renderer.render(scene, camera);
+function populateSelect(select, values, labelFn, selected) {
+  select.innerHTML = '';
+  values.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = labelFn(v);
+    if (Number(v) === Number(selected)) opt.selected = true;
+    select.appendChild(opt);
+  });
 }
 
 function bindUI() {
-  document.querySelectorAll('[data-view]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.view = btn.dataset.view;
-      document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b === btn));
-      document.querySelector('#previewView').classList.toggle('active', state.view === 'preview');
-      document.querySelector('#setupView').classList.toggle('active', state.view === 'setup');
-      if (state.view === 'preview') resizeRenderer();
-    });
+  els.fixtureGrid.addEventListener('click', e => {
+    const b = e.target.closest('button[data-fixture]'); if (!b) return;
+    state.fixture = b.dataset.fixture; update();
   });
-
-  els.patternGrid.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.pattern = btn.dataset.pattern;
-      syncActiveButtons();
-      updateAll();
-    });
+  els.accessoryGrid.addEventListener('click', e => {
+    const b = e.target.closest('button[data-accessory]'); if (!b) return;
+    state.accessory = b.dataset.accessory; update();
   });
-
-  els.fixtureGrid.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.fixture = btn.dataset.fixture;
-      syncActiveButtons();
-      updateAll();
-    });
+  els.cctGrid.addEventListener('click', e => {
+    const b = e.target.closest('button[data-cct]'); if (!b) return;
+    state.cct = Number(b.dataset.cct); update();
   });
-
-  els.accessoryGrid.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.accessory = btn.dataset.accessory;
-      syncActiveButtons();
-      updateAll();
-    });
-  });
-
-  els.intensitySlider.addEventListener('input', () => { state.intensityPct = +els.intensitySlider.value; updateAll(); });
-  els.distanceSlider.addEventListener('input', () => { state.sourceDistanceM = +els.distanceSlider.value; updateAll(); });
-  els.cameraSlider.addEventListener('input', () => { state.cameraDistanceM = +els.cameraSlider.value; updateAll(); });
-
-  els.isoSelect.addEventListener('change', () => { state.iso = +els.isoSelect.value; updateAll(); });
-  els.shutterSelect.addEventListener('change', () => { state.shutter = 1 / (+els.shutterSelect.value); updateAll(); });
-  els.apertureSelect.addEventListener('change', () => { state.aperture = +els.apertureSelect.value; updateAll(); });
-
-  els.resetBtn.addEventListener('click', () => {
-    Object.assign(state, {
-      pattern: 'rembrandt', fixture: 'halo200x', accessory: 'softbox', intensityPct: 10,
-      sourceDistanceM: 1.2, cameraDistanceM: 1.5, iso: 800, shutter: 1 / 50, aperture: 5.6
-    });
-    syncControlsFromState();
-    updateAll();
-  });
+  els.intensitySlider.addEventListener('input', () => { state.intensityPct = Number(els.intensitySlider.value); update(); });
+  els.isoSelect.addEventListener('change', () => { state.iso = Number(els.isoSelect.value); update(); });
+  els.shutterSelect.addEventListener('change', () => { state.shutterDenom = Number(els.shutterSelect.value); update(); });
+  els.apertureSelect.addEventListener('change', () => { state.aperture = Number(els.apertureSelect.value); update(); });
+  els.testDistanceSlider.addEventListener('input', () => { state.testDistance = Number(els.testDistanceSlider.value); update(); });
+  els.resetBtn.addEventListener('click', reset);
 }
 
-function populateCameraControls() {
-  els.isoSelect.innerHTML = ISO_VALUES.map(v => `<option value="${v}">${v}</option>`).join('');
-  els.shutterSelect.innerHTML = SHUTTER_DENOMINATORS.map(v => `<option value="${v}">1/${v}</option>`).join('');
-  els.apertureSelect.innerHTML = APERTURE_VALUES.map(v => `<option value="${v}">f/${formatAperture(v)}</option>`).join('');
-  syncControlsFromState();
-}
-
-function syncControlsFromState() {
+function reset() {
+  Object.assign(state, { fixture:'halo60x', accessory:'softbox', cct:5600, intensityPct:100, iso:800, shutterDenom:50, aperture:2.8, testDistance:2.0 });
   els.intensitySlider.value = state.intensityPct;
-  els.distanceSlider.value = state.sourceDistanceM;
-  els.cameraSlider.value = state.cameraDistanceM;
-  els.isoSelect.value = String(state.iso);
-  els.shutterSelect.value = String(Math.round(1 / state.shutter));
-  els.apertureSelect.value = String(state.aperture);
+  els.isoSelect.value = state.iso;
+  els.shutterSelect.value = state.shutterDenom;
+  els.apertureSelect.value = state.aperture;
+  els.testDistanceSlider.value = state.testDistance;
+  update();
+}
+
+function update() {
   syncActiveButtons();
+  const fixture = fixtures[state.fixture];
+  els.softboxButtonLabel.textContent = fixture.softboxLabel.toUpperCase();
+  els.cctValue.textContent = `${state.cct} K`;
+  els.intensityValue.textContent = `${state.intensityPct} %`;
+  els.testDistanceValue.textContent = `${state.testDistance.toFixed(1)} m`;
+
+  const points = getPoints();
+  const reqLux = requiredLux(state.iso, state.shutterDenom, state.aperture);
+  const maxD = state.intensityPct <= 0 ? 0 : solveDistanceForLux(reqLux);
+
+  els.requiredLux.textContent = `${formatLux(reqLux)} lux`;
+  els.cameraSummary.textContent = `ISO ${state.iso} · 1/${state.shutterDenom} · f/${formatAperture(state.aperture)}`;
+  els.maxDistance.textContent = maxD > 0 ? formatDistance(maxD) : '0.0';
+
+  const rangeState = classifyDistance(maxD, points);
+  els.dataStatus.textContent = rangeState.label;
+  els.dataStatus.classList.toggle('warning', rangeState.warning);
+
+  if (state.intensityPct === 100) {
+    els.dimmerStatus.textContent = '100 % · MESURE CONSTRUCTEUR';
+    els.intensityWarning.textContent = 'À 100 %, le calcul utilise directement les mesures constructeur.';
+    els.intensityWarning.classList.remove('warning');
+  } else {
+    els.dimmerStatus.textContent = `${state.intensityPct} % · DIMMER ESTIMÉ`;
+    els.intensityWarning.textContent = 'Sous 100 %, les lux sont estimés proportionnellement au dimmer : amaran ne publie pas de courbe complète par pourcentage.';
+    els.intensityWarning.classList.add('warning');
+  }
+
+  if (maxD <= 0) {
+    els.resultSentence.textContent = 'Projecteur à 0 % : aucun éclairement disponible.';
+  } else {
+    els.resultSentence.textContent = `${fixture.label} · ${currentAccessoryLabel()} · ${state.cct} K · ${state.intensityPct} % peut atteindre environ ${formatDistance(maxD)} m avant de passer sous l'exposition cible.`;
+  }
+
+  renderMeasurements(points);
+  updateTestDistance(reqLux);
 }
 
 function syncActiveButtons() {
-  els.patternGrid.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.pattern === state.pattern));
-  els.fixtureGrid.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.fixture === state.fixture));
-  els.accessoryGrid.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.accessory === state.accessory));
+  document.querySelectorAll('[data-fixture]').forEach(b => b.classList.toggle('active', b.dataset.fixture === state.fixture));
+  document.querySelectorAll('[data-accessory]').forEach(b => b.classList.toggle('active', b.dataset.accessory === state.accessory));
+  document.querySelectorAll('[data-cct]').forEach(b => b.classList.toggle('active', Number(b.dataset.cct) === state.cct));
 }
 
-function updateAll() {
-  updateReadouts();
-  updateSetup();
-  updateThree();
+function currentAccessoryLabel() {
+  if (state.accessory === 'softbox') return fixtures[state.fixture].softboxLabel;
+  return accessoryLabels[state.accessory];
 }
 
-function updateReadouts() {
-  const p = patternData[state.pattern];
-  const fixture = fixtures[state.fixture];
-  const accessoryLabel = state.accessory === 'softbox' ? fixture.softboxLabel : accessoryData[state.accessory].label;
-  const currentLux = getCurrentLux();
-  const deltaStops = exposureDeltaStops(currentLux);
-
-  els.softboxButtonLabel.textContent = fixture.softboxLabel.toUpperCase();
-  els.intensityValue.value = `${Math.round(state.intensityPct)} %`;
-  els.distanceValue.value = `${state.sourceDistanceM.toFixed(1)} m`;
-  els.cameraValue.value = `${state.cameraDistanceM.toFixed(1)} m`;
-  els.luxValue.textContent = `${formatLux(currentLux)} lux`;
-  els.exposureDelta.textContent = formatStops(deltaStops);
-
-  els.hudPattern.textContent = p.label;
-  els.hudStats.textContent = `${fixture.label} · ${accessoryLabel} · ${Math.round(state.intensityPct)} % · ${formatLux(currentLux)} lx`;
-  els.setupReadout.textContent = `${p.label} · ${fixture.label} · ${accessoryLabel} · ${state.sourceDistanceM.toFixed(1)} m`;
-  els.lightNodeLabel.textContent = `${fixture.label.toUpperCase()} · ${accessoryLabel.toUpperCase()}`;
+function getPoints() {
+  return fixtures[state.fixture].data[state.cct][state.accessory];
 }
 
-function updateSetup() {
-  const p = patternData[state.pattern];
-  const az = THREE.MathUtils.degToRad(p.azimuth);
-
-  const centerX = 50;
-  const centerY = 47;
-  const radius = mapRange(state.sourceDistanceM, 0.5, 4, 19, 42);
-
-  const lightX = centerX - Math.sin(az) * radius;
-  const lightY = centerY - Math.cos(az) * radius;
-  els.lightNode.style.left = `${lightX}%`;
-  els.lightNode.style.top = `${lightY}%`;
-
-  const fixture = fixtures[state.fixture];
-  let panelW;
-  if (state.accessory === 'softbox') panelW = mapRange(fixture.softboxCm, 60, 90, 72, 96);
-  else panelW = state.accessory === 'reflector' ? 42 : 30;
-  els.lightPanel.style.width = `${panelW}px`;
-  els.lightPanel.style.height = `${state.accessory === 'softbox' ? Math.max(18, panelW * 0.28) : Math.max(13, panelW * 0.36)}px`;
-  els.lightPanel.classList.toggle('hard-source', state.accessory !== 'softbox');
-
-  const dx = lightX - centerX;
-  const dy = lightY - centerY;
-  const angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-  const stage = document.querySelector('#setupStage').getBoundingClientRect();
-  const pxDx = dx / 100 * stage.width;
-  const pxDy = dy / 100 * stage.height;
-  const len = Math.hypot(pxDx, pxDy);
-  els.lightRay.style.height = `${len}px`;
-  els.lightRay.style.transform = `translateX(-50%) rotate(${angle}deg)`;
-
-  const cameraY = mapRange(state.cameraDistanceM, 0.8, 3, 75, 91);
-  els.cameraNode.style.top = `${cameraY}%`;
+function requiredLux(iso, shutterDenom, aperture) {
+  const t = 1 / shutterDenom;
+  return INCIDENT_C * aperture * aperture / (iso * t);
 }
 
-function getCurrentLux() {
+function estimatedLuxAtDistance(distance) {
   if (state.intensityPct <= 0) return 0;
-  const table = fixtures[state.fixture].photometrics[state.accessory];
-  const luxAt100 = interpolatePhotometricLux(table, state.sourceDistanceM);
-  return luxAt100 * (state.intensityPct / 100);
+  const fullPower = curveLux(distance, getPoints());
+  return fullPower * (state.intensityPct / 100);
 }
 
-function interpolatePhotometricLux(points, distanceM) {
-  const sorted = [...points].sort((a, b) => a[0] - b[0]);
-  const first = sorted[0];
-  const last = sorted[sorted.length - 1];
-
-  // Outside published distances: inverse-square extrapolation from the nearest measured point.
-  if (distanceM <= first[0]) return first[1] * Math.pow(first[0] / distanceM, 2);
-  if (distanceM >= last[0]) return last[1] * Math.pow(last[0] / distanceM, 2);
-
-  // Between measured points: interpolate in log(distance)/log(lux) space.
-  // This preserves a physically plausible power-law curve while passing exactly through lab values.
-  for (let i = 0; i < sorted.length - 1; i++) {
-    const [d1, e1] = sorted[i];
-    const [d2, e2] = sorted[i + 1];
-    if (distanceM >= d1 && distanceM <= d2) {
-      const x = (Math.log(distanceM) - Math.log(d1)) / (Math.log(d2) - Math.log(d1));
-      return Math.exp(Math.log(e1) + x * (Math.log(e2) - Math.log(e1)));
+function curveLux(distance, points) {
+  const d = Math.max(0.05, distance);
+  let a, b;
+  if (d <= points[0][0]) {
+    [a,b] = [points[0], points[1]];
+  } else if (d >= points[points.length - 1][0]) {
+    [a,b] = [points[points.length - 2], points[points.length - 1]];
+  } else {
+    for (let i=0;i<points.length-1;i++) {
+      if (d >= points[i][0] && d <= points[i+1][0]) { a=points[i]; b=points[i+1]; break; }
     }
   }
-  return last[1];
+  const [d1,e1] = a; const [d2,e2] = b;
+  const exponent = Math.log(e2/e1) / Math.log(d2/d1);
+  return e1 * Math.pow(d/d1, exponent);
 }
 
-function cameraExposureFactor() {
-  return (state.iso / REFERENCE_CAMERA.iso)
-    * (state.shutter / REFERENCE_CAMERA.shutter)
-    * Math.pow(REFERENCE_CAMERA.aperture / state.aperture, 2);
+function solveDistanceForLux(targetLux) {
+  if (state.intensityPct <= 0) return 0;
+  const nearLux = estimatedLuxAtDistance(0.1);
+  if (nearLux < targetLux) return 0;
+  let lo = 0.1, hi = 1;
+  while (estimatedLuxAtDistance(hi) > targetLux && hi < 200) hi *= 2;
+  if (hi >= 200 && estimatedLuxAtDistance(hi) > targetLux) return 200;
+  for (let i=0;i<80;i++) {
+    const mid = (lo+hi)/2;
+    if (estimatedLuxAtDistance(mid) >= targetLux) lo = mid; else hi = mid;
+  }
+  return (lo+hi)/2;
 }
 
-function requiredLuxForCamera(iso, shutterSeconds, aperture) {
-  return INCIDENT_METER_C * aperture * aperture / (shutterSeconds * iso);
+function classifyDistance(distance, points) {
+  if (distance <= 0) return {label:'SOURCE ÉTEINTE', warning:true};
+  const min = points[0][0], max = points[points.length-1][0];
+  if (distance < min) return {label:`EXTRAPOLATION < ${min} m`, warning:true};
+  if (distance > max) return {label:`EXTRAPOLATION > ${max} m`, warning:true};
+  const atPoint = points.some(([d]) => Math.abs(d-distance) < 0.02);
+  return {label: atPoint ? 'POINT CONSTRUCTEUR' : 'INTERPOLATION CONSTRUCTEUR', warning:false};
 }
 
-function exposureDeltaStops(currentLux) {
-  if (currentLux <= 0) return -Infinity;
-  const required = requiredLuxForCamera(state.iso, state.shutter, state.aperture);
-  return Math.log2(currentLux / required);
+function renderMeasurements(points) {
+  const fixture = fixtures[state.fixture];
+  els.sourceDescriptor.textContent = `${fixture.label} · ${currentAccessoryLabel()} · ${state.cct} K · mesures à 100 %`;
+  els.measurementRow.innerHTML = points.map(([d,lux]) => `<div class="measure-chip"><span>${d} m</span><strong>${formatLux(lux)} lux</strong></div>`).join('');
 }
 
-function sourceWorldDistance(distanceM) {
-  return mapRange(distanceM, 0.5, 4, 2.35, 8.9);
+function updateTestDistance(reqLux) {
+  const d = state.testDistance;
+  const lux = estimatedLuxAtDistance(d);
+  const reqIso = lux > 0 ? INCIDENT_C * state.aperture * state.aperture / (lux * (1/state.shutterDenom)) : Infinity;
+  const possibleF = lux > 0 ? Math.sqrt(lux * state.iso * (1/state.shutterDenom) / INCIDENT_C) : 0;
+  const margin = lux > 0 && reqLux > 0 ? Math.log2(lux/reqLux) : -Infinity;
+  const rangeState = classifyDistance(d, getPoints());
+
+  els.testLux.textContent = `${formatLux(lux)} lux`;
+  els.requiredIso.textContent = Number.isFinite(reqIso) ? `ISO ${formatIso(reqIso)}` : '—';
+  els.possibleAperture.textContent = possibleF > 0 ? `f/${formatAperture(possibleF)}` : '—';
+  els.stopMargin.textContent = Number.isFinite(margin) ? `${margin >= 0 ? '+' : ''}${margin.toFixed(1)} stop${Math.abs(margin) >= 1.5 ? 's' : ''}` : '—';
+
+  const enough = lux >= reqLux && lux > 0;
+  els.testMessage.classList.toggle('negative', !enough);
+  const confidenceText = rangeState.warning ? ` ${rangeState.label.toLowerCase()}.` : '';
+  if (lux <= 0) {
+    els.testMessage.textContent = 'Source à 0 % : pas d’exposition disponible.';
+  } else if (enough) {
+    els.testMessage.textContent = `À ${d.toFixed(1)} m, la source suffit pour ISO ${state.iso} / 1/${state.shutterDenom} / f/${formatAperture(state.aperture)} avec ${Math.abs(margin).toFixed(1)} stop${Math.abs(margin)>=1.5?'s':''} de marge.${confidenceText}`;
+  } else {
+    els.testMessage.textContent = `À ${d.toFixed(1)} m, il manque ${Math.abs(margin).toFixed(1)} stop${Math.abs(margin)>=1.5?'s':''}. Il faudrait environ ISO ${formatIso(reqIso)} à 1/${state.shutterDenom} et f/${formatAperture(state.aperture)}.${confidenceText}`;
+  }
 }
 
 function formatLux(v) {
-  if (!Number.isFinite(v) || v <= 0) return '0';
-  if (v >= 10000) return (Math.round(v / 100) * 100).toLocaleString('fr-FR');
-  if (v >= 1000) return (Math.round(v / 10) * 10).toLocaleString('fr-FR');
-  return Math.round(v).toLocaleString('fr-FR');
+  if (!Number.isFinite(v)) return '—';
+  if (v >= 10000) return Math.round(v).toLocaleString('fr-FR');
+  if (v >= 1000) return Math.round(v).toLocaleString('fr-FR');
+  if (v >= 100) return Math.round(v).toString();
+  if (v >= 10) return v.toFixed(1).replace('.', ',');
+  return v.toFixed(2).replace('.', ',');
 }
-
-function formatStops(v) {
-  if (v === -Infinity) return '−∞ stop';
-  const rounded = Math.round(v * 10) / 10;
-  if (Math.abs(rounded) < 0.05) return '0.0 stop';
-  return `${rounded > 0 ? '+' : '−'}${Math.abs(rounded).toFixed(1)} stop${Math.abs(rounded) >= 1.5 ? 's' : ''}`;
+function formatDistance(v) {
+  if (v >= 20) return v.toFixed(0);
+  if (v >= 10) return v.toFixed(1);
+  return v.toFixed(1);
 }
-
 function formatAperture(v) {
-  return Number.isInteger(v) ? String(v) : String(v);
+  if (v >= 10) return v.toFixed(1).replace(/\.0$/,'');
+  return v.toFixed(1).replace(/\.0$/,'');
 }
-
-function mapRange(v, a, b, c, d) {
-  const t = (v - a) / (b - a);
-  return c + (d - c) * t;
+function formatIso(v) {
+  if (!Number.isFinite(v)) return '—';
+  if (v >= 1000) return Math.round(v/10)*10;
+  return Math.max(1, Math.round(v));
 }

@@ -1,64 +1,43 @@
-BOS LIGHT — V0.2
+BOS LIGHT — V0.3
+================
 
-NOUVEAUTÉS V0.2
-- Suppression du slider de taille de source.
-- Choix de projecteur : amaran Halo 60x, 100x, 200x, 300x, 600x.
-- Choix d'accessoire : Nu, Réflecteur, Softbox 60 ou 90 selon le projecteur.
-- Intensité projecteur : 0 à 100 %.
-- Réglages caméra : ISO, shutter, diaphragme.
-- Affichage de l'éclairement estimé au sujet en lux.
-- Affichage d'un écart d'exposition en stops basé sur une mesure incidente.
-- Le mode AUTO a été supprimé : l'exposition est maintenant déterminée par la lumière + les réglages caméra.
+Pivot du prototype : BOS Light ne simule plus le rendu d'un visage.
+Il devient un calculateur photométrique de préparation de tournage.
 
-PHOTOMÉTRIE
-Les valeurs à 5600 K proviennent des tableaux de mesures laboratoire Aputure/amaran publiés pour la gamme Halo.
+Fonctions
+---------
+- amaran Halo 60x / 100x / 200x / 300x / 600x
+- Nu / Réflecteur / Softbox 60 ou 90 selon le modèle
+- 2700 / 3200 / 4300 / 5600 / 6500 K
+- Intensité 0–100 %
+- ISO max / shutter / diaphragme
+- Calcul de distance maximale
+- Test d'une distance donnée : lux, ISO requis, diaph possible, marge en stops
+- Indication claire interpolation / extrapolation
 
-Halo 60x / 100x : mesures officielles à 1 m et 3 m pour :
-- No Accessories
-- Mini Reflector
-- Light Dome 60
+Données photométriques
+----------------------
+Sources constructeur officielles :
+https://help.amarancreators.com/en/amaran-halo-60x-100x/specifications
+https://help.amarancreators.com/en/amaran-halo-200x-300x-600x/specifications
 
-Halo 200x / 300x / 600x : mesures officielles à 1 m, 3 m et 5 m pour :
-- No Accessories
-- Reflector
-- Light Dome 90
+Les valeurs 100 % passent exactement par les points de mesure Aputure Lab.
+Entre deux points, l'app fait une interpolation logarithmique (loi de puissance locale).
+Hors de la plage de mesure, elle extrapole la pente locale et le signale.
 
-Entre les distances mesurées, BOS Light interpole en espace log/log pour conserver une courbe de type loi de puissance qui passe exactement par les données constructeur.
-Sous 1 m et au-delà du dernier point mesuré, BOS Light extrapole en inverse-square.
+Dimmer
+------
+Aucune table constructeur complète par pourcentage n'est publiée dans les pages utilisées.
+Sous 100 %, la V0.3 suppose donc une variation linéaire des lux avec le pourcentage.
+Le résultat est explicitement marqué "DIMMER ESTIMÉ".
 
-INTENSITÉ 0–100 %
-Les appareils proposent un réglage d'intensité de 0 à 100 %, mais la documentation constructeur consultée ne publie pas une courbe lux par lux selon la position du dimmer.
-Cette V0.2 suppose donc une relation linéaire entre le pourcentage d'intensité et l'éclairement. C'est une approximation explicite.
+Exposition
+----------
+Relation posemètre incident utilisée : E = C * N² / (ISO * t), avec C = 250.
+Cette relation permet de convertir l'éclairement en exposition théorique.
+Les EI réels des caméras, les tolérances des projecteurs et les méthodes de mesure peuvent créer un écart pratique.
 
-CAMÉRA / EXPOSITION
-Le calcul d'écart d'exposition utilise la relation d'un posemètre incident :
-N² / t = E × ISO / C
-avec C = 250.
-
-Le rendu applique ensuite les variations relatives ISO / shutter / diaphragme. L'objectif est d'obtenir une cohérence en stops, pas de certifier une mesure d'exposition absolue pour n'importe quelle peau ou chaîne colorimétrique.
-
-DOUCEUR DES OMBRES
-Le choix d'accessoire agit aussi sur la douceur :
-- Nu : petite source, ombres dures.
-- Réflecteur : source dure et concentrée.
-- Softbox 60/90 : surface apparente plus grande, ombres plus douces.
-
-La douceur reste une approximation temps réel via PCFSoftShadowMap + shadow.radius. Ce n'est pas encore un rendu path-tracé d'une vraie surface émissive.
-
-IMPORTANT
-Ce prototype charge Three.js et le scan Lee Perry-Smith depuis Internet.
-Pour le tester correctement, déploie le dossier sur GitHub Pages / Netlify / Vercel,
-ou lance un serveur local puis ouvre la page avec une connexion Internet.
-
-Exemple de serveur local :
-  python3 -m http.server 8080
-Puis ouvrir : http://localhost:8080
-
-Licence du modèle humain
-"Infinite, 3D Head Scan" by Lee Perry-Smith
-Creative Commons Attribution 3.0 Unported (CC BY 3.0)
-Source / copie utilisée : examples/models/gltf/LeePerrySmith du dépôt three.js.
-
-Ce modèle est utilisé ici uniquement comme base de prototype technique.
-Pour une version publique/finale BOS Light, il est conseillé de choisir un scan humain
-avec licence commerciale et esthétique validées pour le produit final.
+Plan Feu
+--------
+Les placements Paramount / Loop / Rembrandt / Split et la construction de schémas lumière sont volontairement retirés de LIGHT.
+Ils sont réservés à l'application séparée "Plan Feu".

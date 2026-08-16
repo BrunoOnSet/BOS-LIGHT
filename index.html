@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#07090d" />
-  <title>BOS Light — Prototype V0.2</title>
+  <title>BOS Light — V0.3</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
@@ -16,79 +16,47 @@
         <span class="brand-badge">BOS</span>
         <div>
           <div class="brand-title">LIGHT</div>
-          <div class="brand-subtitle">Prototype V0.2 · Halo @ 5600 K</div>
+          <div class="brand-subtitle">Calculateur photométrique · V0.3</div>
         </div>
       </div>
       <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
     </header>
 
-    <section class="mode-row segmented" aria-label="Mode d'affichage">
-      <button class="segment" data-view="setup" type="button">SETUP</button>
-      <button class="segment active" data-view="preview" type="button">PREVIEW</button>
-    </section>
-
-    <section class="viewport-card">
-      <div id="previewView" class="view active">
-        <canvas id="threeCanvas"></canvas>
-        <div id="loading" class="loading-card">
-          <div class="spinner"></div>
-          <strong>Chargement du visage…</strong>
-          <span>Connexion internet nécessaire pour ce prototype.</span>
-        </div>
-        <div id="loadError" class="error-card hidden">
-          <strong>Le modèle 3D n’a pas pu être chargé.</strong>
-          <span>Vérifie la connexion internet puis recharge la page.</span>
-        </div>
-        <div class="preview-hud">
-          <span id="hudPattern">REMBRANDT</span>
-          <span id="hudStats">Halo 200x · Softbox 90</span>
-        </div>
+    <section class="result-card" aria-live="polite">
+      <div class="result-eyebrow">DISTANCE MAX À L'EXPOSITION CHOISIE</div>
+      <div class="result-main">
+        <strong id="maxDistance">—</strong>
+        <span>m</span>
       </div>
-
-      <div id="setupView" class="view setup-view">
-        <div class="setup-stage" id="setupStage">
-          <div class="setup-grid"></div>
-          <div class="subject-node">
-            <div class="subject-head"></div>
-            <div class="subject-label">SUJET</div>
-          </div>
-          <div class="camera-node" id="cameraNode">
-            <div class="camera-icon"></div>
-            <span>CAMÉRA</span>
-          </div>
-          <div class="light-ray" id="lightRay"></div>
-          <div class="light-node" id="lightNode">
-            <div class="light-panel" id="lightPanel"></div>
-            <span id="lightNodeLabel">HALO 200X · SOFTBOX 90</span>
-          </div>
-          <div class="setup-readout" id="setupReadout"></div>
+      <div class="result-sub" id="resultSentence">—</div>
+      <div class="badge-row">
+        <span class="status-badge" id="dataStatus">—</span>
+        <span class="status-badge secondary" id="dimmerStatus">100 % · mesure constructeur</span>
+      </div>
+      <div class="result-grid">
+        <div>
+          <span>ÉCLAIREMENT REQUIS</span>
+          <strong id="requiredLux">— lux</strong>
+        </div>
+        <div>
+          <span>RÉGLAGE CAMÉRA</span>
+          <strong id="cameraSummary">—</strong>
         </div>
       </div>
     </section>
 
     <section class="controls-card">
       <div class="control-block">
-        <label class="control-label">PLACEMENT KEY</label>
-        <div class="pattern-grid" id="patternGrid">
-          <button data-pattern="paramount" type="button">PARAMOUNT</button>
-          <button data-pattern="loop" type="button">LOOP</button>
-          <button class="active" data-pattern="rembrandt" type="button">REMBRANDT</button>
-          <button data-pattern="split" type="button">SPLIT</button>
-        </div>
-      </div>
-
-      <div class="control-block">
         <div class="section-head">
           <div>
             <label class="control-label">PROJECTEUR</label>
-            <p class="control-note">Photométrie constructeur amaran/Aputure à 5600 K.</p>
+            <p class="control-note">Photométrie laboratoire Aputure/amaran.</p>
           </div>
-          <span class="fixed-cct">5600 K</span>
         </div>
         <div class="fixture-grid" id="fixtureGrid">
-          <button data-fixture="halo60x" type="button">HALO 60X</button>
+          <button class="active" data-fixture="halo60x" type="button">HALO 60X</button>
           <button data-fixture="halo100x" type="button">HALO 100X</button>
-          <button class="active" data-fixture="halo200x" type="button">HALO 200X</button>
+          <button data-fixture="halo200x" type="button">HALO 200X</button>
           <button data-fixture="halo300x" type="button">HALO 300X</button>
           <button data-fixture="halo600x" type="button">HALO 600X</button>
         </div>
@@ -99,50 +67,45 @@
         <div class="accessory-grid" id="accessoryGrid">
           <button data-accessory="bare" type="button">NU</button>
           <button data-accessory="reflector" type="button">RÉFLECTEUR</button>
-          <button class="active" data-accessory="softbox" type="button"><span id="softboxButtonLabel">SOFTBOX 90</span></button>
+          <button class="active" data-accessory="softbox" type="button"><span id="softboxButtonLabel">SOFTBOX 60</span></button>
+        </div>
+      </div>
+
+      <div class="control-block">
+        <div class="control-head compact-head">
+          <label>TEMPÉRATURE</label>
+          <output id="cctValue">5600 K</output>
+        </div>
+        <div class="cct-grid" id="cctGrid">
+          <button data-cct="2700" type="button">2700</button>
+          <button data-cct="3200" type="button">3200</button>
+          <button data-cct="4300" type="button">4300</button>
+          <button class="active" data-cct="5600" type="button">5600</button>
+          <button data-cct="6500" type="button">6500</button>
         </div>
       </div>
 
       <div class="control-block slider-block">
         <div class="control-head">
           <label for="intensitySlider">INTENSITÉ</label>
-          <output id="intensityValue">10 %</output>
+          <output id="intensityValue">100 %</output>
         </div>
-        <input id="intensitySlider" type="range" min="0" max="100" value="10" step="1" />
+        <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
         <div class="range-labels"><span>0 %</span><span>100 %</span></div>
-      </div>
-
-      <div class="control-block slider-block">
-        <div class="control-head">
-          <label for="distanceSlider">DISTANCE SOURCE</label>
-          <output id="distanceValue">1.2 m</output>
-        </div>
-        <input id="distanceSlider" type="range" min="0.5" max="4" value="1.2" step="0.1" />
-        <div class="range-labels"><span>0.5 m</span><span>4 m</span></div>
-      </div>
-
-      <div class="meter-strip">
-        <div class="meter-item">
-          <span>ÉCLAIREMENT SUJET</span>
-          <strong id="luxValue">— lux</strong>
-        </div>
-        <div class="meter-item">
-          <span>EXPO INCIDENTE</span>
-          <strong id="exposureDelta">—</strong>
-        </div>
+        <p class="inline-warning" id="intensityWarning">À 100 %, le calcul utilise directement les mesures constructeur.</p>
       </div>
 
       <div class="control-block camera-block">
         <div class="section-head camera-title-row">
           <div>
-            <label class="control-label">CAMÉRA</label>
-            <p class="control-note">Ces trois réglages agissent directement sur l’exposition du rendu.</p>
+            <label class="control-label">EXPOSITION CIBLE</label>
+            <p class="control-note">La distance max correspond au point où l'éclairement disponible atteint cette exposition incidente.</p>
           </div>
         </div>
         <div class="camera-grid">
           <label class="select-control">
-            <span>ISO</span>
-            <select id="isoSelect" aria-label="ISO"></select>
+            <span>ISO MAX</span>
+            <select id="isoSelect" aria-label="ISO maximum"></select>
           </label>
           <label class="select-control">
             <span>SHUTTER</span>
@@ -155,35 +118,62 @@
         </div>
       </div>
 
-      <div class="control-block slider-block">
-        <div class="control-head">
-          <label for="cameraSlider">DISTANCE CAMÉRA</label>
-          <output id="cameraValue">1.5 m</output>
+      <div class="control-block source-data-block">
+        <div class="section-head">
+          <div>
+            <label class="control-label">MESURES UTILISÉES</label>
+            <p class="control-note" id="sourceDescriptor">—</p>
+          </div>
+          <span class="lab-badge">APUTURE LAB</span>
         </div>
-        <input id="cameraSlider" type="range" min="0.8" max="3" value="1.5" step="0.1" />
-        <div class="range-labels"><span>0.8 m</span><span>3 m</span></div>
-      </div>
-
-      <div class="control-block info-block">
-        <p><strong>Calcul lumière :</strong> mesures labo Aputure/amaran à 5600 K, interpolation entre les distances publiées. Sous 1 m et au-delà du dernier point mesuré, extrapolation inverse-square.</p>
-        <p><strong>Intensité :</strong> 0–100 % est modélisé linéairement faute de courbe photométrique constructeur publiée par pas de dimmer.</p>
+        <div class="measurement-row" id="measurementRow"></div>
       </div>
     </section>
 
+    <section class="test-card">
+      <div class="section-head">
+        <div>
+          <div class="card-title">TESTER UNE DISTANCE</div>
+          <p class="control-note">Pour vérifier rapidement ce que la source permet à une distance donnée.</p>
+        </div>
+        <strong class="distance-readout" id="testDistanceValue">2.0 m</strong>
+      </div>
+      <input id="testDistanceSlider" type="range" min="0.5" max="10" value="2" step="0.1" />
+      <div class="range-labels"><span>0.5 m</span><span>10 m</span></div>
+
+      <div class="test-grid">
+        <div class="test-metric">
+          <span>ÉCLAIREMENT</span>
+          <strong id="testLux">— lux</strong>
+        </div>
+        <div class="test-metric">
+          <span>ISO REQUIS</span>
+          <strong id="requiredIso">—</strong>
+        </div>
+        <div class="test-metric">
+          <span>DIAPH POSSIBLE</span>
+          <strong id="possibleAperture">—</strong>
+        </div>
+        <div class="test-metric">
+          <span>MARGE À ISO MAX</span>
+          <strong id="stopMargin">—</strong>
+        </div>
+      </div>
+      <div class="test-message" id="testMessage">—</div>
+    </section>
+
+    <section class="info-card">
+      <p><strong>Principe :</strong> les courbes passent exactement par les mesures constructeur publiées. Entre deux distances mesurées, LIGHT interpole en échelle logarithmique. Hors de la plage mesurée, la valeur est signalée comme extrapolée.</p>
+      <p><strong>Dimmer :</strong> amaran ne publie pas de table lux complète pour chaque pourcentage. En dessous de 100 %, LIGHT estime donc le flux comme proportionnel au dimmer et l'indique explicitement.</p>
+      <p><strong>Exposition :</strong> conversion lux ↔ ISO / shutter / diaph selon une relation de posemètre incident avec constante C = 250. Les EI réels des caméras et les tolérances des unités peuvent créer un écart pratique.</p>
+    </section>
+
     <footer>
-      <span>Prototype technique — rendu temps réel WebGL.</span>
-      <span>Head scan: Lee Perry‑Smith · CC BY 3.0.</span>
+      <span>BOS LIGHT · outil de préparation, pas un posemètre de plateau.</span>
+      <span>Données Halo : Aputure/amaran · CCT constructeur.</span>
     </footer>
   </main>
 
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
-    }
-  }
-  </script>
-  <script type="module" src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
