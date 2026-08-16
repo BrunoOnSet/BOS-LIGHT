@@ -1,22 +1,27 @@
-BOS LIGHT — V0.7
+BOS LIGHT — V0.9
 ================
 
 Nouveautés
 ----------
-- Ordre des panneaux revu : réglages caméra en premier, repliés au démarrage avec résumé visible.
-- Réglages projecteur ensuite, puis détails techniques tout en bas.
-- Ajout des amaran Ray 60c / 120c / 360c / 660c.
-- Ajout des anciens amaran 100x S / 200x S.
-- Accessoires adaptés dynamiquement selon le projecteur.
+- Catalogue multi-marques : amaran + Aputure.
+- amaran : HALO, RAY, COB S et ACE (Ace 25x / Ace 25c).
+- Aputure : LIGHT STORM et STORM.
+- LIGHT STORM intégrés : LS 60x, LS 300x, LS 300d II, LS 600d Pro, LS 600x Pro, LS 600c Pro II, LS 1200d Pro.
+- STORM intégrés : 80c, 400x, 700x, 1000c, 1200x.
+- Structure conservée : 01 Caméra / 02 Ma lumière / 03 Réglages lumière / 04 Résultat / Détails techniques.
+- 02 Ma lumière est repliable et tous les réglages sont conservés en localStorage, même après fermeture/rafraîchissement.
+- Distance source/sujet : 1 à 20 m.
 
-Données constructeur
----------------------
-Halo : mesures amaran/Aputure déjà utilisées en V0.5.
-100x S / 200x S : mesures officielles nu + Hyper Reflector à 1 m / 3 m / 5 m.
-Ray 60c / 120c : mesures officielles Mini Reflector à 1 m / 3 m. Le mode nu repose uniquement sur la sortie max publiée à 1 m ; LIGHT le signale comme estimation.
-Ray 360c / 660c : mesures officielles Fresnel Spot 15° / Flood 45° à 3 m / 5 m. Le mode nu repose uniquement sur la sortie max publiée à 1 m ; LIGHT le signale comme estimation.
+ACE
+---
+Les Ace 25x et 25c utilisent à 100 % les mesures officielles du Boost Mode. Accessoires disponibles dans LIGHT : Nu, Dome Diffuser, Light Control Grid.
+
+Aputure
+-------
+Les accessoires affichés dépendent du modèle et uniquement des photométries constructeur intégrées dans cette version. Certains modèles ont volontairement moins de modificateurs que leur catalogue réel : on n'affiche pas une combinaison si nous n'avons pas intégré une table photométrique fiable.
 
 Important
 ---------
-Sous 100 % de dimmer, la puissance reste estimée proportionnellement faute de courbe constructeur complète par pourcentage.
-Le calcul d'exposition incidente utilise C = 340 (Lumisphere Sekonic).
+Sous 100 % de dimmer, LIGHT estime toujours la baisse de lux proportionnellement au pourcentage, faute de courbe de gradation détaillée pour chaque modèle.
+Le calcul d'exposition incidente utilise C = 340 (logique Lumisphere Sekonic).
+Le résultat reste une aide de préparation/tournage et ne remplace pas une mesure au posemètre lorsque l'exposition est critique.

@@ -189,3 +189,39 @@ footer { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; 
   .family-grid { grid-template-columns:1fr; }
   .power-grid { grid-template-columns:repeat(2,1fr) !important; }
 }
+
+/* V0.8 — 01 caméra / 02 lumière repliable / 03 réglages lumière / 04 résultat */
+.card-heading .step { width:34px; min-width:34px; font-size:11px; }
+.collapsible-card summary { list-style:none; cursor:pointer; }
+.collapsible-card summary::-webkit-details-marker { display:none; }
+.collapsible-card > summary.card-heading { border-bottom:0; }
+.collapsible-card[open] > summary.card-heading { border-bottom:1px solid var(--line); }
+.collapsible-card[open] .collapsible-heading .chevron { transform:translateY(-50%) rotate(180deg); }
+.light-card .summary-value { max-width:275px; overflow:hidden; text-overflow:ellipsis; }
+.light-settings-card { margin-top:12px; }
+.light-settings-card .cct-grid { margin-top:9px; }
+.distance-control-block { padding-bottom:16px; }
+.compact-distance-head { align-items:center; }
+.distance-help { margin-top:4px; color:var(--muted); font-size:9.5px; line-height:1.35; }
+.result-section { margin-top:12px; }
+.result-section > .card-heading { border-bottom:1px solid var(--line); }
+.result-card-inner { margin:14px; border-radius:17px; box-shadow:none; }
+.result-body { padding:0 16px 16px; }
+.result-body .status-box { margin-top:0; }
+.compact-explainer { margin-top:14px; max-width:none; }
+.tech-card { margin-top:12px; }
+
+@media (max-width:520px) {
+  .light-card .summary-value { max-width:175px; }
+  .result-card-inner { margin:10px; }
+  .result-body { padding:0 10px 12px; }
+}
+@media (max-width:380px) {
+  .light-card .summary-value { display:none; }
+}
+
+/* V0.9 — catalogue multi-marques : amaran + Aputure */
+.brand-grid { max-width:360px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.family-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.power-grid button { min-height:42px; line-height:1.2; }
+@media (max-width:520px){ .brand-grid{grid-template-columns:repeat(2,1fr);max-width:none;} .family-grid{grid-template-columns:repeat(2,1fr) !important;} }

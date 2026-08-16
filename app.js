@@ -1,7 +1,8 @@
-// BOS LIGHT V0.7 — assistant de puissance/exposition pour le tournage
+// BOS LIGHT V0.9 — assistant de puissance/exposition pour le tournage
 // Mesures constructeur Aputure/amaran. Exposition incidente : C = 340 (Lumisphere Sekonic).
 
 const INCIDENT_C = 340;
+const STORAGE_KEY = 'bos-light-settings-v1';
 
 const state = {
   fixture: 'halo60x', accessory: 'softbox', cct: 5600,
@@ -38,6 +39,10 @@ const haloFixtures = {
 };
 
 const cobFixtures = {
+  cob60xs:{label:'amaran COB 60x S',family:'cob',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',data:{2700:[[0.5,8270],[1,2087],[3,252]],3200:[[0.5,8300],[1,2100],[3,252]],4300:[[0.5,8890],[1,2248],[3,268]],5600:[[0.5,9560],[1,2427],[3,288]],6500:[[0.5,9560],[1,2545],[3,302]]}},
+    reflector:{label:'Mini Hyper Reflector',quality:'measured',data:{2700:[[0.5,96100],[1,27750],[3,2965]],3200:[[0.5,97400],[1,28160],[3,2980]],4300:[[0.5,105400],[1,30500],[3,3230]],5600:[[0.5,114700],[1,33300],[3,3510]],6500:[[0.5,120800],[1,35100],[3,3700]]}}
+  }},
   cob100xs:{label:'amaran 100x S',family:'cob',defaultAccessory:'reflector',accessories:{
     bare:{label:'Nu',quality:'measured',data:{2700:[[1,2760],[3,324],[5,126]],3200:[[1,3410],[3,405],[5,157]],4300:[[1,3590],[3,426],[5,164]],5600:[[1,3640],[3,433],[5,166]],6500:[[1,3170],[3,377],[5,166]]}},
     reflector:{label:'Hyper Reflector',quality:'measured',data:{2700:[[1,22470],[3,2422],[5,856]],3200:[[1,28180],[3,2970],[5,1066]],4300:[[1,29670],[3,3160],[5,1137]],5600:[[1,30500],[3,3240],[5,1156]],6500:[[1,26080],[3,2824],[5,1005]]}}
@@ -69,25 +74,34 @@ const rayFixtures = {
   }}
 };
 
-const fixtures = {...haloFixtures, ...rayFixtures, ...cobFixtures};
-const FAMILY_ORDER = {
-  halo:['halo60x','halo100x','halo200x','halo300x','halo600x'],
-  'ray-small':['ray60c','ray120c'],
-  'ray-large':['ray360c','ray660c'],
-  cob:['cob100xs','cob200xs']
-};
+const aceFixtures = {"ace25x":{"label":"amaran Ace 25x","brand":"amaran","group":"ace","defaultAccessory":"bare","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2700":[[0.5,5010],[1,1301]],"3200":[[0.5,5880],[1,1526]],"4300":[[0.5,6010],[1,1563]],"5600":[[0.5,6320],[1,1636]],"6500":[[0.5,5960],[1,1544]]},"role":"bare"},"dome":{"label":"Dome Diffuser","quality":"measured","data":{"2700":[[0.5,1746],[1,441]],"3200":[[0.5,2077],[1,524]],"4300":[[0.5,2163],[1,547]],"5600":[[0.5,2293],[1,580]],"6500":[[0.5,2183],[1,552]]},"role":"softbox"},"grid":{"label":"Light Control Grid","quality":"measured","data":{"2700":[[0.5,4010],[1,994]],"3200":[[0.5,4860],[1,1170]],"4300":[[0.5,5000],[1,1206]],"5600":[[0.5,5260],[1,1253]],"6500":[[0.5,4650],[1,1188]]},"role":"grid"}},"note":"À 100 %, LIGHT utilise les mesures constructeur du Boost Mode (32 W)."},"ace25c":{"label":"amaran Ace 25c","brand":"amaran","group":"ace","defaultAccessory":"bare","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2300":[[0.5,3970],[1,1034]],"3200":[[0.5,4110],[1,1077]],"4300":[[0.5,5908],[1,1500]],"5600":[[0.5,4470],[1,1171]],"6500":[[0.5,4330],[1,1136]],"10000":[[0.5,3770],[1,990]]},"role":"bare"},"dome":{"label":"Dome Diffuser","quality":"measured","data":{"2300":[[0.5,1397],[1,358]],"3200":[[0.5,1433],[1,370]],"4300":[[0.5,2001],[1,514]],"5600":[[0.5,1594],[1,412]],"6500":[[0.5,1548],[1,400]],"10000":[[0.5,1369],[1,352]]},"role":"softbox"},"grid":{"label":"Light Control Grid","quality":"measured","data":{"2300":[[0.5,3150],[1,824]],"3200":[[0.5,3250],[1,859]],"4300":[[0.5,4440],[1,1188]],"5600":[[0.5,3560],[1,939]],"6500":[[0.5,3640],[1,902]],"10000":[[0.5,3158],[1,790]]},"role":"grid"}},"note":"À 100 %, LIGHT utilise les mesures constructeur du Boost Mode (32 W)."}};
 
+const lightStormFixtures = {"ls60x":{"label":"Aputure LS 60x","brand":"aputure","group":"lightstorm","defaultAccessory":"flood45","accessories":{"spot15":{"label":"Spot 15°","quality":"measured","data":{"2700":[[1,25110],[3,3125],[5,1116]],"3200":[[1,30132],[3,3794],[5,1339]],"4300":[[1,31248],[3,3683],[5,1395]],"5600":[[1,33480],[3,4241],[5,1451]],"6500":[[1,32364],[3,4018],[5,1395]]},"role":"fresnelSpot"},"flood45":{"label":"Flood 45°","quality":"measured","data":{"2700":[[1,4464],[3,525],[5,201]],"3200":[[1,5357],[3,647],[5,234]],"4300":[[1,5245],[3,625],[5,234]],"5600":[[1,5803],[3,703],[5,268]],"6500":[[1,5580],[3,670],[5,246]]},"role":"fresnelFlood"}}},"ls300x":{"label":"Aputure LS 300x","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"3200":[[1,5100],[3,580],[5,220]],"4300":[[1,7500],[3,800],[5,350]],"5500":[[1,6300],[3,700],[5,250]]},"role":"bare"},"reflector":{"label":"Hyper Reflector","quality":"measured","data":{"3200":[[1,16200],[3,1300],[5,450]],"4300":[[1,24300],[3,2100],[5,700]],"5500":[[1,20500],[3,1700],[5,550]]},"role":"reflector"}}},"ls300d2":{"label":"Aputure LS 300d II","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"reflector":{"label":"Réflecteur standard","quality":"measured","data":{"5600":[[1,45000],[3,3500],[5,1200]]},"role":"reflector","note":"La table constructeur publiée pour le LS 300d II donne cette série de mesures comme sortie de référence."}}},"ls600dpro":{"label":"Aputure LS 600d Pro","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"5600":[[1,22150],[3,2600],[5,1020]]},"role":"bare"},"reflector":{"label":"600 Series Hyper Reflector","quality":"measured","data":{"5600":[[1,98500],[3,8500],[5,3000]]},"role":"reflector"}}},"ls600xpro":{"label":"Aputure LS 600x Pro","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2700":[[1,9420],[2,2427],[3,1104],[5,423],[7,230]],"3200":[[1,11630],[2,2995],[3,1364],[5,524],[7,285]],"4300":[[1,16040],[2,4130],[3,1874],[5,724],[7,391]],"5600":[[1,16060],[2,4150],[3,1880],[5,728],[7,393]],"6500":[[1,13890],[2,3590],[3,1628],[5,629],[7,340]]},"role":"bare"},"reflector":{"label":"Hyper Reflector","quality":"measured","data":{"2700":[[1,36500],[2,7760],[3,3220],[5,1150],[7,583]],"3200":[[1,45300],[2,9650],[3,4010],[5,1426],[7,722]],"4300":[[1,62900],[2,13390],[3,5560],[5,1978],[7,1002]],"5600":[[1,63900],[2,13530],[3,5610],[5,1996],[7,1012]],"6500":[[1,55300],[2,11750],[3,4880],[5,1731],[7,878]]},"role":"reflector"}},"note":"Photométries Aputure en mode Max Output."},"ls600cpro2":{"label":"Aputure LS 600c Pro II","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2300":[[1,17130],[3,1903],[5,685]],"3200":[[1,18950],[3,2106],[5,758]],"4300":[[1,20190],[3,2243],[5,808]],"5600":[[1,21610],[3,2401],[5,864]],"6500":[[1,21600],[3,2400],[5,864]]},"role":"bare"},"reflector":{"label":"Standard Hyper Reflector","quality":"measured","data":{"2300":[[1,70900],[3,7878],[5,2836]],"3200":[[1,78700],[3,8744],[5,3148]],"4300":[[1,84600],[3,9400],[5,3384]],"5600":[[1,91500],[3,10167],[5,3660]],"6500":[[1,91100],[3,10122],[5,3644]]},"role":"reflector"}}},"ls1200dpro":{"label":"Aputure LS 1200d Pro","brand":"aputure","group":"lightstorm","defaultAccessory":"medium","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"5600":[[3,6380],[5,2802],[7,1538],[9,964]]},"role":"bare"},"narrow":{"label":"Hyper Reflector Narrow","quality":"measured","data":{"5600":[[3,83100],[5,28340],[7,15200],[9,8580]]},"role":"reflector"},"medium":{"label":"Hyper Reflector Medium","quality":"measured","data":{"5600":[[3,22400],[5,8200],[7,4660],[9,2880]]},"role":"reflector"},"wide":{"label":"Hyper Reflector Wide","quality":"measured","data":{"5600":[[3,13010],[5,4800],[7,2706],[9,1775]]},"role":"reflector"}}}};
+
+const stormFixtures = {"storm80c":{"label":"Aputure STORM 80c","brand":"aputure","group":"storm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"3200":[[1,6300],[2,1619],[3,696]],"4300":[[1,6540],[2,1687],[3,722]],"5600":[[1,6500],[2,1681],[3,725]],"6500":[[1,6404],[2,1653],[3,713]],"8000":[[1,6197],[2,1583],[3,684]],"10000":[[1,5981],[2,1541],[3,666]]},"role":"bare"},"reflector":{"label":"Hyper Reflector","quality":"measured","data":{"3200":[[1,19090],[2,4682],[3,1911]],"4300":[[1,19930],[2,4889],[3,2001]],"5600":[[1,19850],[2,4859],[3,1987]],"6500":[[1,19650],[2,4781],[3,1956]],"8000":[[1,18560],[2,4584],[3,1874]],"10000":[[1,17720],[2,4466],[3,1830]]},"role":"reflector"}}},"storm400x":{"label":"Aputure STORM 400x","brand":"aputure","group":"storm","defaultAccessory":"refl35","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[1,20590],[3,2361],[5,880]],"3200":[[1,25600],[3,2964],[5,1105]],"4300":[[1,27350],[3,3140],[5,1170]],"5600":[[1,27100],[3,3110],[5,1161]],"6500":[[1,26500],[3,3040],[5,1134]],"7500":[[1,25700],[3,2960],[5,1105]],"10000":[[1,24160],[3,2790],[5,1038]]},"role":"bare"},"refl35":{"label":"Hyper Reflector 35°","quality":"measured","data":{"2500":[[1,49200],[3,3850],[5,1334]],"3200":[[1,61600],[3,4850],[5,1677]],"4300":[[1,65400],[3,5120],[5,1780]],"5600":[[1,64600],[3,5090],[5,1769]],"6500":[[1,63300],[3,4970],[5,1729]],"7500":[[1,61600],[3,4840],[5,1685]],"10000":[[1,57800],[3,4550],[5,1585]]},"role":"reflector"},"refl30":{"label":"Hyper Reflector 30°","quality":"measured","data":{"2500":[[1,70800],[3,7180],[5,2510]],"3200":[[1,89000],[3,8990],[5,3150]],"4300":[[1,93600],[3,9510],[5,3340]],"5600":[[1,93000],[3,9430],[5,3310]],"6500":[[1,90800],[3,9200],[5,3230]],"7500":[[1,88400],[3,8970],[5,3140]],"10000":[[1,83100],[3,8420],[5,2950]]},"role":"reflector"}}},"storm700x":{"label":"Aputure STORM 700x","brand":"aputure","group":"storm","defaultAccessory":"refl35","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[1,36700],[3,4200],[5,1588]],"3200":[[1,42400],[3,4870],[5,1839]],"4300":[[1,53700],[3,6210],[5,2330]],"5600":[[1,54900],[3,6370],[5,2394]],"6500":[[1,53600],[3,6190],[5,2333]],"7500":[[1,49200],[3,5660],[5,2136]],"10000":[[1,40900],[3,4720],[5,1778]]},"role":"bare"},"refl35":{"label":"Hyper Reflector 35°","quality":"measured","data":{"2500":[[3,12480],[5,4100]],"3200":[[3,14430],[5,3930]],"4300":[[3,18120],[5,5040]],"5600":[[3,18670],[5,5320]],"6500":[[3,18250],[5,5380]],"7500":[[3,16760],[5,5240]],"10000":[[3,13930],[5,4650]]},"role":"reflector"},"refl25":{"label":"Hyper Reflector 25°","quality":"measured","data":{"2500":[[3,18120],[5,6040]],"3200":[[3,20950],[5,5880]],"4300":[[3,26430],[5,7560]],"5600":[[3,27190],[5,7950]],"6500":[[3,26520],[5,8060]],"7500":[[3,24300],[5,7810]],"10000":[[3,20200],[5,6960]]},"role":"reflector"}}},"storm1000c":{"label":"Aputure STORM 1000c","brand":"aputure","group":"storm","defaultAccessory":"bm7830","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[2,12500],[3,5600],[5,2150],[7,1100]],"3200":[[2,14500],[3,6500],[5,2500],[7,1300]],"4300":[[2,14700],[3,6600],[5,2550],[7,1350]],"5600":[[2,14000],[3,6300],[5,2450],[7,1300]],"6500":[[2,13700],[3,6200],[5,2350],[7,1250]]},"role":"bare"},"bm7815":{"label":"Reflector BM7815","quality":"measured","data":{"2500":[[2,140000],[3,62000],[5,21000],[7,10500]],"3200":[[2,160000],[3,72000],[5,24500],[7,12200]],"4300":[[2,164000],[3,73000],[5,25000],[7,12500]],"5600":[[2,158000],[3,70000],[5,24000],[7,12000]],"6500":[[2,152000],[3,68000],[5,23500],[7,11700]]},"role":"reflector"},"bm7830":{"label":"Reflector BM7830","quality":"measured","data":{"2500":[[2,70000],[3,27000],[5,8800],[7,4400]],"3200":[[2,80000],[3,31000],[5,10000],[7,5100]],"4300":[[2,82000],[3,31000],[5,10500],[7,5200]],"5600":[[2,79000],[3,31000],[5,10000],[7,5000]],"6500":[[2,75000],[3,30000],[5,9800],[7,4900]]},"role":"reflector"},"bm7845":{"label":"Reflector BM7845","quality":"measured","data":{"2500":[[2,30000],[3,12500],[5,4400],[7,2350]],"3200":[[2,34000],[3,14500],[5,5100],[7,2700]],"4300":[[2,35000],[3,14700],[5,5200],[7,2700]],"5600":[[2,33500],[3,14200],[5,5000],[7,2600]],"6500":[[2,32500],[3,14000],[5,4900],[7,2550]]},"role":"reflector"}}},"storm1200x":{"label":"Aputure STORM 1200x","brand":"aputure","group":"storm","defaultAccessory":"bm7830","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[2,14600],[3,6570],[5,2510],[7,1270]],"3200":[[2,18700],[3,8370],[5,3170],[7,1610]],"4300":[[2,19000],[3,8620],[5,3280],[7,1670]],"5600":[[2,18900],[3,8490],[5,3230],[7,1640]],"6500":[[2,18600],[3,8370],[5,3180],[7,1620]]},"role":"bare"},"bm7815":{"label":"Reflector BM7815","quality":"measured","data":{"2500":[[2,162000],[3,74000],[5,25600],[7,12800]],"3200":[[2,206000],[3,94600],[5,30900],[7,16300]],"4300":[[2,212000],[3,97400],[5,33600],[7,16800]],"5600":[[2,209000],[3,96100],[5,33300],[7,16600]],"6500":[[2,162000],[3,94700],[5,32700],[7,16300]]},"role":"reflector"},"bm7830":{"label":"Reflector BM7830","quality":"measured","data":{"2500":[[2,80000],[3,32200],[5,10900],[7,5430]],"3200":[[2,102000],[3,41100],[5,13800],[7,6920]],"4300":[[2,105000],[3,42400],[5,14300],[7,7150]],"5600":[[2,104000],[3,41800],[5,14100],[7,7050]],"6500":[[2,102000],[3,41200],[5,13900],[7,6950]]},"role":"reflector"},"bm7845":{"label":"Reflector BM7845","quality":"measured","data":{"2500":[[2,35500],[3,15300],[5,5420],[7,2770]],"3200":[[2,45400],[3,19500],[5,6910],[7,3510]],"4300":[[2,47000],[3,20100],[5,7130],[7,3630]],"5600":[[2,46000],[3,19800],[5,7070],[7,3580]],"6500":[[2,45400],[3,19500],[5,6910],[7,3530]]},"role":"reflector"}}}};
+
+const fixtures = {...haloFixtures, ...rayFixtures, ...cobFixtures, ...aceFixtures, ...lightStormFixtures, ...stormFixtures};
 const UI_GROUPS = {
   halo:['halo60x','halo100x','halo200x','halo300x','halo600x'],
   ray:['ray60c','ray120c','ray360c','ray660c'],
-  cob:['cob100xs','cob200xs']
+  cob:['cob60xs','cob100xs','cob200xs'],
+  ace:['ace25x','ace25c'],
+  lightstorm:['ls60x','ls300x','ls300d2','ls600dpro','ls600xpro','ls600cpro2','ls1200dpro'],
+  storm:['storm80c','storm400x','storm700x','storm1000c','storm1200x']
 };
+const BRAND_GROUPS = {amaran:['halo','ray','cob','ace'],aputure:['lightstorm','storm']};
+const BRAND_LABELS = {amaran:'amaran',aputure:'Aputure'};
+const GROUP_LABELS = {halo:'HALO',ray:'RAY',cob:'COB S',ace:'ACE',lightstorm:'LIGHT STORM',storm:'STORM'};
 const POWER_LABELS = {
   halo60x:'60X',halo100x:'100X',halo200x:'200X',halo300x:'300X',halo600x:'600X',
   ray60c:'60C',ray120c:'120C',ray360c:'360C',ray660c:'660C',
-  cob100xs:'100X S',cob200xs:'200X S'
+  cob60xs:'60X S',cob100xs:'100X S',cob200xs:'200X S',
+  ace25x:'25X',ace25c:'25C',
+  ls60x:'LS 60X',ls300x:'LS 300X',ls300d2:'300D II',ls600dpro:'600D PRO',ls600xpro:'600X PRO',ls600cpro2:'600C PRO II',ls1200dpro:'1200D PRO',
+  storm80c:'80C',storm400x:'400X',storm700x:'700X',storm1000c:'1000C',storm1200x:'1200X'
 };
-function uiGroupForFixture(key=state.fixture){if(key.startsWith('halo'))return'halo';if(key.startsWith('ray'))return'ray';return'cob';}
+function uiGroupForFixture(key=state.fixture){for(const [group,keys] of Object.entries(UI_GROUPS)){if(keys.includes(key))return group;}return'halo';}
+function brandForFixture(key=state.fixture){const group=uiGroupForFixture(key);return Object.entries(BRAND_GROUPS).find(([,groups])=>groups.includes(group))?.[0]||'amaran';}
 
 
 const ISO_VALUES=[100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800];
@@ -98,7 +112,7 @@ const $=sel=>document.querySelector(sel);
 const els={
   brandGrid:$('#brandGrid'),familyGrid:$('#familyGrid'),powerGrid:$('#powerGrid'),accessoryGrid:$('#accessoryGrid'),accessoryNote:$('#accessoryNote'),
   cctGrid:$('#cctGrid'),cctSection:$('#cctSection'),cctValue:$('#cctValue'),cctNote:$('#cctNote'),
-  intensitySlider:$('#intensitySlider'),intensityValue:$('#intensityValue'),isoSelect:$('#isoSelect'),shutterSelect:$('#shutterSelect'),apertureSelect:$('#apertureSelect'),cameraSummary:$('#cameraSummary'),
+  intensitySlider:$('#intensitySlider'),intensityValue:$('#intensityValue'),isoSelect:$('#isoSelect'),shutterSelect:$('#shutterSelect'),apertureSelect:$('#apertureSelect'),cameraSummary:$('#cameraSummary'),lightSummary:$('#lightSummary'),
   maxDistance:$('#maxDistance'),heroSummary:$('#heroSummary'),testDistanceSlider:$('#testDistanceSlider'),testDistanceValue:$('#testDistanceValue'),statusBox:$('#statusBox'),statusTitle:$('#statusTitle'),statusText:$('#statusText'),solutionIntro:$('#solutionIntro'),solutions:$('#solutions'),
   testLux:$('#testLux'),stopMargin:$('#stopMargin'),requiredIso:$('#requiredIso'),possibleAperture:$('#possibleAperture'),sourceDescriptor:$('#sourceDescriptor'),measurementRow:$('#measurementRow'),dataNote:$('#dataNote'),dimmerNote:$('#dimmerNote'),labBadge:$('#labBadge'),resetBtn:$('#resetBtn')
 };
@@ -106,14 +120,35 @@ const els={
 init();
 
 function init(){
+  loadSavedState();
   populateSelect(els.isoSelect,ISO_VALUES,v=>`ISO ${v}`,state.iso);
   populateSelect(els.apertureSelect,APERTURES,v=>`f/${formatAperture(v)}`,state.aperture);
   populateSelect(els.shutterSelect,SHUTTER_DENOMS,v=>`1/${v}`,state.shutterDenom);
+  els.intensitySlider.value=state.intensityPct;
+  els.testDistanceSlider.value=state.testDistance;
   bindUI(); update();
+}
+function loadSavedState(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+    if(!saved||typeof saved!=='object')return;
+    const allowed=['fixture','accessory','cct','intensityPct','iso','shutterDenom','aperture','testDistance'];
+    allowed.forEach(k=>{if(saved[k]!==undefined)state[k]=saved[k];});
+    if(!fixtures[state.fixture]) state.fixture='halo60x';
+    if(!ISO_VALUES.includes(Number(state.iso))) state.iso=800;
+    if(!SHUTTER_DENOMS.includes(Number(state.shutterDenom))) state.shutterDenom=50;
+    if(!APERTURES.includes(Number(state.aperture))) state.aperture=2.8;
+    state.intensityPct=Math.max(0,Math.min(100,Number(state.intensityPct)||0));
+    state.testDistance=Math.max(1,Math.min(10,Number(state.testDistance)||2));
+    state.cct=Number(state.cct)||5600;
+  }catch(_){ /* stockage indisponible : on garde les valeurs par défaut */ }
+}
+function persistState(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){}
 }
 function populateSelect(select,values,labelFn,selected){select.innerHTML='';values.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=labelFn(v);if(Number(v)===Number(selected))o.selected=true;select.appendChild(o);});}
 function bindUI(){
-  els.brandGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-brand]');if(!b)return;});
+  els.brandGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-brand]');if(!b)return;const brand=b.dataset.brand;if(brand===brandForFixture())return;const group=BRAND_GROUPS[brand][0];state.fixture=UI_GROUPS[group][0];state.accessory=fixtures[state.fixture].defaultAccessory;ensureAccessoryAndCct();update();});
   els.familyGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-family]');if(!b)return;const group=b.dataset.family;if(group===uiGroupForFixture())return;state.fixture=UI_GROUPS[group][0];state.accessory=fixtures[state.fixture].defaultAccessory;ensureAccessoryAndCct();update();});
   els.powerGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-fixture]');if(!b)return;state.fixture=b.dataset.fixture;ensureAccessoryAndCct();update();});
   els.accessoryGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-accessory]');if(!b)return;state.accessory=b.dataset.accessory;ensureAccessoryAndCct();update();});
@@ -125,7 +160,7 @@ function bindUI(){
   els.testDistanceSlider.addEventListener('input',()=>{state.testDistance=Number(els.testDistanceSlider.value);update();});
   els.resetBtn.addEventListener('click',reset);
 }
-function reset(){Object.assign(state,{fixture:'halo60x',accessory:'softbox',cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2});els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;update();}
+function reset(){Object.assign(state,{fixture:'halo60x',accessory:'softbox',cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;update();}
 
 function fixture(){return fixtures[state.fixture];}
 function accessory(fixtureKey=state.fixture,accessoryKey=state.accessory){return fixtures[fixtureKey].accessories[accessoryKey];}
@@ -141,12 +176,18 @@ function update(){
   const reqLux=requiredLux(state.iso,state.shutterDenom,state.aperture); const maxD=state.intensityPct<=0?0:solveDistanceForLux(reqLux);
   els.intensityValue.textContent=`${state.intensityPct} %`; els.testDistanceValue.textContent=`${formatDistance(state.testDistance)} m`; els.maxDistance.textContent=maxD>0?formatDistance(maxD):'0,0';
   els.cameraSummary.textContent=`ISO ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
+  if(els.lightSummary) els.lightSummary.textContent=`${BRAND_LABELS[brandForFixture()]} · ${fixture().label.replace(/^amaran |^Aputure /,'')} · ${accessory().label}`;
+  els.labBadge.textContent=BRAND_LABELS[brandForFixture()].toUpperCase();
   els.heroSummary.textContent=`${fixture().label} · ${accessory().label} · ${state.intensityPct} % · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
-  updateDistanceStatus(reqLux,maxD); updateAdvanced(reqLux,maxD,getPoints());
+  updateDistanceStatus(reqLux,maxD); updateAdvanced(reqLux,maxD,getPoints()); persistState();
 }
 function renderFixtureHierarchy(){
-  const group=uiGroupForFixture();
-  els.familyGrid.querySelectorAll('[data-family]').forEach(b=>b.classList.toggle('active',b.dataset.family===group));
+  const brand=brandForFixture(), group=uiGroupForFixture();
+  els.brandGrid.style.gridTemplateColumns=`repeat(${Object.keys(BRAND_GROUPS).length},minmax(0,1fr))`;
+  els.brandGrid.innerHTML=Object.keys(BRAND_GROUPS).map(key=>`<button data-brand="${key}" class="brand-choice ${key===brand?'active':''}" type="button">${BRAND_LABELS[key]}</button>`).join('');
+  const groups=BRAND_GROUPS[brand];
+  els.familyGrid.style.gridTemplateColumns=`repeat(${Math.min(groups.length,4)},minmax(0,1fr))`;
+  els.familyGrid.innerHTML=groups.map(key=>`<button data-family="${key}" class="${key===group?'active':''}" type="button">${GROUP_LABELS[key]}</button>`).join('');
   const keys=UI_GROUPS[group];
   els.powerGrid.style.gridTemplateColumns=`repeat(${Math.min(keys.length,5)},minmax(0,1fr))`;
   els.powerGrid.innerHTML=keys.map(key=>`<button data-fixture="${key}" class="${key===state.fixture?'active':''}" type="button">${POWER_LABELS[key]}</button>`).join('');
@@ -155,7 +196,7 @@ function renderFixtureHierarchy(){
 function renderAccessoryButtons(){
   const entries=Object.entries(fixture().accessories); els.accessoryGrid.style.gridTemplateColumns=`repeat(${Math.min(entries.length,3)},minmax(0,1fr))`;
   els.accessoryGrid.innerHTML=entries.map(([key,a])=>`<button data-accessory="${key}" class="${key===state.accessory?'active':''}" type="button">${a.label.toUpperCase()}</button>`).join('');
-  const a=accessory(); els.accessoryNote.textContent=a.quality==='single'?'Ce mode repose sur un seul point constructeur : la distance est donc une estimation plus large.':'';
+  const a=accessory(); const notes=[]; if(a.quality==='single')notes.push('Ce mode repose sur un seul point constructeur : la distance est donc une estimation plus large.'); if(a.note)notes.push(a.note); if(fixture().note)notes.push(fixture().note); els.accessoryNote.textContent=notes.join(' ');
 }
 function renderCctButtons(){
   const keys=Object.keys(accessory().data).map(Number).sort((a,b)=>a-b); const isSingle=keys.length===1;
@@ -199,11 +240,12 @@ function snapApertureForOpening(maxF,currentF){if(!Number.isFinite(maxF)||maxF<=
 function snapApertureForClosing(maxF,currentF){if(!Number.isFinite(maxF)||maxF<=currentF)return null;const valid=APERTURES.filter(f=>f<=maxF&&f>currentF);return valid.length?valid[valid.length-1]:null;}
 function snapIsoUp(requiredIso){return ISO_VALUES.find(v=>v>=requiredIso)||null;}
 function findStrongerFixture(reqLux,distance){
-  const family=fixture().family,order=FAMILY_ORDER[family]||[],idx=order.indexOf(state.fixture),role=currentAccessoryRole();
+  const group=uiGroupForFixture(),order=UI_GROUPS[group]||[],idx=order.indexOf(state.fixture),role=currentAccessoryRole();
   for(let i=idx+1;i<order.length;i++){const key=order[i],candidateAccessory=findAccessoryByRole(key,role);if(candidateAccessory&&estimatedLuxAtDistance(distance,key,100,candidateAccessory)>=reqLux)return key;}return null;
 }
-function currentAccessoryRole(){if(state.accessory==='bare')return'bare';if(['reflector','miniReflector'].includes(state.accessory))return'reflector';if(state.accessory==='softbox')return'softbox';if(state.accessory.startsWith('fresnel'))return state.accessory;return state.accessory;}
-function findAccessoryByRole(fixtureKey,role){const keys=Object.keys(fixtures[fixtureKey].accessories);if(role==='reflector')return keys.find(k=>['reflector','miniReflector'].includes(k))||null;return keys.find(k=>k===role)||null;}
+function accessoryRole(key,a){if(a?.role)return a.role;if(key==='bare')return'bare';if(key.toLowerCase().includes('reflector'))return'reflector';if(['reflector','miniReflector'].includes(key))return'reflector';if(key.includes('softbox')||key.includes('dome'))return'softbox';if(key.toLowerCase().includes('spot'))return'fresnelSpot';if(key.toLowerCase().includes('flood'))return'fresnelFlood';return key;}
+function currentAccessoryRole(){return accessoryRole(state.accessory,accessory());}
+function findAccessoryByRole(fixtureKey,role){const entries=Object.entries(fixtures[fixtureKey].accessories);return entries.find(([k,a])=>accessoryRole(k,a)===role)?.[0]||null;}
 
 function updateAdvanced(reqLux,maxD,points){
   const d=state.testDistance,lux=estimatedLuxAtDistance(d),margin=lux>0?Math.log2(lux/reqLux):-Infinity,reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity,possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
@@ -214,7 +256,7 @@ function updateAdvanced(reqLux,maxD,points){
   if(accessory().quality==='single')els.dataNote.textContent='Un seul point constructeur est publié pour ce mode. LIGHT applique une décroissance en carré inverse : considère la distance comme une estimation, pas comme une mesure constructeur complète.';
   else els.dataNote.textContent=warning?`Une partie du calcul sort de la plage mesurée (${rangeAtTest.label.toLowerCase()} / distance max : ${rangeAtMax.label.toLowerCase()}).`:'La distance testée et la distance max restent dans la plage de mesures constructeur ; LIGHT interpole entre les points publiés.';
   els.dataNote.classList.toggle('warning',warning||accessory().quality==='single');
-  if(state.intensityPct===100){els.dimmerNote.textContent='Puissance 100 % : les points de départ sont les mesures publiées par le constructeur.';els.dimmerNote.classList.remove('warning');}
+  if(state.intensityPct===100){els.dimmerNote.textContent=fixture().note?`Puissance 100 % : ${fixture().note}`:'Puissance 100 % : les points de départ sont les mesures publiées par le constructeur.';els.dimmerNote.classList.remove('warning');}
   else{els.dimmerNote.textContent='Sous 100 %, LIGHT estime les lux proportionnellement au dimmer. Cette partie est moins fiable faute de courbe constructeur détaillée par pourcentage.';els.dimmerNote.classList.add('warning');}
 }
 function classifyDistance(distance,points,quality){if(!Number.isFinite(distance)||distance<=0)return{label:'source éteinte',warning:true};if(quality==='single')return{label:'estimation depuis 1 point',warning:true};const min=points[0][0],max=points[points.length-1][0];if(distance<min)return{label:`extrapolation < ${min} m`,warning:true};if(distance>max)return{label:`extrapolation > ${max} m`,warning:true};return{label:'interpolation constructeur',warning:false};}
