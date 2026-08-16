@@ -225,3 +225,5 @@ footer { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; 
 .family-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
 .power-grid button { min-height:42px; line-height:1.2; }
 @media (max-width:520px){ .brand-grid{grid-template-columns:repeat(2,1fr);max-width:none;} .family-grid{grid-template-columns:repeat(2,1fr) !important;} }
+
+.lab-badge.estimate-badge{border-color:rgba(255,184,77,.45);background:rgba(255,184,77,.10);color:#ffd08a;}

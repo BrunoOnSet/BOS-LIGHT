@@ -25,3 +25,6 @@ Important
 Sous 100 % de dimmer, LIGHT estime toujours la baisse de lux proportionnellement au pourcentage, faute de courbe de gradation détaillée pour chaque modèle.
 Le calcul d'exposition incidente utilise C = 340 (logique Lumisphere Sekonic).
 Le résultat reste une aide de préparation/tournage et ne remplace pas une mesure au posemètre lorsque l'exposition est critique.
+
+
+V0.10 : ajout de softbox estimées sur COB S, RAY, Aputure Light Storm et STORM. Les estimations sont explicitement marquées ≈ et ESTIMATION. Ajout Parapluie / diffuseur estimé sur ACE.
