@@ -130,3 +130,32 @@ footer { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; 
   .cct-grid { grid-template-columns:repeat(3,1fr); }
   .hero-distance strong { font-size:62px; }
 }
+
+/* V0.6 — caméra repliée en premier, familles de projecteurs */
+.camera-card summary { list-style:none; cursor:pointer; }
+.camera-card summary::-webkit-details-marker { display:none; }
+.camera-card .card-heading { border-bottom:0; }
+.camera-card[open] .card-heading { border-bottom:1px solid var(--line); }
+.collapsible-heading { position:relative; padding-right:42px; }
+.collapsible-heading .heading-copy { min-width:0; }
+.summary-value { margin-left:auto; color:var(--blue); font-size:10.5px; font-weight:850; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.collapsible-heading .chevron { position:absolute; right:15px; top:50%; transform:translateY(-50%); }
+.camera-card[open] .collapsible-heading .chevron { transform:translateY(-50%) rotate(180deg); }
+.fixture-families { display:grid; gap:12px; margin-top:9px; }
+.fixture-family > span { display:block; color:#6f7b8b; font-size:8px; letter-spacing:.12em; font-weight:900; margin-bottom:6px; }
+.fixture-family .fixture-grid { margin-top:0; }
+.ray-grid { grid-template-columns:repeat(4,1fr); }
+.cob-grid { grid-template-columns:repeat(2,1fr); max-width:42%; }
+.accessory-note { min-height:0; margin-top:7px; color:#8d7f66; font-size:9px; line-height:1.4; }
+.advanced-section[hidden] { display:none; }
+@media (max-width:520px) {
+  .summary-value { font-size:9.5px; max-width:145px; overflow:hidden; text-overflow:ellipsis; }
+  .collapsible-heading { align-items:flex-start; }
+  .ray-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .cob-grid { max-width:none; }
+}
+@media (max-width:380px) {
+  .summary-value { display:none; }
+  .ray-grid { grid-template-columns:repeat(2,1fr); }
+  .cob-grid { grid-template-columns:repeat(2,1fr); }
+}
