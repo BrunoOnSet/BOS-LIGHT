@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#07090d" />
-  <title>BOS Light — Prototype V0.1</title>
+  <title>BOS Light — Prototype V0.2</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
@@ -16,7 +16,7 @@
         <span class="brand-badge">BOS</span>
         <div>
           <div class="brand-title">LIGHT</div>
-          <div class="brand-subtitle">Prototype V0.1 · Key light</div>
+          <div class="brand-subtitle">Prototype V0.2 · Halo @ 5600 K</div>
         </div>
       </div>
       <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
@@ -41,7 +41,7 @@
         </div>
         <div class="preview-hud">
           <span id="hudPattern">REMBRANDT</span>
-          <span id="hudStats">120 cm · 1.2 m</span>
+          <span id="hudStats">Halo 200x · Softbox 90</span>
         </div>
       </div>
 
@@ -59,7 +59,7 @@
           <div class="light-ray" id="lightRay"></div>
           <div class="light-node" id="lightNode">
             <div class="light-panel" id="lightPanel"></div>
-            <span>KEY</span>
+            <span id="lightNodeLabel">HALO 200X · SOFTBOX 90</span>
           </div>
           <div class="setup-readout" id="setupReadout"></div>
         </div>
@@ -77,13 +77,39 @@
         </div>
       </div>
 
+      <div class="control-block">
+        <div class="section-head">
+          <div>
+            <label class="control-label">PROJECTEUR</label>
+            <p class="control-note">Photométrie constructeur amaran/Aputure à 5600 K.</p>
+          </div>
+          <span class="fixed-cct">5600 K</span>
+        </div>
+        <div class="fixture-grid" id="fixtureGrid">
+          <button data-fixture="halo60x" type="button">HALO 60X</button>
+          <button data-fixture="halo100x" type="button">HALO 100X</button>
+          <button class="active" data-fixture="halo200x" type="button">HALO 200X</button>
+          <button data-fixture="halo300x" type="button">HALO 300X</button>
+          <button data-fixture="halo600x" type="button">HALO 600X</button>
+        </div>
+      </div>
+
+      <div class="control-block">
+        <label class="control-label">ACCESSOIRE</label>
+        <div class="accessory-grid" id="accessoryGrid">
+          <button data-accessory="bare" type="button">NU</button>
+          <button data-accessory="reflector" type="button">RÉFLECTEUR</button>
+          <button class="active" data-accessory="softbox" type="button"><span id="softboxButtonLabel">SOFTBOX 90</span></button>
+        </div>
+      </div>
+
       <div class="control-block slider-block">
         <div class="control-head">
-          <label for="sizeSlider">TAILLE SOURCE</label>
-          <output id="sizeValue">120 cm</output>
+          <label for="intensitySlider">INTENSITÉ</label>
+          <output id="intensityValue">10 %</output>
         </div>
-        <input id="sizeSlider" type="range" min="20" max="200" value="120" step="5" />
-        <div class="range-labels"><span>20 cm</span><span>200 cm</span></div>
+        <input id="intensitySlider" type="range" min="0" max="100" value="10" step="1" />
+        <div class="range-labels"><span>0 %</span><span>100 %</span></div>
       </div>
 
       <div class="control-block slider-block">
@@ -95,6 +121,40 @@
         <div class="range-labels"><span>0.5 m</span><span>4 m</span></div>
       </div>
 
+      <div class="meter-strip">
+        <div class="meter-item">
+          <span>ÉCLAIREMENT SUJET</span>
+          <strong id="luxValue">— lux</strong>
+        </div>
+        <div class="meter-item">
+          <span>EXPO INCIDENTE</span>
+          <strong id="exposureDelta">—</strong>
+        </div>
+      </div>
+
+      <div class="control-block camera-block">
+        <div class="section-head camera-title-row">
+          <div>
+            <label class="control-label">CAMÉRA</label>
+            <p class="control-note">Ces trois réglages agissent directement sur l’exposition du rendu.</p>
+          </div>
+        </div>
+        <div class="camera-grid">
+          <label class="select-control">
+            <span>ISO</span>
+            <select id="isoSelect" aria-label="ISO"></select>
+          </label>
+          <label class="select-control">
+            <span>SHUTTER</span>
+            <select id="shutterSelect" aria-label="Shutter"></select>
+          </label>
+          <label class="select-control">
+            <span>DIAPH</span>
+            <select id="apertureSelect" aria-label="Diaphragme"></select>
+          </label>
+        </div>
+      </div>
+
       <div class="control-block slider-block">
         <div class="control-head">
           <label for="cameraSlider">DISTANCE CAMÉRA</label>
@@ -104,17 +164,9 @@
         <div class="range-labels"><span>0.8 m</span><span>3 m</span></div>
       </div>
 
-      <div class="control-block">
-        <div class="control-head exposure-head">
-          <div>
-            <label>EXPOSITION</label>
-            <p>Auto compare la qualité de lumière. Physique laisse chuter l’intensité avec la distance.</p>
-          </div>
-          <div class="mini-segmented" id="exposureToggle">
-            <button class="active" data-exposure="auto" type="button">AUTO</button>
-            <button data-exposure="physical" type="button">PHYSIQUE</button>
-          </div>
-        </div>
+      <div class="control-block info-block">
+        <p><strong>Calcul lumière :</strong> mesures labo Aputure/amaran à 5600 K, interpolation entre les distances publiées. Sous 1 m et au-delà du dernier point mesuré, extrapolation inverse-square.</p>
+        <p><strong>Intensité :</strong> 0–100 % est modélisé linéairement faute de courbe photométrique constructeur publiée par pas de dimmer.</p>
       </div>
     </section>
 
