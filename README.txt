@@ -1,4 +1,4 @@
-BOS LIGHT — V0.11
+BOS LIGHT — V0.12
 =================
 
 Nouveautés
@@ -26,4 +26,6 @@ Important
 Historique récent
 -----------------
 V0.10 : ajout des softbox estimées et du marquage ≈ / ESTIMATION.
-V0.11 : ajout initial de Nanlite et Godox.
+V0.12 : ajout initial de Nanlite et Godox.
+
+V0.12 : Godox élargi (SL III, ML30/ML30Bi/ML100Bi, VL II, SZ200Bi) et Nanlite élargi (FC, Forza, FS). Les mesures constructeur restent prioritaires ; softboxes non mesurées = ≈.

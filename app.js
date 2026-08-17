@@ -1,4 +1,4 @@
-// BOS LIGHT V0.11 — assistant de puissance/exposition pour le tournage
+// BOS LIGHT V0.12 — assistant de puissance/exposition pour le tournage
 // Mesures constructeur Aputure/amaran. Exposition incidente : C = 340 (Lumisphere Sekonic).
 
 const INCIDENT_C = 340;
@@ -81,7 +81,7 @@ const lightStormFixtures = {"ls60x":{"label":"Aputure LS 60x","brand":"aputure",
 const stormFixtures = {"storm80c":{"label":"Aputure STORM 80c","brand":"aputure","group":"storm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"3200":[[1,6300],[2,1619],[3,696]],"4300":[[1,6540],[2,1687],[3,722]],"5600":[[1,6500],[2,1681],[3,725]],"6500":[[1,6404],[2,1653],[3,713]],"8000":[[1,6197],[2,1583],[3,684]],"10000":[[1,5981],[2,1541],[3,666]]},"role":"bare"},"reflector":{"label":"Hyper Reflector","quality":"measured","data":{"3200":[[1,19090],[2,4682],[3,1911]],"4300":[[1,19930],[2,4889],[3,2001]],"5600":[[1,19850],[2,4859],[3,1987]],"6500":[[1,19650],[2,4781],[3,1956]],"8000":[[1,18560],[2,4584],[3,1874]],"10000":[[1,17720],[2,4466],[3,1830]]},"role":"reflector"}}},"storm400x":{"label":"Aputure STORM 400x","brand":"aputure","group":"storm","defaultAccessory":"refl35","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[1,20590],[3,2361],[5,880]],"3200":[[1,25600],[3,2964],[5,1105]],"4300":[[1,27350],[3,3140],[5,1170]],"5600":[[1,27100],[3,3110],[5,1161]],"6500":[[1,26500],[3,3040],[5,1134]],"7500":[[1,25700],[3,2960],[5,1105]],"10000":[[1,24160],[3,2790],[5,1038]]},"role":"bare"},"refl35":{"label":"Hyper Reflector 35°","quality":"measured","data":{"2500":[[1,49200],[3,3850],[5,1334]],"3200":[[1,61600],[3,4850],[5,1677]],"4300":[[1,65400],[3,5120],[5,1780]],"5600":[[1,64600],[3,5090],[5,1769]],"6500":[[1,63300],[3,4970],[5,1729]],"7500":[[1,61600],[3,4840],[5,1685]],"10000":[[1,57800],[3,4550],[5,1585]]},"role":"reflector"},"refl30":{"label":"Hyper Reflector 30°","quality":"measured","data":{"2500":[[1,70800],[3,7180],[5,2510]],"3200":[[1,89000],[3,8990],[5,3150]],"4300":[[1,93600],[3,9510],[5,3340]],"5600":[[1,93000],[3,9430],[5,3310]],"6500":[[1,90800],[3,9200],[5,3230]],"7500":[[1,88400],[3,8970],[5,3140]],"10000":[[1,83100],[3,8420],[5,2950]]},"role":"reflector"}}},"storm700x":{"label":"Aputure STORM 700x","brand":"aputure","group":"storm","defaultAccessory":"refl35","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[1,36700],[3,4200],[5,1588]],"3200":[[1,42400],[3,4870],[5,1839]],"4300":[[1,53700],[3,6210],[5,2330]],"5600":[[1,54900],[3,6370],[5,2394]],"6500":[[1,53600],[3,6190],[5,2333]],"7500":[[1,49200],[3,5660],[5,2136]],"10000":[[1,40900],[3,4720],[5,1778]]},"role":"bare"},"refl35":{"label":"Hyper Reflector 35°","quality":"measured","data":{"2500":[[3,12480],[5,4100]],"3200":[[3,14430],[5,3930]],"4300":[[3,18120],[5,5040]],"5600":[[3,18670],[5,5320]],"6500":[[3,18250],[5,5380]],"7500":[[3,16760],[5,5240]],"10000":[[3,13930],[5,4650]]},"role":"reflector"},"refl25":{"label":"Hyper Reflector 25°","quality":"measured","data":{"2500":[[3,18120],[5,6040]],"3200":[[3,20950],[5,5880]],"4300":[[3,26430],[5,7560]],"5600":[[3,27190],[5,7950]],"6500":[[3,26520],[5,8060]],"7500":[[3,24300],[5,7810]],"10000":[[3,20200],[5,6960]]},"role":"reflector"}}},"storm1000c":{"label":"Aputure STORM 1000c","brand":"aputure","group":"storm","defaultAccessory":"bm7830","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[2,12500],[3,5600],[5,2150],[7,1100]],"3200":[[2,14500],[3,6500],[5,2500],[7,1300]],"4300":[[2,14700],[3,6600],[5,2550],[7,1350]],"5600":[[2,14000],[3,6300],[5,2450],[7,1300]],"6500":[[2,13700],[3,6200],[5,2350],[7,1250]]},"role":"bare"},"bm7815":{"label":"Reflector BM7815","quality":"measured","data":{"2500":[[2,140000],[3,62000],[5,21000],[7,10500]],"3200":[[2,160000],[3,72000],[5,24500],[7,12200]],"4300":[[2,164000],[3,73000],[5,25000],[7,12500]],"5600":[[2,158000],[3,70000],[5,24000],[7,12000]],"6500":[[2,152000],[3,68000],[5,23500],[7,11700]]},"role":"reflector"},"bm7830":{"label":"Reflector BM7830","quality":"measured","data":{"2500":[[2,70000],[3,27000],[5,8800],[7,4400]],"3200":[[2,80000],[3,31000],[5,10000],[7,5100]],"4300":[[2,82000],[3,31000],[5,10500],[7,5200]],"5600":[[2,79000],[3,31000],[5,10000],[7,5000]],"6500":[[2,75000],[3,30000],[5,9800],[7,4900]]},"role":"reflector"},"bm7845":{"label":"Reflector BM7845","quality":"measured","data":{"2500":[[2,30000],[3,12500],[5,4400],[7,2350]],"3200":[[2,34000],[3,14500],[5,5100],[7,2700]],"4300":[[2,35000],[3,14700],[5,5200],[7,2700]],"5600":[[2,33500],[3,14200],[5,5000],[7,2600]],"6500":[[2,32500],[3,14000],[5,4900],[7,2550]]},"role":"reflector"}}},"storm1200x":{"label":"Aputure STORM 1200x","brand":"aputure","group":"storm","defaultAccessory":"bm7830","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[2,14600],[3,6570],[5,2510],[7,1270]],"3200":[[2,18700],[3,8370],[5,3170],[7,1610]],"4300":[[2,19000],[3,8620],[5,3280],[7,1670]],"5600":[[2,18900],[3,8490],[5,3230],[7,1640]],"6500":[[2,18600],[3,8370],[5,3180],[7,1620]]},"role":"bare"},"bm7815":{"label":"Reflector BM7815","quality":"measured","data":{"2500":[[2,162000],[3,74000],[5,25600],[7,12800]],"3200":[[2,206000],[3,94600],[5,30900],[7,16300]],"4300":[[2,212000],[3,97400],[5,33600],[7,16800]],"5600":[[2,209000],[3,96100],[5,33300],[7,16600]],"6500":[[2,162000],[3,94700],[5,32700],[7,16300]]},"role":"reflector"},"bm7830":{"label":"Reflector BM7830","quality":"measured","data":{"2500":[[2,80000],[3,32200],[5,10900],[7,5430]],"3200":[[2,102000],[3,41100],[5,13800],[7,6920]],"4300":[[2,105000],[3,42400],[5,14300],[7,7150]],"5600":[[2,104000],[3,41800],[5,14100],[7,7050]],"6500":[[2,102000],[3,41200],[5,13900],[7,6950]]},"role":"reflector"},"bm7845":{"label":"Reflector BM7845","quality":"measured","data":{"2500":[[2,35500],[3,15300],[5,5420],[7,2770]],"3200":[[2,45400],[3,19500],[5,6910],[7,3510]],"4300":[[2,47000],[3,20100],[5,7130],[7,3630]],"5600":[[2,46000],[3,19800],[5,7070],[7,3580]],"6500":[[2,45400],[3,19500],[5,6910],[7,3530]]},"role":"reflector"}}}};
 
 
-// V0.11 — premiers catalogues Nanlite et Godox.
+// V0.12 — catalogues Godox et Nanlite élargis.
 // Pour les nouveaux modèles ci-dessous, LIGHT n'utilise que les photométries
 // explicitement publiées par le fabricant. Quand un seul point est disponible,
 // la qualité est marquée "single" et la distance reste une estimation par carré inverse.
@@ -92,28 +92,128 @@ const nanliteFixtures = {
   nanFc120b:{label:'Nanlite FC-120B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
     reflector:{label:'Réflecteur 45°',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,17450]]}}
   },note:'Nanlite publie 17 450 lux à 1 m avec réflecteur 45° à 5600 K.'},
+  nanFc300b:{label:'Nanlite FC-300B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'single',role:'bare',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,11210]]}},
+    reflector:{label:'Réflecteur 45°',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,37340]]}},
+    rapid90:{label:'Rapid 90',quality:'measured',role:'softbox',data:{2700:[[1,9780],[3,584],[5,195]],3200:[[1,12490],[3,742],[5,249]],4300:[[1,14590],[3,871],[5,292]],5600:[[1,12610],[3,754],[5,252]],6500:[[1,11160],[3,665],[5,223]]}}
+  },note:'Nu et réflecteur : mesures Nanlite à 1 m. Rapid 90 : mesures Nanlite à 1 m, 3 m et 5 m.'},
+  nanFc500b:{label:'Nanlite FC-500B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'single',role:'bare',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,21110]]}},
+    reflector:{label:'Réflecteur 45°',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,65640]]}}
+  },note:'Nanlite publie 21 110 lux nu et 65 640 lux avec réflecteur à 1 m, 5600 K.'},
+  nanFc500c:{label:'Nanlite FC-500C',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,28770],[3,3303],[5,1281]]}},
+    reflector:{label:'Réflecteur',quality:'measured',role:'reflector',data:{5600:[[1,77110],[3,7687],[5,2805]]}},
+    rapid90:{label:'Rapid 90',quality:'measured',role:'softbox',data:{2700:[[1,17340],[3,1015],[5,340]],3200:[[1,18600],[3,1088],[5,364]],4300:[[1,19310],[3,1129],[5,378]],5600:[[1,19200],[3,1124],[5,376]],6500:[[1,18800],[3,1100],[5,368]]}}
+  },note:'Photométries Nanlite publiées à plusieurs distances, y compris avec Rapid 90.'},
   nanFc720b:{label:'Nanlite FC-720B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
     bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,50700],[3,5680],[5,2135]]}},
     reflector:{label:'Réflecteur',quality:'measured',role:'reflector',data:{5600:[[1,133800],[3,12690],[5,4580]]}}
   },note:'Photométries Nanlite publiées à 1 m, 3 m et 5 m à 5600 K.'},
+  nanFc720c:{label:'Nanlite FC-720C',brand:'nanlite',group:'nanfc',defaultAccessory:'bare',accessories:{
+    bare:{label:'Nu',quality:'single',role:'bare',singlePointLabel:'Mesure constructeur @ 3 m',data:{5600:[[3,5040]]}}
+  },note:'Nanlite publie 5 040 lux nu à 3 m, 5600 K. La courbe hors de ce point reste une estimation.'},
+
   nanForza60b2:{label:'Nanlite Forza 60B II',brand:'nanlite',group:'nanforza',defaultAccessory:'bare',accessories:{
     bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,2577],[2,649],[3,308]]}}
   },note:'Photométries Nanlite publiées nu à 1 m, 2 m et 3 m à 5600 K.'},
+  nanForza60c:{label:'Nanlite Forza 60C',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
+    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,12810]]}}
+  },note:'Nanlite publie 12 810 lux à 1 m, 5600 K, avec réflecteur.'},
   nanForza150b:{label:'Nanlite Forza 150B',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
     reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,23130]]}}
-  },note:'Nanlite publie 23 130 lux à 1 m avec réflecteur à 5600 K.'}
+  },note:'Nanlite publie 23 130 lux à 1 m avec réflecteur à 5600 K.'},
+  nanForza300b2:{label:'Nanlite Forza 300B II',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
+    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,68060]]}}
+  },note:'Nanlite publie 68 060 lux à 1 m, 5600 K, avec le réflecteur fourni.'},
+  nanForza500b2:{label:'Nanlite Forza 500B II',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
+    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,67320]]}}
+  },note:'Nanlite publie 67 320 lux à 1 m avec le réflecteur fourni.'},
+  nanForza720b:{label:'Nanlite Forza 720B',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{2700:[[1,18640],[2,4783],[3,2385]],3200:[[1,20920],[2,5417],[3,2644]],5600:[[1,24770],[2,6469],[3,3116]],6500:[[1,24630],[2,6455],[3,3074]]}},
+    reflector:{label:'Réflecteur 55°',quality:'measured',role:'reflector',data:{2700:[[1,61650],[2,13440],[3,5854]],3200:[[1,70151],[2,15220],[3,6604]],5600:[[1,84460],[2,18270],[3,7919]],6500:[[1,83250],[2,18180],[3,7886]]}}
+  },note:'Photométries Nanlite publiées nu et avec réflecteur à 1 m, 2 m et 3 m.'},
+
+  nanFs60b:{label:'Nanlite FS-60B',brand:'nanlite',group:'nanfs',defaultAccessory:'reflector',accessories:{
+    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,13360]]}}
+  },note:'Nanlite publie 13 360 lux à 1 m à 5600 K avec réflecteur.'},
+  nanFs150b:{label:'Nanlite FS-150B',brand:'nanlite',group:'nanfs',defaultAccessory:'reflector',accessories:{
+    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,26300]]}}
+  },note:'Nanlite publie jusqu’à 26 300 lux à 1 m avec le réflecteur fourni.'},
+  nanFs300c:{label:'Nanlite FS-300C',brand:'nanlite',group:'nanfs',defaultAccessory:'reflector',accessories:{
+    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,48850]]}}
+  },note:'Nanlite publie 48 850 lux à 1 m, 5600 K, avec réflecteur.'}
 };
 
 const godoxFixtures = {
   godoxSl60iibi:{label:'Godox SL60IIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
     reflector:{label:'Réflecteur standard',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,25100]]}}
   },note:'Godox publie 25 100 lux à 1 m avec réflecteur standard.'},
+  godoxSl100bi:{label:'Godox SL100Bi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
+    reflector:{label:'Réflecteur standard',quality:'single',role:'reflector',singlePointLabel:'Max constructeur @ 1 m',data:{5600:[[1,32100]]}}
+  },note:'Godox annonce un éclairement maximal de 32 100 lux à 1 m avec réflecteur.'},
+  godoxSl150iii:{label:'Godox SL150III',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,5900],[2,1570],[3,740]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,73600],[2,16300],[3,6770]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
+  godoxSl150iiibi:{label:'Godox SL150IIIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,4880],[2,1270],[3,606]],3200:[[1,6340],[2,1650],[3,787]],4300:[[1,7610],[2,1990],[3,938]],5600:[[1,6810],[2,1730],[3,830]],6500:[[1,5530],[2,1450],[3,683]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[1,56200],[2,13100],[3,5500]],3200:[[1,76800],[2,17800],[3,7220]],4300:[[1,90500],[2,20800],[3,8760]],5600:[[1,80400],[2,18400],[3,7740]],6500:[[1,67300],[2,15200],[3,6410]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m pour plusieurs CCT.'},
+  godoxSl200iii:{label:'Godox SL200III',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,7920],[2,2070],[3,1000]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,95600],[2,21500],[3,9080]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
+  godoxSl200iiibi:{label:'Godox SL200IIIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,5960],[2,1460],[3,736]],3200:[[1,7040],[2,1920],[3,845]],4300:[[1,7980],[2,2140],[3,962]],5600:[[1,8130],[2,2180],[3,979]],6500:[[1,6690],[2,1800],[3,808]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[1,73500],[2,16400],[3,6700]],3200:[[1,83700],[2,18900],[3,7820]],4300:[[1,94400],[2,21300],[3,8840]],5600:[[1,95400],[2,21600],[3,8810]],6500:[[1,78200],[2,17700],[3,7210]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m pour plusieurs CCT.'},
+  godoxSl300iii:{label:'Godox SL300III',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,12900],[2,3300],[3,1650]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,99300],[2,20000],[3,8800]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
+  godoxSl300iiibi:{label:'Godox SL300IIIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,6590],[2,1740],[3,827]],3200:[[1,8710],[2,2200],[3,1050]],4300:[[1,10200],[2,2680],[3,1280]],5600:[[1,9730],[2,2550],[3,1210]],6500:[[1,8110],[2,2140],[3,1020]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[1,79400],[2,18200],[3,7660]],3200:[[1,104000],[2,23700],[3,9970]],4300:[[1,120000],[2,27300],[3,11500]],5600:[[1,117000],[2,25800],[3,10900]],6500:[[1,94900],[2,21400],[3,9070]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m pour plusieurs CCT.'},
+
+  godoxMl30:{label:'Godox ML30',brand:'godox',group:'godoxml',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[0.5,5880],[1,1540],[2,392]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[0.5,45700],[1,8590],[2,1740]]}}
+  },note:'Table photométrique Godox à 0,5 m, 1 m et 2 m.'},
+  godoxMl30bi:{label:'Godox ML30Bi',brand:'godox',group:'godoxml',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[0.5,4850],[1,1250],[2,361]],3200:[[0.5,5230],[1,1330],[2,392]],4300:[[0.5,5740],[1,1460],[2,424]],5600:[[0.5,5650],[1,1450],[2,418]],6500:[[0.5,5550],[1,1430],[2,414]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[0.5,34600],[1,6430],[2,1540]],3200:[[0.5,37100],[1,6840],[2,1690]],4300:[[0.5,41100],[1,7530],[2,1830]],5600:[[0.5,40700],[1,7470],[2,1800]],6500:[[0.5,40100],[1,7460],[2,1780]]}}
+  },note:'Table photométrique Godox à 0,5 m, 1 m et 2 m pour plusieurs CCT.'},
   godoxMl80bi:{label:'Godox ML80Bi',brand:'godox',group:'godoxml',defaultAccessory:'zoom',accessories:{
     zoom:{label:'ML-Z Zoom Reflector',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,29600]]}}
   },note:'Godox publie 29 600 lux à 1 m à 5600 K avec le ML-Z Zoom Reflector.'},
+  godoxMl100bi:{label:'Godox ML100Bi',brand:'godox',group:'godoxml',defaultAccessory:'ml15',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,2580],[2,682],[3,316]],3200:[[1,2990],[2,777],[3,363]],4300:[[1,3520],[2,916],[3,427]],5600:[[1,3670],[2,953],[3,446]],6500:[[1,3380],[2,878],[3,410]]}},
+    ml15:{label:'ML-L15',quality:'measured',role:'reflector',data:{2800:[[1,24100],[2,6010],[3,2800]],3200:[[1,27900],[2,7040],[3,3250]],4300:[[1,32900],[2,8350],[3,3860]],5600:[[1,34300],[2,8800],[3,4040]],6500:[[1,31200],[2,8100],[3,3730]]}},
+    ml36:{label:'ML-L36',quality:'measured',role:'reflector',data:{2800:[[1,12500],[2,3140],[3,1380]],3200:[[1,14500],[2,3640],[3,1610]],4300:[[1,17100],[2,4320],[3,1910]],5600:[[1,17900],[2,4480],[3,1990]],6500:[[1,16500],[2,4130],[3,1830]]}}
+  },note:'Table photométrique Godox nu + optiques ML-L15 / ML-L36 à 1 m, 2 m et 3 m.'},
   godoxMl150bi:{label:'Godox ML150Bi',brand:'godox',group:'godoxml',defaultAccessory:'zoom',accessories:{
     zoom:{label:'ML-Z Zoom Reflector',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,61054]]}}
   },note:'Godox publie 61 054 lux à 1 m à 5600 K avec le ML-Z Zoom Reflector.'},
+
+  godoxVl150ii:{label:'Godox VL150II',brand:'godox',group:'godoxvl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,6100],[2,1700],[3,810]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,76000],[2,16000],[3,5400]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
+  godoxVl200ii:{label:'Godox VL200II',brand:'godox',group:'godoxvl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,7400],[2,2100],[3,1100]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,88900],[2,19000],[3,8000]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
+  godoxVl300ii:{label:'Godox VL300II',brand:'godox',group:'godoxvl',defaultAccessory:'reflector',accessories:{
+    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,11600],[2,3500],[3,1700]]}},
+    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,99000],[2,20900],[3,8800]]}}
+  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
+
+  godoxSz200bi:{label:'Godox SZ200Bi',brand:'godox',group:'godoxsz',defaultAccessory:'zoom',accessories:{
+    zoom:{label:'Zoom intégré',quality:'single',role:'reflector',singlePointLabel:'Maximum constructeur @ 1 m',data:{5600:[[1,32500]]}}
+  },note:'Godox annonce environ 32 500 lux à 1 m en sortie maximale ; le niveau réel varie avec le zoom et la CCT.'},
+
   godoxLa600bi:{label:'Godox LA600Bi',brand:'godox',group:'godoxlitemons',defaultAccessory:'reflector',accessories:{
     reflector:{label:'BR30 Reflector',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,212500]]}}
   },note:'Godox publie 212 500 lux à 1 m à 5600 K avec le BR30 Reflector.'}
@@ -205,16 +305,41 @@ addEstimatedSoftbox(stormFixtures.storm1200x,120);
 addEstimatedUmbrella(aceFixtures.ace25x);
 addEstimatedUmbrella(aceFixtures.ace25c);
 
-// Nanlite — softbox estimée lorsqu'aucune photométrie directe n'est publiée ici.
+// Nanlite — softbox estimée uniquement lorsque la fixture n'a pas déjà une softbox mesurée.
 addEstimatedSoftbox(nanliteFixtures.nanFc60b,60,{sourceKey:'reflector'});
 addEstimatedSoftbox(nanliteFixtures.nanFc120b,60,{sourceKey:'reflector'});
+addEstimatedSoftbox(nanliteFixtures.nanFc300b,90,{sourceKey:'bare'}); // helper ignore : Rapid 90 mesurée déjà présente
+addEstimatedSoftbox(nanliteFixtures.nanFc500b,90,{sourceKey:'bare'});
+addEstimatedSoftbox(nanliteFixtures.nanFc500c,90,{sourceKey:'bare'}); // helper ignore : Rapid 90 mesurée déjà présente
 addEstimatedSoftbox(nanliteFixtures.nanFc720b,120,{sourceKey:'bare'});
+addEstimatedSoftbox(nanliteFixtures.nanFc720c,120,{sourceKey:'bare'});
 addEstimatedSoftbox(nanliteFixtures.nanForza60b2,60,{sourceKey:'bare'});
+addEstimatedSoftbox(nanliteFixtures.nanForza60c,60,{sourceKey:'reflector'});
 addEstimatedSoftbox(nanliteFixtures.nanForza150b,90,{sourceKey:'reflector'});
+addEstimatedSoftbox(nanliteFixtures.nanForza300b2,120,{sourceKey:'reflector'});
+addEstimatedSoftbox(nanliteFixtures.nanForza500b2,120,{sourceKey:'reflector'});
+addEstimatedSoftbox(nanliteFixtures.nanForza720b,120,{sourceKey:'bare'});
+addEstimatedSoftbox(nanliteFixtures.nanFs60b,60,{sourceKey:'reflector'});
+addEstimatedSoftbox(nanliteFixtures.nanFs150b,90,{sourceKey:'reflector'});
+addEstimatedSoftbox(nanliteFixtures.nanFs300c,90,{sourceKey:'reflector'});
 // Godox
 addEstimatedSoftbox(godoxFixtures.godoxSl60iibi,60,{sourceKey:'reflector'});
+addEstimatedSoftbox(godoxFixtures.godoxSl100bi,60,{sourceKey:'reflector'});
+addEstimatedSoftbox(godoxFixtures.godoxSl150iii,90,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxSl150iiibi,90,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxSl200iii,90,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxSl200iiibi,90,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxSl300iii,120,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxSl300iiibi,120,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxMl30,60,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxMl30bi,60,{sourceKey:'bare'});
 addEstimatedSoftbox(godoxFixtures.godoxMl80bi,60,{sourceKey:'zoom'});
+addEstimatedSoftbox(godoxFixtures.godoxMl100bi,60,{sourceKey:'bare'});
 addEstimatedSoftbox(godoxFixtures.godoxMl150bi,90,{sourceKey:'zoom'});
+addEstimatedSoftbox(godoxFixtures.godoxVl150ii,90,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxVl200ii,90,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxVl300ii,120,{sourceKey:'bare'});
+addEstimatedSoftbox(godoxFixtures.godoxSz200bi,90,{sourceKey:'zoom'});
 addEstimatedSoftbox(godoxFixtures.godoxLa600bi,120,{sourceKey:'reflector'});
 
 const fixtures = {...haloFixtures, ...rayFixtures, ...cobFixtures, ...aceFixtures, ...lightStormFixtures, ...stormFixtures, ...nanliteFixtures, ...godoxFixtures};
@@ -225,15 +350,18 @@ const UI_GROUPS = {
   ace:['ace25x','ace25c'],
   lightstorm:['ls60x','ls300x','ls300d2','ls600dpro','ls600xpro','ls600cpro2','ls1200dpro'],
   storm:['storm80c','storm400x','storm700x','storm1000c','storm1200x'],
-  nanfc:['nanFc60b','nanFc120b','nanFc720b'],
-  nanforza:['nanForza60b2','nanForza150b'],
-  godoxsl:['godoxSl60iibi'],
-  godoxml:['godoxMl80bi','godoxMl150bi'],
+  nanfc:['nanFc60b','nanFc120b','nanFc300b','nanFc500b','nanFc500c','nanFc720b','nanFc720c'],
+  nanforza:['nanForza60b2','nanForza60c','nanForza150b','nanForza300b2','nanForza500b2','nanForza720b'],
+  nanfs:['nanFs60b','nanFs150b','nanFs300c'],
+  godoxsl:['godoxSl60iibi','godoxSl100bi','godoxSl150iii','godoxSl150iiibi','godoxSl200iii','godoxSl200iiibi','godoxSl300iii','godoxSl300iiibi'],
+  godoxml:['godoxMl30','godoxMl30bi','godoxMl80bi','godoxMl100bi','godoxMl150bi'],
+  godoxvl:['godoxVl150ii','godoxVl200ii','godoxVl300ii'],
+  godoxsz:['godoxSz200bi'],
   godoxlitemons:['godoxLa600bi']
 };
-const BRAND_GROUPS = {amaran:['halo','ray','cob','ace'],aputure:['lightstorm','storm'],nanlite:['nanfc','nanforza'],godox:['godoxsl','godoxml','godoxlitemons']};
+const BRAND_GROUPS = {amaran:['halo','ray','cob','ace'],aputure:['lightstorm','storm'],nanlite:['nanfc','nanforza','nanfs'],godox:['godoxsl','godoxml','godoxvl','godoxsz','godoxlitemons']};
 const BRAND_LABELS = {amaran:'amaran',aputure:'Aputure',nanlite:'Nanlite',godox:'Godox'};
-const GROUP_LABELS = {halo:'HALO',ray:'RAY',cob:'COB S',ace:'ACE',lightstorm:'LIGHT STORM',storm:'STORM',nanfc:'FC',nanforza:'FORZA',godoxsl:'SL',godoxml:'ML',godoxlitemons:'LITEMONS'};
+const GROUP_LABELS = {halo:'HALO',ray:'RAY',cob:'COB S',ace:'ACE',lightstorm:'LIGHT STORM',storm:'STORM',nanfc:'FC',nanforza:'FORZA',nanfs:'FS',godoxsl:'SL',godoxml:'ML',godoxvl:'VL II',godoxsz:'SZ',godoxlitemons:'LITEMONS'};
 const POWER_LABELS = {
   halo60x:'60X',halo100x:'100X',halo200x:'200X',halo300x:'300X',halo600x:'600X',
   ray60c:'60C',ray120c:'120C',ray360c:'360C',ray660c:'660C',
@@ -241,8 +369,12 @@ const POWER_LABELS = {
   ace25x:'25X',ace25c:'25C',
   ls60x:'LS 60X',ls300x:'LS 300X',ls300d2:'300D II',ls600dpro:'600D PRO',ls600xpro:'600X PRO',ls600cpro2:'600C PRO II',ls1200dpro:'1200D PRO',
   storm80c:'80C',storm400x:'400X',storm700x:'700X',storm1000c:'1000C',storm1200x:'1200X',
-  nanFc60b:'FC-60B',nanFc120b:'FC-120B',nanFc720b:'FC-720B',nanForza60b2:'60B II',nanForza150b:'150B',
-  godoxSl60iibi:'SL60IIBi',godoxMl80bi:'ML80Bi',godoxMl150bi:'ML150Bi',godoxLa600bi:'LA600Bi'
+  nanFc60b:'FC-60B',nanFc120b:'FC-120B',nanFc300b:'FC-300B',nanFc500b:'FC-500B',nanFc500c:'FC-500C',nanFc720b:'FC-720B',nanFc720c:'FC-720C',
+  nanForza60b2:'60B II',nanForza60c:'60C',nanForza150b:'150B',nanForza300b2:'300B II',nanForza500b2:'500B II',nanForza720b:'720B',
+  nanFs60b:'FS-60B',nanFs150b:'FS-150B',nanFs300c:'FS-300C',
+  godoxSl60iibi:'SL60IIBi',godoxSl100bi:'SL100Bi',godoxSl150iii:'SL150III',godoxSl150iiibi:'SL150III Bi',godoxSl200iii:'SL200III',godoxSl200iiibi:'SL200III Bi',godoxSl300iii:'SL300III',godoxSl300iiibi:'SL300III Bi',
+  godoxMl30:'ML30',godoxMl30bi:'ML30Bi',godoxMl80bi:'ML80Bi',godoxMl100bi:'ML100Bi',godoxMl150bi:'ML150Bi',
+  godoxVl150ii:'VL150II',godoxVl200ii:'VL200II',godoxVl300ii:'VL300II',godoxSz200bi:'SZ200Bi',godoxLa600bi:'LA600Bi'
 };
 function uiGroupForFixture(key=state.fixture){for(const [group,keys] of Object.entries(UI_GROUPS)){if(keys.includes(key))return group;}return'halo';}
 function brandForFixture(key=state.fixture){const group=uiGroupForFixture(key);return Object.entries(BRAND_GROUPS).find(([,groups])=>groups.includes(group))?.[0]||'amaran';}
