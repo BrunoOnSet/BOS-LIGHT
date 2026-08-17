@@ -38,6 +38,7 @@ button, select { -webkit-tap-highlight-color: transparent; }
 .setup-track { height:2px; background:rgba(255,255,255,.13); position:relative; overflow:visible; }
 .setup-fill { position:absolute; inset:0; background:linear-gradient(90deg,rgba(42,168,255,.3),rgba(42,168,255,.9)); }
 .hero-summary { margin:10px auto 0; max-width:600px; color:#a9b4c1; font-size:11.5px; line-height:1.45; }
+.beam-hint { margin:7px auto 0; width:max-content; max-width:calc(100% - 24px); padding:6px 10px; border:1px solid rgba(42,168,255,.22); background:rgba(42,168,255,.07); border-radius:999px; color:#c9d6e4; font-size:9.5px; font-weight:800; letter-spacing:.02em; line-height:1.2; }
 .exposure-explainer { margin:12px auto 0; max-width:610px; padding:10px 12px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.16); text-align:left; }
 .exposure-explainer strong { display:block; color:#dce4ed; font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; }
 .exposure-explainer span { display:block; margin-top:4px; color:#7d8999; font-size:9.5px; line-height:1.45; }

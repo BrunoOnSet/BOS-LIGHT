@@ -1,4 +1,4 @@
-// BOS LIGHT V0.12 — assistant de puissance/exposition pour le tournage
+// BOS LIGHT V0.13 — assistant de puissance/exposition pour le tournage
 // Mesures constructeur Aputure/amaran. Exposition incidente : C = 340 (Lumisphere Sekonic).
 
 const INCIDENT_C = 340;
@@ -389,7 +389,7 @@ const els={
   brandGrid:$('#brandGrid'),familyGrid:$('#familyGrid'),powerGrid:$('#powerGrid'),accessoryGrid:$('#accessoryGrid'),accessoryNote:$('#accessoryNote'),
   cctGrid:$('#cctGrid'),cctSection:$('#cctSection'),cctValue:$('#cctValue'),cctNote:$('#cctNote'),
   intensitySlider:$('#intensitySlider'),intensityValue:$('#intensityValue'),isoSelect:$('#isoSelect'),shutterSelect:$('#shutterSelect'),apertureSelect:$('#apertureSelect'),cameraSummary:$('#cameraSummary'),lightSummary:$('#lightSummary'),
-  maxDistance:$('#maxDistance'),heroSummary:$('#heroSummary'),testDistanceSlider:$('#testDistanceSlider'),testDistanceValue:$('#testDistanceValue'),statusBox:$('#statusBox'),statusTitle:$('#statusTitle'),statusText:$('#statusText'),solutionIntro:$('#solutionIntro'),solutions:$('#solutions'),
+  maxDistance:$('#maxDistance'),heroSummary:$('#heroSummary'),beamHint:$('#beamHint'),testDistanceSlider:$('#testDistanceSlider'),testDistanceValue:$('#testDistanceValue'),statusBox:$('#statusBox'),statusTitle:$('#statusTitle'),statusText:$('#statusText'),solutionIntro:$('#solutionIntro'),solutions:$('#solutions'),
   testLux:$('#testLux'),stopMargin:$('#stopMargin'),requiredIso:$('#requiredIso'),possibleAperture:$('#possibleAperture'),sourceDescriptor:$('#sourceDescriptor'),measurementRow:$('#measurementRow'),dataNote:$('#dataNote'),dimmerNote:$('#dimmerNote'),labBadge:$('#labBadge'),resetBtn:$('#resetBtn')
 };
 
@@ -452,9 +452,10 @@ function update(){
   const reqLux=requiredLux(state.iso,state.shutterDenom,state.aperture); const maxD=state.intensityPct<=0?0:solveDistanceForLux(reqLux);
   els.intensityValue.textContent=`${state.intensityPct} %`; els.testDistanceValue.textContent=`${formatDistance(state.testDistance)} m`; els.maxDistance.textContent=maxD>0?formatDistance(maxD):'0,0';
   els.cameraSummary.textContent=`ISO ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
-  if(els.lightSummary) els.lightSummary.textContent=`${BRAND_LABELS[brandForFixture()]} · ${fixture().label.replace(/^(amaran |Aputure |Nanlite |Godox )/,'')} · ${accessory().label}`;
+  if(els.lightSummary) els.lightSummary.textContent=`${BRAND_LABELS[brandForFixture()]} · ${fixture().label.replace(/^(amaran |Aputure |Nanlite |Godox )/,'')} · ${accessoryUiLabel()}`;
   els.labBadge.textContent=accessory().quality==='estimated'?'ESTIMATION':BRAND_LABELS[brandForFixture()].toUpperCase(); els.labBadge.classList.toggle('estimate-badge',accessory().quality==='estimated');
-  els.heroSummary.textContent=`${fixture().label} · ${accessory().label} · ${state.intensityPct} % · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
+  els.heroSummary.textContent=`${fixture().label} · ${accessoryUiLabel()} · ${state.intensityPct} % · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
+  if(els.beamHint) els.beamHint.textContent=modifierHint();
   updateDistanceStatus(reqLux,maxD); updateAdvanced(reqLux,maxD,getPoints()); persistState();
 }
 function renderFixtureHierarchy(){
@@ -471,7 +472,7 @@ function renderFixtureHierarchy(){
 
 function renderAccessoryButtons(){
   const entries=Object.entries(fixture().accessories); els.accessoryGrid.style.gridTemplateColumns=`repeat(${Math.min(entries.length,3)},minmax(0,1fr))`;
-  els.accessoryGrid.innerHTML=entries.map(([key,a])=>`<button data-accessory="${key}" class="${key===state.accessory?'active':''}" type="button">${a.label.toUpperCase()}</button>`).join('');
+  els.accessoryGrid.innerHTML=entries.map(([key,a])=>`<button data-accessory="${key}" class="${key===state.accessory?'active':''}" type="button">${accessoryUiLabel(key,a).toUpperCase()}</button>`).join('');
   const a=accessory(); const notes=[]; if(a.quality==='single')notes.push('Ce mode repose sur un seul point constructeur : la distance est donc une estimation plus large.'); if(a.quality==='estimated')notes.push(`≈ ${a.estimateBasis || 'Valeur extrapolée : aucune photométrie constructeur n’est publiée pour ce modificateur.'}`); if(a.note)notes.push(a.note); if(fixture().note)notes.push(fixture().note); els.accessoryNote.textContent=notes.join(' ');
 }
 function renderCctButtons(){
@@ -522,6 +523,22 @@ function findStrongerFixture(reqLux,distance){
 function accessoryRole(key,a){if(a?.role)return a.role;if(key==='bare')return'bare';if(key.toLowerCase().includes('reflector'))return'reflector';if(['reflector','miniReflector'].includes(key))return'reflector';if(key.includes('softbox')||key.includes('dome'))return'softbox';if(key.toLowerCase().includes('spot'))return'fresnelSpot';if(key.toLowerCase().includes('flood'))return'fresnelFlood';return key;}
 function currentAccessoryRole(){return accessoryRole(state.accessory,accessory());}
 function findAccessoryByRole(fixtureKey,role){const entries=Object.entries(fixtures[fixtureKey].accessories);return entries.find(([k,a])=>accessoryRole(k,a)===role)?.[0]||null;}
+
+function accessoryUiLabel(key=state.accessory,a=accessory()){
+  const role=accessoryRole(key,a);
+  if(role==='reflector') return a.quality==='estimated'?'Bol ≈':'Bol';
+  return a.label;
+}
+function modifierHint(){
+  const a=accessory(), role=currentAccessoryRole(), label=accessoryUiLabel();
+  if(role==='reflector') return 'Avec bol — faisceau concentré';
+  if(role==='softbox') return `Avec ${label} — faisceau large et diffus`;
+  if(role==='bare') return 'Nu — faisceau natif du projecteur';
+  if(role==='fresnelSpot') return `Avec ${label} — faisceau étroit et concentré`;
+  if(role==='fresnelFlood') return `Avec ${label} — faisceau élargi`;
+  if(role==='grid') return `Avec ${label} — faisceau contrôlé`;
+  return label;
+}
 
 function updateAdvanced(reqLux,maxD,points){
   const d=state.testDistance,lux=estimatedLuxAtDistance(d),margin=lux>0?Math.log2(lux/reqLux):-Infinity,reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity,possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
