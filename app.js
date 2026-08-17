@@ -1,543 +1,901 @@
-// BOS LIGHT V0.12 — assistant de puissance/exposition pour le tournage
-// Mesures constructeur Aputure/amaran. Exposition incidente : C = 340 (Lumisphere Sekonic).
+const NS='http://www.w3.org/2000/svg';
+const stage=document.getElementById('stage');
+const beamsLayer=document.getElementById('beamsLayer');
+const objectsLayer=document.getElementById('objectsLayer');
+const inspector=document.getElementById('inspector');
+const inspectorBody=document.getElementById('inspectorBody');
+const toggleInspectorBtn=document.getElementById('toggleInspectorBtn');
+const inspectorToggleLabel=document.getElementById('inspectorToggleLabel');
+const inspectorEmpty=document.getElementById('inspectorEmpty');
+const inspectorFields=document.getElementById('inspectorFields');
+const selectionHint=document.getElementById('selectionHint');
+const cameraReadout=document.getElementById('cameraReadout');
+const cameraMonitors=document.getElementById('cameraMonitors');
+const previewTabs=document.getElementById('previewTabs');
+const addDialog=document.getElementById('addDialog');
+const addKinds=document.getElementById('addKinds');
+const lightChooser=document.getElementById('lightChooser');
+const simpleChooser=document.getElementById('simpleChooser');
+const dialogTitle=document.getElementById('dialogTitle');
+const brandChoices=document.getElementById('brandChoices');
+const familyChoices=document.getElementById('familyChoices');
+const modelChoices=document.getElementById('modelChoices');
+const catalogCount=document.getElementById('catalogCount');
+const simpleGrid=document.getElementById('simpleGrid');
+const simpleLabel=document.getElementById('simpleLabel');
+const snapSelect=document.getElementById('snapSelect');
+const labelsModeSelect=document.getElementById('labelsModeSelect');
+const toggleBeamsBtn=document.getElementById('toggleBeamsBtn');
+const gridOpacityRange=document.getElementById('gridOpacityRange');
+const gridOpacityValue=document.getElementById('gridOpacityValue');
+const currentPlanBadge=document.getElementById('currentPlanBadge');
+const libraryDialog=document.getElementById('libraryDialog');
+const planNameInput=document.getElementById('planNameInput');
+const folderSelect=document.getElementById('folderSelect');
+const planLibraryList=document.getElementById('planLibraryList');
+const shareProjectBtn=document.getElementById('shareProjectBtn');
+const importProjectBtn=document.getElementById('importProjectBtn');
+const importProjectInput=document.getElementById('importProjectInput');
+const stageWrap=document.getElementById('stageWrap');
+const resetViewBtn=document.getElementById('resetViewBtn');
+const zoomReadout=document.getElementById('zoomReadout');
 
-const INCIDENT_C = 340;
-const STORAGE_KEY = 'bos-light-settings-v1';
-
-const state = {
-  fixture: 'halo60x', accessory: 'softbox', cct: 5600,
-  intensityPct: 100, iso: 800, shutterDenom: 50, aperture: 2.8,
-  testDistance: 2.0
+const cameras={
+  'Sony FX3':{w:35.6,h:23.8},
+  'Sony FX6':{w:35.7,h:18.8},
+  'Sony a7S III':{w:35.6,h:23.8},
+  'Full Frame 3:2':{w:36,h:24},
+  'Super 35 / APS-C':{w:23.5,h:15.6}
 };
 
-const haloFixtures = {
-  halo60x: {label:'Halo 60x',family:'halo',defaultAccessory:'softbox',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[1,2570],[3,295]],3200:[[1,2800],[3,321]],4300:[[1,3070],[3,353]],5600:[[1,3240],[3,372]],6500:[[1,3270],[3,375]]}},
-    reflector:{label:'Réflecteur',quality:'measured',data:{2700:[[1,21440],[3,2164]],3200:[[1,23530],[3,2372]],4300:[[1,26000],[3,2622]],5600:[[1,27520],[3,2777]],6500:[[1,27890],[3,2812]]}},
-    softbox:{label:'Softbox 60',quality:'measured',data:{2700:[[1,1760],[3,133]],3200:[[1,1927],[3,145]],4300:[[1,2129],[3,160]],5600:[[1,2255],[3,169]],6500:[[1,2285],[3,171]]}}
-  }},
-  halo100x: {label:'Halo 100x',family:'halo',defaultAccessory:'softbox',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[1,3670],[3,414]],3200:[[1,4360],[3,492]],4300:[[1,4890],[3,551]],5600:[[1,4860],[3,547]],6500:[[1,4630],[3,521]]}},
-    reflector:{label:'Réflecteur',quality:'measured',data:{2700:[[1,27910],[3,2690]],3200:[[1,33500],[3,3230]],4300:[[1,38100],[3,3670]],5600:[[1,38400],[3,3700]],6500:[[1,36700],[3,3540]]}},
-    softbox:{label:'Softbox 60',quality:'measured',data:{2700:[[1,2417],[3,182]],3200:[[1,2892],[3,218]],4300:[[1,3280],[3,247]],5600:[[1,3290],[3,248]],6500:[[1,3140],[3,237]]}}
-  }},
-  halo200x: {label:'Halo 200x',family:'halo',defaultAccessory:'softbox',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[1,7800],[3,881],[5,358]],3200:[[1,9460],[3,1066],[5,441]],4300:[[1,10500],[3,1184],[5,495]],5600:[[1,10530],[3,1187],[5,503]],6500:[[1,9800],[3,1104],[5,471]]}},
-    reflector:{label:'Réflecteur',quality:'measured',data:{2700:[[1,22000],[3,2136],[5,746]],3200:[[1,26730],[3,2594],[5,921]],4300:[[1,29800],[3,2889],[5,1038]],5600:[[1,29980],[3,2901],[5,1054]],6500:[[1,27930],[3,2705],[5,988]]}},
-    softbox:{label:'Softbox 90',quality:'measured',data:{2700:[[1,7090],[3,489],[5,175]],3200:[[1,8620],[3,595],[5,216]],4300:[[1,9620],[3,662],[5,244]],5600:[[1,9670],[3,666],[5,248]],6500:[[1,9010],[3,621],[5,233]]}}
-  }},
-  halo300x: {label:'Halo 300x',family:'halo',defaultAccessory:'softbox',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[1,11850],[3,1335],[5,554]],3200:[[1,14600],[3,1647],[5,685]],4300:[[1,16200],[3,1827],[5,768]],5600:[[1,16120],[3,1819],[5,763]],6500:[[1,14360],[3,1515],[5,683]]}},
-    reflector:{label:'Réflecteur',quality:'measured',data:{2700:[[1,38100],[3,3630],[5,1292]],3200:[[1,47200],[3,4480],[5,1602]],4300:[[1,52600],[3,5000],[5,1803]],5600:[[1,52600],[3,5000],[5,1796]],6500:[[1,46800],[3,4450],[5,1610]]}},
-    softbox:{label:'Softbox 90',quality:'measured',data:{2700:[[1,11530],[3,808],[5,293]],3200:[[1,14250],[3,999],[5,364]],4300:[[1,15850],[3,1113],[5,410]],5600:[[1,15890],[3,1111],[5,408]],6500:[[1,14140],[3,989],[5,366]]}}
-  }},
-  halo600x: {label:'Halo 600x',family:'halo',defaultAccessory:'softbox',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[1,23600],[3,2627],[5,1094]],3200:[[1,27920],[3,3100],[5,1280]],4300:[[1,32000],[3,3550],[5,1475]],5600:[[1,32500],[3,3610],[5,1494]],6500:[[1,31200],[3,3460],[5,1461]]}},
-    reflector:{label:'Réflecteur',quality:'measured',data:{2700:[[1,72500],[3,6900],[5,2519]],3200:[[1,86400],[3,8200],[5,2948]],4300:[[1,99900],[3,9480],[5,3420]],5600:[[1,102100],[3,9680],[5,3480]],6500:[[1,98400],[3,9340],[5,3410]]}},
-    softbox:{label:'Softbox 90',quality:'measured',data:{2700:[[1,21590],[3,1485],[5,566]],3200:[[1,25590],[3,1767],[5,662]],4300:[[1,29700],[3,2042],[5,768]],5600:[[1,30300],[3,2087],[5,782]],6500:[[1,29300],[3,2012],[5,766]]}}
-  }}
-};
+const lightCatalog=[
+  // AMARAN — Halo
+  {brand:'Amaran',family:'Halo',name:'amaran Halo 60x',short:'H60x',form:'halo',beam:55},
+  {brand:'Amaran',family:'Halo',name:'amaran Halo 100x',short:'H100',form:'halo',beam:55},
+  {brand:'Amaran',family:'Halo',name:'amaran Halo 200x',short:'H200',form:'halo',beam:55},
+  {brand:'Amaran',family:'Halo',name:'amaran Halo 300x',short:'H300',form:'halo',beam:55},
+  {brand:'Amaran',family:'Halo',name:'amaran Halo 600x',short:'H600',form:'halo',beam:55},
+  // AMARAN — Ray
+  {brand:'Amaran',family:'Ray',name:'amaran Ray 60c',short:'R60c',form:'ray',beam:70},
+  {brand:'Amaran',family:'Ray',name:'amaran Ray 120c',short:'R120',form:'ray',beam:55},
+  {brand:'Amaran',family:'Ray',name:'amaran Ray 360c',short:'R360',form:'ray',beam:55},
+  {brand:'Amaran',family:'Ray',name:'amaran Ray 660c',short:'R660',form:'ray',beam:55},
+  // AMARAN — COB S
+  {brand:'Amaran',family:'COB S',name:'amaran COB 60d S',short:'60dS',form:'cob',beam:55},
+  {brand:'Amaran',family:'COB S',name:'amaran COB 60x S',short:'60xS',form:'cob',beam:55},
+  {brand:'Amaran',family:'COB S',name:'amaran 100d S',short:'100d',form:'cob',beam:55},
+  {brand:'Amaran',family:'COB S',name:'amaran 100x S',short:'100x',form:'cob',beam:55},
+  {brand:'Amaran',family:'COB S',name:'amaran 200d S',short:'200d',form:'cob',beam:55},
+  {brand:'Amaran',family:'COB S',name:'amaran 200x S',short:'200x',form:'cob',beam:55},
+  // AMARAN — COB couleur
+  {brand:'Amaran',family:'COB couleur',name:'amaran 150c',short:'150c',form:'cob-color',beam:55},
+  {brand:'Amaran',family:'COB couleur',name:'amaran 300c',short:'300c',form:'cob-color',beam:55},
+  // AMARAN — Panels
+  {brand:'Amaran',family:'Panels',name:'amaran Pano 60c',short:'P60c',form:'panel',beam:120,aspect:1.55},
+  {brand:'Amaran',family:'Panels',name:'amaran Pano 120c',short:'P120',form:'panel',beam:120,aspect:1.65},
+  {brand:'Amaran',family:'Panels',name:'amaran P60c',short:'P60c',form:'panel',beam:120,aspect:1.35},
+  {brand:'Amaran',family:'Panels',name:'amaran P60x',short:'P60x',form:'panel',beam:120,aspect:1.35},
+  {brand:'Amaran',family:'Panels',name:'amaran Verge',short:'VERGE',form:'panel-wide',beam:120,aspect:2.1},
+  {brand:'Amaran',family:'Panels',name:'amaran Verge Max',short:'V MAX',form:'panel-wide',beam:120,aspect:2.4},
+  // AMARAN — Pocket
+  {brand:'Amaran',family:'Pocket',name:'amaran Ace 25c',short:'A25c',form:'pocket',beam:120},
+  {brand:'Amaran',family:'Pocket',name:'amaran Ace 25x',short:'A25x',form:'pocket',beam:120},
+  {brand:'Amaran',family:'Pocket',name:'amaran Go',short:'GO',form:'pocket-round',beam:120},
+  // AMARAN — Tubes
+  {brand:'Amaran',family:'Tubes',name:'amaran T2c',short:'T2c',form:'tube',beam:180,length:55},
+  {brand:'Amaran',family:'Tubes',name:'amaran T4c',short:'T4c',form:'tube',beam:180,length:78},
+  {brand:'Amaran',family:'Pixel Tubes',name:'amaran PT1c',short:'PT1',form:'pixel-bar',beam:180,length:38},
+  {brand:'Amaran',family:'Pixel Tubes',name:'amaran PT2c',short:'PT2',form:'pixel-bar',beam:180,length:56},
+  {brand:'Amaran',family:'Pixel Tubes',name:'amaran PT4c',short:'PT4',form:'pixel-bar',beam:180,length:80},
+  // AMARAN — Flex
+  {brand:'Amaran',family:'Flex',name:'amaran F21c',short:'F21c',form:'mat',beam:180,aspect:2},
+  {brand:'Amaran',family:'Flex',name:'amaran F21x',short:'F21x',form:'mat',beam:180,aspect:2},
+  {brand:'Amaran',family:'Flex',name:'amaran F22c',short:'F22c',form:'mat',beam:180,aspect:1},
+  {brand:'Amaran',family:'Flex',name:'amaran F22x',short:'F22x',form:'mat',beam:180,aspect:1},
+  {brand:'Amaran',family:'Pixel',name:'amaran SM5c',short:'SM5c',form:'strip',beam:180,length:76},
 
-const cobFixtures = {
-  cob60xs:{label:'amaran COB 60x S',family:'cob',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[0.5,8270],[1,2087],[3,252]],3200:[[0.5,8300],[1,2100],[3,252]],4300:[[0.5,8890],[1,2248],[3,268]],5600:[[0.5,9560],[1,2427],[3,288]],6500:[[0.5,9560],[1,2545],[3,302]]}},
-    reflector:{label:'Mini Hyper Reflector',quality:'measured',data:{2700:[[0.5,96100],[1,27750],[3,2965]],3200:[[0.5,97400],[1,28160],[3,2980]],4300:[[0.5,105400],[1,30500],[3,3230]],5600:[[0.5,114700],[1,33300],[3,3510]],6500:[[0.5,120800],[1,35100],[3,3700]]}}
-  }},
-  cob100xs:{label:'amaran 100x S',family:'cob',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[1,2760],[3,324],[5,126]],3200:[[1,3410],[3,405],[5,157]],4300:[[1,3590],[3,426],[5,164]],5600:[[1,3640],[3,433],[5,166]],6500:[[1,3170],[3,377],[5,166]]}},
-    reflector:{label:'Hyper Reflector',quality:'measured',data:{2700:[[1,22470],[3,2422],[5,856]],3200:[[1,28180],[3,2970],[5,1066]],4300:[[1,29670],[3,3160],[5,1137]],5600:[[1,30500],[3,3240],[5,1156]],6500:[[1,26080],[3,2824],[5,1005]]}}
-  }},
-  cob200xs:{label:'amaran 200x S',family:'cob',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',data:{2700:[[1,4930],[3,577],[5,223]],3200:[[1,5630],[3,675],[5,257]],4300:[[1,5980],[3,715],[5,273]],5600:[[1,6400],[3,764],[5,291]],6500:[[1,6060],[3,723],[5,277]]}},
-    reflector:{label:'Hyper Reflector',quality:'measured',data:{2700:[[1,35000],[3,3570],[5,1265]],3200:[[1,40200],[3,4120],[5,1455]],4300:[[1,42600],[3,4350],[5,1538]],5600:[[1,45400],[3,4630],[5,1635]],6500:[[1,42900],[3,4370],[5,1543]]}}
-  }}
-};
+  // APUTURE — STORM
+  {brand:'Aputure',family:'STORM',name:'Aputure STORM 80c',short:'80c',form:'storm',beam:55},
+  {brand:'Aputure',family:'STORM',name:'Aputure STORM 400x',short:'400x',form:'storm',beam:55},
+  {brand:'Aputure',family:'STORM',name:'Aputure STORM 700x',short:'700x',form:'storm',beam:55},
+  {brand:'Aputure',family:'STORM',name:'Aputure STORM 1000c',short:'1000c',form:'storm-color',beam:55},
+  {brand:'Aputure',family:'STORM',name:'Aputure STORM 1200x',short:'1200x',form:'storm',beam:55},
+  {brand:'Aputure',family:'STORM',name:'Aputure STORM XT52',short:'XT52',form:'storm-heavy',beam:45},
+  {brand:'Aputure',family:'STORM',name:'Aputure STORM CS32',short:'CS32',form:'storm-heavy',beam:45},
+  // APUTURE — Electro Storm
+  {brand:'Aputure',family:'Electro Storm',name:'Aputure Electro Storm XT26',short:'XT26',form:'storm-heavy',beam:45},
+  {brand:'Aputure',family:'Electro Storm',name:'Aputure Electro Storm CS15',short:'CS15',form:'storm-heavy-color',beam:45},
+  // APUTURE — Light Storm
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 60d',short:'60d',form:'ls-small',beam:45},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 60x',short:'60x',form:'ls-small',beam:45},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 300d II',short:'300d',form:'ls',beam:55},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 300x',short:'300x',form:'ls',beam:55},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 600d',short:'600d',form:'ls',beam:55},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 600d Pro',short:'600dP',form:'ls',beam:55},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 600x Pro',short:'600xP',form:'ls',beam:55},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 600c Pro',short:'600cP',form:'ls-color',beam:55},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 600c Pro II',short:'600cII',form:'ls-color',beam:55},
+  {brand:'Aputure',family:'Light Storm',name:'Aputure LS 1200d Pro',short:'1200d',form:'ls-heavy',beam:55},
+  // APUTURE — NOVA
+  {brand:'Aputure',family:'NOVA',name:'Aputure NOVA II 1x1',short:'N II 1',form:'nova',beam:120,aspect:1},
+  {brand:'Aputure',family:'NOVA',name:'Aputure NOVA II 2x1',short:'N II 2',form:'nova',beam:120,aspect:2},
+  {brand:'Aputure',family:'NOVA',name:'Aputure NOVA 9° 2x1',short:'N 9°',form:'nova-narrow',beam:9,aspect:2},
+  {brand:'Aputure',family:'NOVA',name:'Aputure Nova P300c',short:'P300',form:'nova',beam:120,aspect:1.4},
+  {brand:'Aputure',family:'NOVA',name:'Aputure Nova P600c',short:'P600',form:'nova',beam:120,aspect:2},
+  // APUTURE — INFINIMAT
+  {brand:'Aputure',family:'INFINIMAT',name:'Aputure INFINIMAT 1x2',short:'IM1×2',form:'mat',beam:180,aspect:2},
+  {brand:'Aputure',family:'INFINIMAT',name:'Aputure INFINIMAT 1x4',short:'IM1×4',form:'mat',beam:180,aspect:3.2},
+  {brand:'Aputure',family:'INFINIMAT',name:'Aputure INFINIMAT 2x4',short:'IM2×4',form:'mat',beam:180,aspect:2},
+  {brand:'Aputure',family:'INFINIMAT',name:'Aputure INFINIMAT 4x4',short:'IM4×4',form:'mat',beam:180,aspect:1},
+  {brand:'Aputure',family:'INFINIMAT',name:'Aputure INFINIMAT 8x8',short:'IM8×8',form:'mat',beam:180,aspect:1},
+  {brand:'Aputure',family:'INFINIMAT',name:'Aputure INFINIMAT 20x20',short:'IM20',form:'mat',beam:180,aspect:1},
+  // APUTURE — INFINIBAR
+  {brand:'Aputure',family:'INFINIBAR',name:'Aputure INFINIBAR PB3',short:'PB3',form:'pixel-bar',beam:180,length:38},
+  {brand:'Aputure',family:'INFINIBAR',name:'Aputure INFINIBAR PB6',short:'PB6',form:'pixel-bar',beam:180,length:57},
+  {brand:'Aputure',family:'INFINIBAR',name:'Aputure INFINIBAR PB12',short:'PB12',form:'pixel-bar',beam:180,length:82},
+  // APUTURE — Mini / Practical
+  {brand:'Aputure',family:'Mini',name:'Aputure MT Pro',short:'MT',form:'pixel-bar',beam:180,length:40},
+  {brand:'Aputure',family:'Mini',name:'Aputure MC Pro',short:'MCP',form:'pocket',beam:120},
+  {brand:'Aputure',family:'Mini',name:'Aputure MC',short:'MC',form:'pocket',beam:120},
+  {brand:'Aputure',family:'Practical',name:'Aputure Accent B7c',short:'B7c',form:'bulb',beam:180}
+];
 
-const rayFixtures = {
-  ray60c:{label:'Ray 60c',family:'ray-small',defaultAccessory:'miniReflector',accessories:{
-    bare:{label:'Nu',quality:'single',singlePointLabel:'Sortie max publiée',data:{5600:[[1,3910]]}},
-    miniReflector:{label:'Mini Reflector',quality:'measured',data:{2300:[[1,16310],[3,1812]],3200:[[1,19130],[3,2126]],4300:[[1,19530],[3,2170]],5600:[[1,18830],[3,2092]],6500:[[1,18500],[3,2056]],10000:[[1,17220],[3,1913]]}}
-  }},
-  ray120c:{label:'Ray 120c',family:'ray-small',defaultAccessory:'miniReflector',accessories:{
-    bare:{label:'Nu',quality:'single',singlePointLabel:'Sortie max publiée',data:{5600:[[1,6850]]}},
-    miniReflector:{label:'Mini Reflector',quality:'measured',data:{2300:[[1,24500],[3,2722]],3200:[[1,35600],[3,3956]],4300:[[1,35400],[3,3933]],5600:[[1,34000],[3,3778]],6500:[[1,33300],[3,3700]],10000:[[1,30500],[3,3389]]}}
-  }},
-  ray360c:{label:'Ray 360c',family:'ray-large',defaultAccessory:'fresnelSpot',accessories:{
-    bare:{label:'Nu',quality:'single',singlePointLabel:'Sortie max publiée',data:{5600:[[1,17130]]}},
-    fresnelSpot:{label:'Fresnel 15°',quality:'measured',data:{2300:[[3,10570],[5,3750]],3200:[[3,16780],[5,5790]],4300:[[3,18110],[5,6210]],5600:[[3,18000],[5,6400]],6500:[[3,17590],[5,6350]],10000:[[3,16580],[5,6000]]}},
-    fresnelFlood:{label:'Fresnel 45°',quality:'measured',data:{2300:[[3,1738],[5,634]],3200:[[3,2750],[5,910]],4300:[[3,2970],[5,968]],5600:[[3,2950],[5,1108]],6500:[[3,2880],[5,1310]],10000:[[3,2730],[5,1014]]}}
-  }},
-  ray660c:{label:'Ray 660c',family:'ray-large',defaultAccessory:'fresnelSpot',accessories:{
-    bare:{label:'Nu',quality:'single',singlePointLabel:'Sortie max publiée',data:{5600:[[1,38500]]}},
-    fresnelSpot:{label:'Fresnel 15°',quality:'measured',data:{2300:[[3,20230],[5,7420]],3200:[[3,30990],[5,10998]],4300:[[3,29945],[5,11081]],5600:[[3,30900],[5,11068]],6500:[[3,28871],[5,11310]],10000:[[3,29450],[5,10790]]}},
-    fresnelFlood:{label:'Fresnel 45°',quality:'measured',data:{2300:[[3,4250],[5,1327]],3200:[[3,5886],[5,2246]],4300:[[3,6821],[5,2338]],5600:[[3,6613],[5,2357]],6500:[[3,6030],[5,2474]],10000:[[3,6230],[5,2370]]}}
-  }}
-};
+// Objets grip et décor disponibles dans Ajouter un élément.
+const accessoryCatalog=[
+  {type:'diffusion',name:'Cadre de diffusion',short:'DIFF',width:2,height:2},
+  {type:'borniol',name:'Borniol',short:'BOR',width:3,height:1.2},
+  {type:'negative',name:'Negative fill',short:'NEG',width:1.2,height:2},
+  {type:'reflector',name:'Réflecteur',short:'REF',width:1.2,height:2}
+];
+const decorCatalog=[
+  {type:'wall',name:'Mur',short:'MUR',width:3,height:.15},
+  {type:'door',name:'Porte',short:'PORTE',width:.9,height:.1},
+  {type:'window',name:'Fenêtre',short:'FEN',width:1.5,height:.1},
+  {type:'table',name:'Table',short:'TABLE',width:1.6,height:.8}
+];
 
-const aceFixtures = {"ace25x":{"label":"amaran Ace 25x","brand":"amaran","group":"ace","defaultAccessory":"bare","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2700":[[0.5,5010],[1,1301]],"3200":[[0.5,5880],[1,1526]],"4300":[[0.5,6010],[1,1563]],"5600":[[0.5,6320],[1,1636]],"6500":[[0.5,5960],[1,1544]]},"role":"bare"},"dome":{"label":"Dome Diffuser","quality":"measured","data":{"2700":[[0.5,1746],[1,441]],"3200":[[0.5,2077],[1,524]],"4300":[[0.5,2163],[1,547]],"5600":[[0.5,2293],[1,580]],"6500":[[0.5,2183],[1,552]]},"role":"softbox"},"grid":{"label":"Light Control Grid","quality":"measured","data":{"2700":[[0.5,4010],[1,994]],"3200":[[0.5,4860],[1,1170]],"4300":[[0.5,5000],[1,1206]],"5600":[[0.5,5260],[1,1253]],"6500":[[0.5,4650],[1,1188]]},"role":"grid"}},"note":"À 100 %, LIGHT utilise les mesures constructeur du Boost Mode (32 W)."},"ace25c":{"label":"amaran Ace 25c","brand":"amaran","group":"ace","defaultAccessory":"bare","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2300":[[0.5,3970],[1,1034]],"3200":[[0.5,4110],[1,1077]],"4300":[[0.5,5908],[1,1500]],"5600":[[0.5,4470],[1,1171]],"6500":[[0.5,4330],[1,1136]],"10000":[[0.5,3770],[1,990]]},"role":"bare"},"dome":{"label":"Dome Diffuser","quality":"measured","data":{"2300":[[0.5,1397],[1,358]],"3200":[[0.5,1433],[1,370]],"4300":[[0.5,2001],[1,514]],"5600":[[0.5,1594],[1,412]],"6500":[[0.5,1548],[1,400]],"10000":[[0.5,1369],[1,352]]},"role":"softbox"},"grid":{"label":"Light Control Grid","quality":"measured","data":{"2300":[[0.5,3150],[1,824]],"3200":[[0.5,3250],[1,859]],"4300":[[0.5,4440],[1,1188]],"5600":[[0.5,3560],[1,939]],"6500":[[0.5,3640],[1,902]],"10000":[[0.5,3158],[1,790]]},"role":"grid"}},"note":"À 100 %, LIGHT utilise les mesures constructeur du Boost Mode (32 W)."}};
+const CURRENT_KEY='bos-plan-feu-v06-current';
+const LIB_KEY='bos-plan-feu-library-v06';
+let state={objects:[],selected:null,activePreviewCamera:null,cameraModel:'Sony FX3',focal:50,snap:.25,labelsMode:'full',beamsVisible:true,gridOpacity:.5,planId:null,planName:'Plan sans titre',folderId:'folder_general'};
+let library={folders:[{id:'folder_general',name:'Plans'}],plans:[]};
+let drag=null;
 
-const lightStormFixtures = {"ls60x":{"label":"Aputure LS 60x","brand":"aputure","group":"lightstorm","defaultAccessory":"flood45","accessories":{"spot15":{"label":"Spot 15°","quality":"measured","data":{"2700":[[1,25110],[3,3125],[5,1116]],"3200":[[1,30132],[3,3794],[5,1339]],"4300":[[1,31248],[3,3683],[5,1395]],"5600":[[1,33480],[3,4241],[5,1451]],"6500":[[1,32364],[3,4018],[5,1395]]},"role":"fresnelSpot"},"flood45":{"label":"Flood 45°","quality":"measured","data":{"2700":[[1,4464],[3,525],[5,201]],"3200":[[1,5357],[3,647],[5,234]],"4300":[[1,5245],[3,625],[5,234]],"5600":[[1,5803],[3,703],[5,268]],"6500":[[1,5580],[3,670],[5,246]]},"role":"fresnelFlood"}}},"ls300x":{"label":"Aputure LS 300x","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"3200":[[1,5100],[3,580],[5,220]],"4300":[[1,7500],[3,800],[5,350]],"5500":[[1,6300],[3,700],[5,250]]},"role":"bare"},"reflector":{"label":"Hyper Reflector","quality":"measured","data":{"3200":[[1,16200],[3,1300],[5,450]],"4300":[[1,24300],[3,2100],[5,700]],"5500":[[1,20500],[3,1700],[5,550]]},"role":"reflector"}}},"ls300d2":{"label":"Aputure LS 300d II","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"reflector":{"label":"Réflecteur standard","quality":"measured","data":{"5600":[[1,45000],[3,3500],[5,1200]]},"role":"reflector","note":"La table constructeur publiée pour le LS 300d II donne cette série de mesures comme sortie de référence."}}},"ls600dpro":{"label":"Aputure LS 600d Pro","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"5600":[[1,22150],[3,2600],[5,1020]]},"role":"bare"},"reflector":{"label":"600 Series Hyper Reflector","quality":"measured","data":{"5600":[[1,98500],[3,8500],[5,3000]]},"role":"reflector"}}},"ls600xpro":{"label":"Aputure LS 600x Pro","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2700":[[1,9420],[2,2427],[3,1104],[5,423],[7,230]],"3200":[[1,11630],[2,2995],[3,1364],[5,524],[7,285]],"4300":[[1,16040],[2,4130],[3,1874],[5,724],[7,391]],"5600":[[1,16060],[2,4150],[3,1880],[5,728],[7,393]],"6500":[[1,13890],[2,3590],[3,1628],[5,629],[7,340]]},"role":"bare"},"reflector":{"label":"Hyper Reflector","quality":"measured","data":{"2700":[[1,36500],[2,7760],[3,3220],[5,1150],[7,583]],"3200":[[1,45300],[2,9650],[3,4010],[5,1426],[7,722]],"4300":[[1,62900],[2,13390],[3,5560],[5,1978],[7,1002]],"5600":[[1,63900],[2,13530],[3,5610],[5,1996],[7,1012]],"6500":[[1,55300],[2,11750],[3,4880],[5,1731],[7,878]]},"role":"reflector"}},"note":"Photométries Aputure en mode Max Output."},"ls600cpro2":{"label":"Aputure LS 600c Pro II","brand":"aputure","group":"lightstorm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2300":[[1,17130],[3,1903],[5,685]],"3200":[[1,18950],[3,2106],[5,758]],"4300":[[1,20190],[3,2243],[5,808]],"5600":[[1,21610],[3,2401],[5,864]],"6500":[[1,21600],[3,2400],[5,864]]},"role":"bare"},"reflector":{"label":"Standard Hyper Reflector","quality":"measured","data":{"2300":[[1,70900],[3,7878],[5,2836]],"3200":[[1,78700],[3,8744],[5,3148]],"4300":[[1,84600],[3,9400],[5,3384]],"5600":[[1,91500],[3,10167],[5,3660]],"6500":[[1,91100],[3,10122],[5,3644]]},"role":"reflector"}}},"ls1200dpro":{"label":"Aputure LS 1200d Pro","brand":"aputure","group":"lightstorm","defaultAccessory":"medium","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"5600":[[3,6380],[5,2802],[7,1538],[9,964]]},"role":"bare"},"narrow":{"label":"Hyper Reflector Narrow","quality":"measured","data":{"5600":[[3,83100],[5,28340],[7,15200],[9,8580]]},"role":"reflector"},"medium":{"label":"Hyper Reflector Medium","quality":"measured","data":{"5600":[[3,22400],[5,8200],[7,4660],[9,2880]]},"role":"reflector"},"wide":{"label":"Hyper Reflector Wide","quality":"measured","data":{"5600":[[3,13010],[5,4800],[7,2706],[9,1775]]},"role":"reflector"}}}};
-
-const stormFixtures = {"storm80c":{"label":"Aputure STORM 80c","brand":"aputure","group":"storm","defaultAccessory":"reflector","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"3200":[[1,6300],[2,1619],[3,696]],"4300":[[1,6540],[2,1687],[3,722]],"5600":[[1,6500],[2,1681],[3,725]],"6500":[[1,6404],[2,1653],[3,713]],"8000":[[1,6197],[2,1583],[3,684]],"10000":[[1,5981],[2,1541],[3,666]]},"role":"bare"},"reflector":{"label":"Hyper Reflector","quality":"measured","data":{"3200":[[1,19090],[2,4682],[3,1911]],"4300":[[1,19930],[2,4889],[3,2001]],"5600":[[1,19850],[2,4859],[3,1987]],"6500":[[1,19650],[2,4781],[3,1956]],"8000":[[1,18560],[2,4584],[3,1874]],"10000":[[1,17720],[2,4466],[3,1830]]},"role":"reflector"}}},"storm400x":{"label":"Aputure STORM 400x","brand":"aputure","group":"storm","defaultAccessory":"refl35","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[1,20590],[3,2361],[5,880]],"3200":[[1,25600],[3,2964],[5,1105]],"4300":[[1,27350],[3,3140],[5,1170]],"5600":[[1,27100],[3,3110],[5,1161]],"6500":[[1,26500],[3,3040],[5,1134]],"7500":[[1,25700],[3,2960],[5,1105]],"10000":[[1,24160],[3,2790],[5,1038]]},"role":"bare"},"refl35":{"label":"Hyper Reflector 35°","quality":"measured","data":{"2500":[[1,49200],[3,3850],[5,1334]],"3200":[[1,61600],[3,4850],[5,1677]],"4300":[[1,65400],[3,5120],[5,1780]],"5600":[[1,64600],[3,5090],[5,1769]],"6500":[[1,63300],[3,4970],[5,1729]],"7500":[[1,61600],[3,4840],[5,1685]],"10000":[[1,57800],[3,4550],[5,1585]]},"role":"reflector"},"refl30":{"label":"Hyper Reflector 30°","quality":"measured","data":{"2500":[[1,70800],[3,7180],[5,2510]],"3200":[[1,89000],[3,8990],[5,3150]],"4300":[[1,93600],[3,9510],[5,3340]],"5600":[[1,93000],[3,9430],[5,3310]],"6500":[[1,90800],[3,9200],[5,3230]],"7500":[[1,88400],[3,8970],[5,3140]],"10000":[[1,83100],[3,8420],[5,2950]]},"role":"reflector"}}},"storm700x":{"label":"Aputure STORM 700x","brand":"aputure","group":"storm","defaultAccessory":"refl35","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[1,36700],[3,4200],[5,1588]],"3200":[[1,42400],[3,4870],[5,1839]],"4300":[[1,53700],[3,6210],[5,2330]],"5600":[[1,54900],[3,6370],[5,2394]],"6500":[[1,53600],[3,6190],[5,2333]],"7500":[[1,49200],[3,5660],[5,2136]],"10000":[[1,40900],[3,4720],[5,1778]]},"role":"bare"},"refl35":{"label":"Hyper Reflector 35°","quality":"measured","data":{"2500":[[3,12480],[5,4100]],"3200":[[3,14430],[5,3930]],"4300":[[3,18120],[5,5040]],"5600":[[3,18670],[5,5320]],"6500":[[3,18250],[5,5380]],"7500":[[3,16760],[5,5240]],"10000":[[3,13930],[5,4650]]},"role":"reflector"},"refl25":{"label":"Hyper Reflector 25°","quality":"measured","data":{"2500":[[3,18120],[5,6040]],"3200":[[3,20950],[5,5880]],"4300":[[3,26430],[5,7560]],"5600":[[3,27190],[5,7950]],"6500":[[3,26520],[5,8060]],"7500":[[3,24300],[5,7810]],"10000":[[3,20200],[5,6960]]},"role":"reflector"}}},"storm1000c":{"label":"Aputure STORM 1000c","brand":"aputure","group":"storm","defaultAccessory":"bm7830","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[2,12500],[3,5600],[5,2150],[7,1100]],"3200":[[2,14500],[3,6500],[5,2500],[7,1300]],"4300":[[2,14700],[3,6600],[5,2550],[7,1350]],"5600":[[2,14000],[3,6300],[5,2450],[7,1300]],"6500":[[2,13700],[3,6200],[5,2350],[7,1250]]},"role":"bare"},"bm7815":{"label":"Reflector BM7815","quality":"measured","data":{"2500":[[2,140000],[3,62000],[5,21000],[7,10500]],"3200":[[2,160000],[3,72000],[5,24500],[7,12200]],"4300":[[2,164000],[3,73000],[5,25000],[7,12500]],"5600":[[2,158000],[3,70000],[5,24000],[7,12000]],"6500":[[2,152000],[3,68000],[5,23500],[7,11700]]},"role":"reflector"},"bm7830":{"label":"Reflector BM7830","quality":"measured","data":{"2500":[[2,70000],[3,27000],[5,8800],[7,4400]],"3200":[[2,80000],[3,31000],[5,10000],[7,5100]],"4300":[[2,82000],[3,31000],[5,10500],[7,5200]],"5600":[[2,79000],[3,31000],[5,10000],[7,5000]],"6500":[[2,75000],[3,30000],[5,9800],[7,4900]]},"role":"reflector"},"bm7845":{"label":"Reflector BM7845","quality":"measured","data":{"2500":[[2,30000],[3,12500],[5,4400],[7,2350]],"3200":[[2,34000],[3,14500],[5,5100],[7,2700]],"4300":[[2,35000],[3,14700],[5,5200],[7,2700]],"5600":[[2,33500],[3,14200],[5,5000],[7,2600]],"6500":[[2,32500],[3,14000],[5,4900],[7,2550]]},"role":"reflector"}}},"storm1200x":{"label":"Aputure STORM 1200x","brand":"aputure","group":"storm","defaultAccessory":"bm7830","accessories":{"bare":{"label":"Nu","quality":"measured","data":{"2500":[[2,14600],[3,6570],[5,2510],[7,1270]],"3200":[[2,18700],[3,8370],[5,3170],[7,1610]],"4300":[[2,19000],[3,8620],[5,3280],[7,1670]],"5600":[[2,18900],[3,8490],[5,3230],[7,1640]],"6500":[[2,18600],[3,8370],[5,3180],[7,1620]]},"role":"bare"},"bm7815":{"label":"Reflector BM7815","quality":"measured","data":{"2500":[[2,162000],[3,74000],[5,25600],[7,12800]],"3200":[[2,206000],[3,94600],[5,30900],[7,16300]],"4300":[[2,212000],[3,97400],[5,33600],[7,16800]],"5600":[[2,209000],[3,96100],[5,33300],[7,16600]],"6500":[[2,162000],[3,94700],[5,32700],[7,16300]]},"role":"reflector"},"bm7830":{"label":"Reflector BM7830","quality":"measured","data":{"2500":[[2,80000],[3,32200],[5,10900],[7,5430]],"3200":[[2,102000],[3,41100],[5,13800],[7,6920]],"4300":[[2,105000],[3,42400],[5,14300],[7,7150]],"5600":[[2,104000],[3,41800],[5,14100],[7,7050]],"6500":[[2,102000],[3,41200],[5,13900],[7,6950]]},"role":"reflector"},"bm7845":{"label":"Reflector BM7845","quality":"measured","data":{"2500":[[2,35500],[3,15300],[5,5420],[7,2770]],"3200":[[2,45400],[3,19500],[5,6910],[7,3510]],"4300":[[2,47000],[3,20100],[5,7130],[7,3630]],"5600":[[2,46000],[3,19800],[5,7070],[7,3580]],"6500":[[2,45400],[3,19500],[5,6910],[7,3530]]},"role":"reflector"}}}};
-
-
-// V0.12 — catalogues Godox et Nanlite élargis.
-// Pour les nouveaux modèles ci-dessous, LIGHT n'utilise que les photométries
-// explicitement publiées par le fabricant. Quand un seul point est disponible,
-// la qualité est marquée "single" et la distance reste une estimation par carré inverse.
-const nanliteFixtures = {
-  nanFc60b:{label:'Nanlite FC-60B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur 45°',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,12510]]}}
-  },note:'Nanlite publie 12 510 lux à 1 m avec réflecteur 45° à 5600 K.'},
-  nanFc120b:{label:'Nanlite FC-120B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur 45°',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,17450]]}}
-  },note:'Nanlite publie 17 450 lux à 1 m avec réflecteur 45° à 5600 K.'},
-  nanFc300b:{label:'Nanlite FC-300B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'single',role:'bare',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,11210]]}},
-    reflector:{label:'Réflecteur 45°',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,37340]]}},
-    rapid90:{label:'Rapid 90',quality:'measured',role:'softbox',data:{2700:[[1,9780],[3,584],[5,195]],3200:[[1,12490],[3,742],[5,249]],4300:[[1,14590],[3,871],[5,292]],5600:[[1,12610],[3,754],[5,252]],6500:[[1,11160],[3,665],[5,223]]}}
-  },note:'Nu et réflecteur : mesures Nanlite à 1 m. Rapid 90 : mesures Nanlite à 1 m, 3 m et 5 m.'},
-  nanFc500b:{label:'Nanlite FC-500B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'single',role:'bare',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,21110]]}},
-    reflector:{label:'Réflecteur 45°',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,65640]]}}
-  },note:'Nanlite publie 21 110 lux nu et 65 640 lux avec réflecteur à 1 m, 5600 K.'},
-  nanFc500c:{label:'Nanlite FC-500C',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,28770],[3,3303],[5,1281]]}},
-    reflector:{label:'Réflecteur',quality:'measured',role:'reflector',data:{5600:[[1,77110],[3,7687],[5,2805]]}},
-    rapid90:{label:'Rapid 90',quality:'measured',role:'softbox',data:{2700:[[1,17340],[3,1015],[5,340]],3200:[[1,18600],[3,1088],[5,364]],4300:[[1,19310],[3,1129],[5,378]],5600:[[1,19200],[3,1124],[5,376]],6500:[[1,18800],[3,1100],[5,368]]}}
-  },note:'Photométries Nanlite publiées à plusieurs distances, y compris avec Rapid 90.'},
-  nanFc720b:{label:'Nanlite FC-720B',brand:'nanlite',group:'nanfc',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,50700],[3,5680],[5,2135]]}},
-    reflector:{label:'Réflecteur',quality:'measured',role:'reflector',data:{5600:[[1,133800],[3,12690],[5,4580]]}}
-  },note:'Photométries Nanlite publiées à 1 m, 3 m et 5 m à 5600 K.'},
-  nanFc720c:{label:'Nanlite FC-720C',brand:'nanlite',group:'nanfc',defaultAccessory:'bare',accessories:{
-    bare:{label:'Nu',quality:'single',role:'bare',singlePointLabel:'Mesure constructeur @ 3 m',data:{5600:[[3,5040]]}}
-  },note:'Nanlite publie 5 040 lux nu à 3 m, 5600 K. La courbe hors de ce point reste une estimation.'},
-
-  nanForza60b2:{label:'Nanlite Forza 60B II',brand:'nanlite',group:'nanforza',defaultAccessory:'bare',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,2577],[2,649],[3,308]]}}
-  },note:'Photométries Nanlite publiées nu à 1 m, 2 m et 3 m à 5600 K.'},
-  nanForza60c:{label:'Nanlite Forza 60C',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,12810]]}}
-  },note:'Nanlite publie 12 810 lux à 1 m, 5600 K, avec réflecteur.'},
-  nanForza150b:{label:'Nanlite Forza 150B',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,23130]]}}
-  },note:'Nanlite publie 23 130 lux à 1 m avec réflecteur à 5600 K.'},
-  nanForza300b2:{label:'Nanlite Forza 300B II',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,68060]]}}
-  },note:'Nanlite publie 68 060 lux à 1 m, 5600 K, avec le réflecteur fourni.'},
-  nanForza500b2:{label:'Nanlite Forza 500B II',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,67320]]}}
-  },note:'Nanlite publie 67 320 lux à 1 m avec le réflecteur fourni.'},
-  nanForza720b:{label:'Nanlite Forza 720B',brand:'nanlite',group:'nanforza',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{2700:[[1,18640],[2,4783],[3,2385]],3200:[[1,20920],[2,5417],[3,2644]],5600:[[1,24770],[2,6469],[3,3116]],6500:[[1,24630],[2,6455],[3,3074]]}},
-    reflector:{label:'Réflecteur 55°',quality:'measured',role:'reflector',data:{2700:[[1,61650],[2,13440],[3,5854]],3200:[[1,70151],[2,15220],[3,6604]],5600:[[1,84460],[2,18270],[3,7919]],6500:[[1,83250],[2,18180],[3,7886]]}}
-  },note:'Photométries Nanlite publiées nu et avec réflecteur à 1 m, 2 m et 3 m.'},
-
-  nanFs60b:{label:'Nanlite FS-60B',brand:'nanlite',group:'nanfs',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,13360]]}}
-  },note:'Nanlite publie 13 360 lux à 1 m à 5600 K avec réflecteur.'},
-  nanFs150b:{label:'Nanlite FS-150B',brand:'nanlite',group:'nanfs',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,26300]]}}
-  },note:'Nanlite publie jusqu’à 26 300 lux à 1 m avec le réflecteur fourni.'},
-  nanFs300c:{label:'Nanlite FS-300C',brand:'nanlite',group:'nanfs',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,48850]]}}
-  },note:'Nanlite publie 48 850 lux à 1 m, 5600 K, avec réflecteur.'}
-};
-
-const godoxFixtures = {
-  godoxSl60iibi:{label:'Godox SL60IIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur standard',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,25100]]}}
-  },note:'Godox publie 25 100 lux à 1 m avec réflecteur standard.'},
-  godoxSl100bi:{label:'Godox SL100Bi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'Réflecteur standard',quality:'single',role:'reflector',singlePointLabel:'Max constructeur @ 1 m',data:{5600:[[1,32100]]}}
-  },note:'Godox annonce un éclairement maximal de 32 100 lux à 1 m avec réflecteur.'},
-  godoxSl150iii:{label:'Godox SL150III',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,5900],[2,1570],[3,740]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,73600],[2,16300],[3,6770]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
-  godoxSl150iiibi:{label:'Godox SL150IIIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,4880],[2,1270],[3,606]],3200:[[1,6340],[2,1650],[3,787]],4300:[[1,7610],[2,1990],[3,938]],5600:[[1,6810],[2,1730],[3,830]],6500:[[1,5530],[2,1450],[3,683]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[1,56200],[2,13100],[3,5500]],3200:[[1,76800],[2,17800],[3,7220]],4300:[[1,90500],[2,20800],[3,8760]],5600:[[1,80400],[2,18400],[3,7740]],6500:[[1,67300],[2,15200],[3,6410]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m pour plusieurs CCT.'},
-  godoxSl200iii:{label:'Godox SL200III',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,7920],[2,2070],[3,1000]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,95600],[2,21500],[3,9080]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
-  godoxSl200iiibi:{label:'Godox SL200IIIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,5960],[2,1460],[3,736]],3200:[[1,7040],[2,1920],[3,845]],4300:[[1,7980],[2,2140],[3,962]],5600:[[1,8130],[2,2180],[3,979]],6500:[[1,6690],[2,1800],[3,808]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[1,73500],[2,16400],[3,6700]],3200:[[1,83700],[2,18900],[3,7820]],4300:[[1,94400],[2,21300],[3,8840]],5600:[[1,95400],[2,21600],[3,8810]],6500:[[1,78200],[2,17700],[3,7210]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m pour plusieurs CCT.'},
-  godoxSl300iii:{label:'Godox SL300III',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,12900],[2,3300],[3,1650]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,99300],[2,20000],[3,8800]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
-  godoxSl300iiibi:{label:'Godox SL300IIIBi',brand:'godox',group:'godoxsl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,6590],[2,1740],[3,827]],3200:[[1,8710],[2,2200],[3,1050]],4300:[[1,10200],[2,2680],[3,1280]],5600:[[1,9730],[2,2550],[3,1210]],6500:[[1,8110],[2,2140],[3,1020]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[1,79400],[2,18200],[3,7660]],3200:[[1,104000],[2,23700],[3,9970]],4300:[[1,120000],[2,27300],[3,11500]],5600:[[1,117000],[2,25800],[3,10900]],6500:[[1,94900],[2,21400],[3,9070]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m pour plusieurs CCT.'},
-
-  godoxMl30:{label:'Godox ML30',brand:'godox',group:'godoxml',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[0.5,5880],[1,1540],[2,392]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[0.5,45700],[1,8590],[2,1740]]}}
-  },note:'Table photométrique Godox à 0,5 m, 1 m et 2 m.'},
-  godoxMl30bi:{label:'Godox ML30Bi',brand:'godox',group:'godoxml',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[0.5,4850],[1,1250],[2,361]],3200:[[0.5,5230],[1,1330],[2,392]],4300:[[0.5,5740],[1,1460],[2,424]],5600:[[0.5,5650],[1,1450],[2,418]],6500:[[0.5,5550],[1,1430],[2,414]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{2800:[[0.5,34600],[1,6430],[2,1540]],3200:[[0.5,37100],[1,6840],[2,1690]],4300:[[0.5,41100],[1,7530],[2,1830]],5600:[[0.5,40700],[1,7470],[2,1800]],6500:[[0.5,40100],[1,7460],[2,1780]]}}
-  },note:'Table photométrique Godox à 0,5 m, 1 m et 2 m pour plusieurs CCT.'},
-  godoxMl80bi:{label:'Godox ML80Bi',brand:'godox',group:'godoxml',defaultAccessory:'zoom',accessories:{
-    zoom:{label:'ML-Z Zoom Reflector',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,29600]]}}
-  },note:'Godox publie 29 600 lux à 1 m à 5600 K avec le ML-Z Zoom Reflector.'},
-  godoxMl100bi:{label:'Godox ML100Bi',brand:'godox',group:'godoxml',defaultAccessory:'ml15',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{2800:[[1,2580],[2,682],[3,316]],3200:[[1,2990],[2,777],[3,363]],4300:[[1,3520],[2,916],[3,427]],5600:[[1,3670],[2,953],[3,446]],6500:[[1,3380],[2,878],[3,410]]}},
-    ml15:{label:'ML-L15',quality:'measured',role:'reflector',data:{2800:[[1,24100],[2,6010],[3,2800]],3200:[[1,27900],[2,7040],[3,3250]],4300:[[1,32900],[2,8350],[3,3860]],5600:[[1,34300],[2,8800],[3,4040]],6500:[[1,31200],[2,8100],[3,3730]]}},
-    ml36:{label:'ML-L36',quality:'measured',role:'reflector',data:{2800:[[1,12500],[2,3140],[3,1380]],3200:[[1,14500],[2,3640],[3,1610]],4300:[[1,17100],[2,4320],[3,1910]],5600:[[1,17900],[2,4480],[3,1990]],6500:[[1,16500],[2,4130],[3,1830]]}}
-  },note:'Table photométrique Godox nu + optiques ML-L15 / ML-L36 à 1 m, 2 m et 3 m.'},
-  godoxMl150bi:{label:'Godox ML150Bi',brand:'godox',group:'godoxml',defaultAccessory:'zoom',accessories:{
-    zoom:{label:'ML-Z Zoom Reflector',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,61054]]}}
-  },note:'Godox publie 61 054 lux à 1 m à 5600 K avec le ML-Z Zoom Reflector.'},
-
-  godoxVl150ii:{label:'Godox VL150II',brand:'godox',group:'godoxvl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,6100],[2,1700],[3,810]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,76000],[2,16000],[3,5400]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
-  godoxVl200ii:{label:'Godox VL200II',brand:'godox',group:'godoxvl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,7400],[2,2100],[3,1100]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,88900],[2,19000],[3,8000]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
-  godoxVl300ii:{label:'Godox VL300II',brand:'godox',group:'godoxvl',defaultAccessory:'reflector',accessories:{
-    bare:{label:'Nu',quality:'measured',role:'bare',data:{5600:[[1,11600],[2,3500],[3,1700]]}},
-    reflector:{label:'Réflecteur standard',quality:'measured',role:'reflector',data:{5600:[[1,99000],[2,20900],[3,8800]]}}
-  },note:'Table photométrique Godox à 1 m, 2 m et 3 m.'},
-
-  godoxSz200bi:{label:'Godox SZ200Bi',brand:'godox',group:'godoxsz',defaultAccessory:'zoom',accessories:{
-    zoom:{label:'Zoom intégré',quality:'single',role:'reflector',singlePointLabel:'Maximum constructeur @ 1 m',data:{5600:[[1,32500]]}}
-  },note:'Godox annonce environ 32 500 lux à 1 m en sortie maximale ; le niveau réel varie avec le zoom et la CCT.'},
-
-  godoxLa600bi:{label:'Godox LA600Bi',brand:'godox',group:'godoxlitemons',defaultAccessory:'reflector',accessories:{
-    reflector:{label:'BR30 Reflector',quality:'single',role:'reflector',singlePointLabel:'Mesure constructeur @ 1 m',data:{5600:[[1,212500]]}}
-  },note:'Godox publie 212 500 lux à 1 m à 5600 K avec le BR30 Reflector.'}
-};
-
-
-// V0.10 — modificateurs estimés.
-// Quand une softbox n'a pas de photométrie publiée, LIGHT fabrique une courbe indicative
-// à partir de la photométrie "nu" (ou d'une sortie de référence disponible) et de profils
-// de pertes observés sur les Halo avec softbox. Ces points ne sont JAMAIS présentés comme
-// des mesures constructeur.
-const ESTIMATE_PROFILES = {
-  bare60:  [[0.5,0.78],[1,0.69],[3,0.45],[5,0.40],[7,0.38]],
-  bare90:  [[0.5,1.05],[1,0.945],[3,0.583],[5,0.517],[7,0.48]],
-  bare120: [[0.5,0.92],[1,0.80],[3,0.50],[5,0.44],[7,0.41],[9,0.39]],
-  refl60:  [[0.5,0.12],[1,0.09],[3,0.065],[5,0.06]],
-  refl90:  [[0.5,0.38],[1,0.31],[3,0.22],[5,0.22],[7,0.20]],
-  refl120: [[0.5,0.31],[1,0.25],[3,0.18],[5,0.18],[7,0.17],[9,0.17]]
-};
-function estimateFactor(distance, profile){
-  const pts=ESTIMATE_PROFILES[profile];
-  if(!pts) return 0.5;
-  if(pts.length===1) return pts[0][1];
-  let a,b;
-  if(distance<=pts[0][0]) [a,b]=[pts[0],pts[1]];
-  else if(distance>=pts[pts.length-1][0]) [a,b]=[pts[pts.length-2],pts[pts.length-1]];
-  else { for(let i=0;i<pts.length-1;i++){ if(distance>=pts[i][0]&&distance<=pts[i+1][0]){a=pts[i];b=pts[i+1];break;} } }
-  const [d1,f1]=a,[d2,f2]=b;
-  const t=(Math.log(distance)-Math.log(d1))/(Math.log(d2)-Math.log(d1));
-  return Math.exp(Math.log(f1)+(Math.log(f2)-Math.log(f1))*t);
+// Navigation du plan : le canevas reste toujours ajusté au téléphone au chargement,
+// puis peut être déplacé et zoomé sans modifier les coordonnées réelles du plan.
+const STAGE_W=1000, STAGE_H=620, MAX_VIEW_ZOOM=4;
+let stageViewport={x:0,y:0,w:STAGE_W,h:STAGE_H};
+const activeTouchPointers=new Map();
+let panGesture=null, pinchGesture=null;
+function clampViewport(v){
+  const minW=STAGE_W/MAX_VIEW_ZOOM;
+  const w=clamp(Number(v.w)||STAGE_W,minW,STAGE_W),h=w*STAGE_H/STAGE_W;
+  const x=clamp(Number(v.x)||0,0,STAGE_W-w),y=clamp(Number(v.y)||0,0,STAGE_H-h);
+  return {x,y,w,h};
 }
-function scaledEstimatedData(sourceData, profile, extraFactor=1){
-  const out={};
-  Object.entries(sourceData).forEach(([cct,points])=>{
-    out[cct]=points.map(([d,lux])=>[d, Math.round(lux*estimateFactor(d,profile)*extraFactor)]);
-  });
-  return out;
+function applyStageViewport(){
+  stageViewport=clampViewport(stageViewport);
+  stage.setAttribute('viewBox',`${stageViewport.x} ${stageViewport.y} ${stageViewport.w} ${stageViewport.h}`);
+  if(zoomReadout)zoomReadout.textContent=`${Math.round(STAGE_W/stageViewport.w*100)} %`;
 }
-function addEstimatedSoftbox(fixtureObj, size, options={}){
-  if(!fixtureObj || fixtureObj.accessories[`softbox${size}est`] || Object.values(fixtureObj.accessories).some(a=>a.role==='softbox')) return;
-  const sourceKey=options.sourceKey || (fixtureObj.accessories.bare ? 'bare' : fixtureObj.defaultAccessory);
-  const source=fixtureObj.accessories[sourceKey];
-  if(!source) return;
-  const isReflector=(source.role==='reflector' || /reflector/i.test(source.label));
-  const profile=`${isReflector?'refl':'bare'}${size}`;
-  fixtureObj.accessories[`softbox${size}est`]={
-    label:`Softbox ${size} ≈`, role:'softbox', quality:'estimated',
-    data:scaledEstimatedData(source.data,profile),
-    estimateBasis:`Estimation à partir de ${source.label.toLowerCase()} et de profils mesurés sur des COB comparables avec softbox ${size} cm.`,
-    estimateWarning:'La toile, la profondeur, le double diffuseur et la marque de la softbox peuvent modifier sensiblement le résultat réel.'
-  };
+function resetStageViewport(){stageViewport={x:0,y:0,w:STAGE_W,h:STAGE_H};applyStageViewport()}
+function stagePointFromClient(clientX,clientY){
+  const r=stage.getBoundingClientRect();
+  if(!r.width||!r.height)return {x:stageViewport.x,y:stageViewport.y};
+  return {x:stageViewport.x+(clientX-r.left)/r.width*stageViewport.w,y:stageViewport.y+(clientY-r.top)/r.height*stageViewport.h};
 }
-function addEstimatedUmbrella(fixtureObj){
-  if(!fixtureObj || fixtureObj.accessories.umbrellaEst) return;
-  const source=fixtureObj.accessories.dome || fixtureObj.accessories.bare;
-  if(!source) return;
-  fixtureObj.accessories.umbrellaEst={
-    label:'Parapluie / diffuseur ≈', role:'softbox', quality:'estimated',
-    data:Object.fromEntries(Object.entries(source.data).map(([cct,points])=>[cct,points.map(([d,lux])=>[d,Math.round(lux*0.65)])])),
-    estimateBasis:`Estimation à partir du ${source.label.toLowerCase()} mesuré, avec une perte supplémentaire indicative de 0,6 stop.`,
-    estimateWarning:'Très approximatif : un parapluie argenté, blanc, shoot-through ou un cadre diffusant peuvent donner des valeurs très différentes.'
-  };
+function viewportFromPinch(start,midX,midY,distance){
+  const ratio=Math.max(.01,distance/start.distance);
+  const newW=clamp(start.viewport.w/ratio,STAGE_W/MAX_VIEW_ZOOM,STAGE_W),newH=newW*STAGE_H/STAGE_W;
+  const r=stage.getBoundingClientRect(),rx=clamp((midX-r.left)/Math.max(1,r.width),0,1),ry=clamp((midY-r.top)/Math.max(1,r.height),0,1);
+  return clampViewport({x:start.anchor.x-rx*newW,y:start.anchor.y-ry*newH,w:newW,h:newH});
 }
-
-// amaran COB S
-addEstimatedSoftbox(cobFixtures.cob60xs,60);
-addEstimatedSoftbox(cobFixtures.cob100xs,60);
-addEstimatedSoftbox(cobFixtures.cob200xs,90);
-// amaran RAY — souvent utilisés avec diffusion / softbox en pratique.
-addEstimatedSoftbox(rayFixtures.ray60c,60);
-addEstimatedSoftbox(rayFixtures.ray120c,60);
-addEstimatedSoftbox(rayFixtures.ray360c,90);
-addEstimatedSoftbox(rayFixtures.ray660c,120);
-// Aputure Light Storm
-addEstimatedSoftbox(lightStormFixtures.ls60x,60,{sourceKey:'flood45'});
-addEstimatedSoftbox(lightStormFixtures.ls300x,90);
-addEstimatedSoftbox(lightStormFixtures.ls300d2,90,{sourceKey:'reflector'});
-addEstimatedSoftbox(lightStormFixtures.ls600dpro,120);
-addEstimatedSoftbox(lightStormFixtures.ls600xpro,120);
-addEstimatedSoftbox(lightStormFixtures.ls600cpro2,120);
-addEstimatedSoftbox(lightStormFixtures.ls1200dpro,120,{sourceKey:'bare'});
-// Aputure STORM
-addEstimatedSoftbox(stormFixtures.storm80c,60);
-addEstimatedSoftbox(stormFixtures.storm400x,90);
-addEstimatedSoftbox(stormFixtures.storm700x,120);
-addEstimatedSoftbox(stormFixtures.storm1000c,120);
-addEstimatedSoftbox(stormFixtures.storm1200x,120);
-// ACE : on reste volontairement plus vague qu'une softbox dédiée.
-addEstimatedUmbrella(aceFixtures.ace25x);
-addEstimatedUmbrella(aceFixtures.ace25c);
-
-// Nanlite — softbox estimée uniquement lorsque la fixture n'a pas déjà une softbox mesurée.
-addEstimatedSoftbox(nanliteFixtures.nanFc60b,60,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanFc120b,60,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanFc300b,90,{sourceKey:'bare'}); // helper ignore : Rapid 90 mesurée déjà présente
-addEstimatedSoftbox(nanliteFixtures.nanFc500b,90,{sourceKey:'bare'});
-addEstimatedSoftbox(nanliteFixtures.nanFc500c,90,{sourceKey:'bare'}); // helper ignore : Rapid 90 mesurée déjà présente
-addEstimatedSoftbox(nanliteFixtures.nanFc720b,120,{sourceKey:'bare'});
-addEstimatedSoftbox(nanliteFixtures.nanFc720c,120,{sourceKey:'bare'});
-addEstimatedSoftbox(nanliteFixtures.nanForza60b2,60,{sourceKey:'bare'});
-addEstimatedSoftbox(nanliteFixtures.nanForza60c,60,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanForza150b,90,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanForza300b2,120,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanForza500b2,120,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanForza720b,120,{sourceKey:'bare'});
-addEstimatedSoftbox(nanliteFixtures.nanFs60b,60,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanFs150b,90,{sourceKey:'reflector'});
-addEstimatedSoftbox(nanliteFixtures.nanFs300c,90,{sourceKey:'reflector'});
-// Godox
-addEstimatedSoftbox(godoxFixtures.godoxSl60iibi,60,{sourceKey:'reflector'});
-addEstimatedSoftbox(godoxFixtures.godoxSl100bi,60,{sourceKey:'reflector'});
-addEstimatedSoftbox(godoxFixtures.godoxSl150iii,90,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxSl150iiibi,90,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxSl200iii,90,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxSl200iiibi,90,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxSl300iii,120,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxSl300iiibi,120,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxMl30,60,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxMl30bi,60,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxMl80bi,60,{sourceKey:'zoom'});
-addEstimatedSoftbox(godoxFixtures.godoxMl100bi,60,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxMl150bi,90,{sourceKey:'zoom'});
-addEstimatedSoftbox(godoxFixtures.godoxVl150ii,90,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxVl200ii,90,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxVl300ii,120,{sourceKey:'bare'});
-addEstimatedSoftbox(godoxFixtures.godoxSz200bi,90,{sourceKey:'zoom'});
-addEstimatedSoftbox(godoxFixtures.godoxLa600bi,120,{sourceKey:'reflector'});
-
-const fixtures = {...haloFixtures, ...rayFixtures, ...cobFixtures, ...aceFixtures, ...lightStormFixtures, ...stormFixtures, ...nanliteFixtures, ...godoxFixtures};
-const UI_GROUPS = {
-  halo:['halo60x','halo100x','halo200x','halo300x','halo600x'],
-  ray:['ray60c','ray120c','ray360c','ray660c'],
-  cob:['cob60xs','cob100xs','cob200xs'],
-  ace:['ace25x','ace25c'],
-  lightstorm:['ls60x','ls300x','ls300d2','ls600dpro','ls600xpro','ls600cpro2','ls1200dpro'],
-  storm:['storm80c','storm400x','storm700x','storm1000c','storm1200x'],
-  nanfc:['nanFc60b','nanFc120b','nanFc300b','nanFc500b','nanFc500c','nanFc720b','nanFc720c'],
-  nanforza:['nanForza60b2','nanForza60c','nanForza150b','nanForza300b2','nanForza500b2','nanForza720b'],
-  nanfs:['nanFs60b','nanFs150b','nanFs300c'],
-  godoxsl:['godoxSl60iibi','godoxSl100bi','godoxSl150iii','godoxSl150iiibi','godoxSl200iii','godoxSl200iiibi','godoxSl300iii','godoxSl300iiibi'],
-  godoxml:['godoxMl30','godoxMl30bi','godoxMl80bi','godoxMl100bi','godoxMl150bi'],
-  godoxvl:['godoxVl150ii','godoxVl200ii','godoxVl300ii'],
-  godoxsz:['godoxSz200bi'],
-  godoxlitemons:['godoxLa600bi']
-};
-const BRAND_GROUPS = {amaran:['halo','ray','cob','ace'],aputure:['lightstorm','storm'],nanlite:['nanfc','nanforza','nanfs'],godox:['godoxsl','godoxml','godoxvl','godoxsz','godoxlitemons']};
-const BRAND_LABELS = {amaran:'amaran',aputure:'Aputure',nanlite:'Nanlite',godox:'Godox'};
-const GROUP_LABELS = {halo:'HALO',ray:'RAY',cob:'COB S',ace:'ACE',lightstorm:'LIGHT STORM',storm:'STORM',nanfc:'FC',nanforza:'FORZA',nanfs:'FS',godoxsl:'SL',godoxml:'ML',godoxvl:'VL II',godoxsz:'SZ',godoxlitemons:'LITEMONS'};
-const POWER_LABELS = {
-  halo60x:'60X',halo100x:'100X',halo200x:'200X',halo300x:'300X',halo600x:'600X',
-  ray60c:'60C',ray120c:'120C',ray360c:'360C',ray660c:'660C',
-  cob60xs:'60X S',cob100xs:'100X S',cob200xs:'200X S',
-  ace25x:'25X',ace25c:'25C',
-  ls60x:'LS 60X',ls300x:'LS 300X',ls300d2:'300D II',ls600dpro:'600D PRO',ls600xpro:'600X PRO',ls600cpro2:'600C PRO II',ls1200dpro:'1200D PRO',
-  storm80c:'80C',storm400x:'400X',storm700x:'700X',storm1000c:'1000C',storm1200x:'1200X',
-  nanFc60b:'FC-60B',nanFc120b:'FC-120B',nanFc300b:'FC-300B',nanFc500b:'FC-500B',nanFc500c:'FC-500C',nanFc720b:'FC-720B',nanFc720c:'FC-720C',
-  nanForza60b2:'60B II',nanForza60c:'60C',nanForza150b:'150B',nanForza300b2:'300B II',nanForza500b2:'500B II',nanForza720b:'720B',
-  nanFs60b:'FS-60B',nanFs150b:'FS-150B',nanFs300c:'FS-300C',
-  godoxSl60iibi:'SL60IIBi',godoxSl100bi:'SL100Bi',godoxSl150iii:'SL150III',godoxSl150iiibi:'SL150III Bi',godoxSl200iii:'SL200III',godoxSl200iiibi:'SL200III Bi',godoxSl300iii:'SL300III',godoxSl300iiibi:'SL300III Bi',
-  godoxMl30:'ML30',godoxMl30bi:'ML30Bi',godoxMl80bi:'ML80Bi',godoxMl100bi:'ML100Bi',godoxMl150bi:'ML150Bi',
-  godoxVl150ii:'VL150II',godoxVl200ii:'VL200II',godoxVl300ii:'VL300II',godoxSz200bi:'SZ200Bi',godoxLa600bi:'LA600Bi'
-};
-function uiGroupForFixture(key=state.fixture){for(const [group,keys] of Object.entries(UI_GROUPS)){if(keys.includes(key))return group;}return'halo';}
-function brandForFixture(key=state.fixture){const group=uiGroupForFixture(key);return Object.entries(BRAND_GROUPS).find(([,groups])=>groups.includes(group))?.[0]||'amaran';}
-
-
-const ISO_VALUES=[100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800];
-const SHUTTER_DENOMS=[24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,500,640,800,1000];
-const APERTURES=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
-
-const $=sel=>document.querySelector(sel);
-const els={
-  brandGrid:$('#brandGrid'),familyGrid:$('#familyGrid'),powerGrid:$('#powerGrid'),accessoryGrid:$('#accessoryGrid'),accessoryNote:$('#accessoryNote'),
-  cctGrid:$('#cctGrid'),cctSection:$('#cctSection'),cctValue:$('#cctValue'),cctNote:$('#cctNote'),
-  intensitySlider:$('#intensitySlider'),intensityValue:$('#intensityValue'),isoSelect:$('#isoSelect'),shutterSelect:$('#shutterSelect'),apertureSelect:$('#apertureSelect'),cameraSummary:$('#cameraSummary'),lightSummary:$('#lightSummary'),
-  maxDistance:$('#maxDistance'),heroSummary:$('#heroSummary'),testDistanceSlider:$('#testDistanceSlider'),testDistanceValue:$('#testDistanceValue'),statusBox:$('#statusBox'),statusTitle:$('#statusTitle'),statusText:$('#statusText'),solutionIntro:$('#solutionIntro'),solutions:$('#solutions'),
-  testLux:$('#testLux'),stopMargin:$('#stopMargin'),requiredIso:$('#requiredIso'),possibleAperture:$('#possibleAperture'),sourceDescriptor:$('#sourceDescriptor'),measurementRow:$('#measurementRow'),dataNote:$('#dataNote'),dimmerNote:$('#dimmerNote'),labBadge:$('#labBadge'),resetBtn:$('#resetBtn')
-};
-
-init();
-
-function init(){
-  loadSavedState();
-  populateSelect(els.isoSelect,ISO_VALUES,v=>`ISO ${v}`,state.iso);
-  populateSelect(els.apertureSelect,APERTURES,v=>`f/${formatAperture(v)}`,state.aperture);
-  populateSelect(els.shutterSelect,SHUTTER_DENOMS,v=>`1/${v}`,state.shutterDenom);
-  els.intensitySlider.value=state.intensityPct;
-  els.testDistanceSlider.value=state.testDistance;
-  bindUI(); update();
+function beginPinchIfPossible(){
+  if(activeTouchPointers.size<2)return false;
+  const pts=[...activeTouchPointers.values()].slice(0,2),a=pts[0],b=pts[1],mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+  const distance=Math.hypot(a.x-b.x,a.y-b.y);
+  pinchGesture={distance:Math.max(1,distance),viewport:{...stageViewport},anchor:stagePointFromClient(mx,my)};
+  panGesture=null;
+  drag=null;
+  return true;
 }
-function loadSavedState(){
-  try{
-    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
-    if(!saved||typeof saved!=='object')return;
-    const allowed=['fixture','accessory','cct','intensityPct','iso','shutterDenom','aperture','testDistance'];
-    allowed.forEach(k=>{if(saved[k]!==undefined)state[k]=saved[k];});
-    if(!fixtures[state.fixture]) state.fixture='halo60x';
-    if(!ISO_VALUES.includes(Number(state.iso))) state.iso=800;
-    if(!SHUTTER_DENOMS.includes(Number(state.shutterDenom))) state.shutterDenom=50;
-    if(!APERTURES.includes(Number(state.aperture))) state.aperture=2.8;
-    state.intensityPct=Math.max(0,Math.min(100,Number(state.intensityPct)||0));
-    state.testDistance=Math.max(1,Math.min(10,Number(state.testDistance)||2));
-    state.cct=Number(state.cct)||5600;
-  }catch(_){ /* stockage indisponible : on garde les valeurs par défaut */ }
+function handleViewportPointerDown(e){
+  if(e.pointerType!=='touch')return;
+  activeTouchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(activeTouchPointers.size>=2){beginPinchIfPossible();e.preventDefault();return}
+  const onObject=!!e.target.closest?.('.object');
+  if(!onObject)panGesture={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,viewport:{...stageViewport}};
 }
-function persistState(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){}
-}
-function populateSelect(select,values,labelFn,selected){select.innerHTML='';values.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=labelFn(v);if(Number(v)===Number(selected))o.selected=true;select.appendChild(o);});}
-function bindUI(){
-  els.brandGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-brand]');if(!b)return;const brand=b.dataset.brand;if(brand===brandForFixture())return;const group=BRAND_GROUPS[brand][0];state.fixture=UI_GROUPS[group][0];state.accessory=fixtures[state.fixture].defaultAccessory;ensureAccessoryAndCct();update();});
-  els.familyGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-family]');if(!b)return;const group=b.dataset.family;if(group===uiGroupForFixture())return;state.fixture=UI_GROUPS[group][0];state.accessory=fixtures[state.fixture].defaultAccessory;ensureAccessoryAndCct();update();});
-  els.powerGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-fixture]');if(!b)return;state.fixture=b.dataset.fixture;ensureAccessoryAndCct();update();});
-  els.accessoryGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-accessory]');if(!b)return;state.accessory=b.dataset.accessory;ensureAccessoryAndCct();update();});
-  els.cctGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-cct]');if(!b)return;state.cct=Number(b.dataset.cct);update();});
-  els.intensitySlider.addEventListener('input',()=>{state.intensityPct=Number(els.intensitySlider.value);update();});
-  els.isoSelect.addEventListener('change',()=>{state.iso=Number(els.isoSelect.value);update();});
-  els.apertureSelect.addEventListener('change',()=>{state.aperture=Number(els.apertureSelect.value);update();});
-  els.shutterSelect.addEventListener('change',()=>{state.shutterDenom=Number(els.shutterSelect.value);update();});
-  els.testDistanceSlider.addEventListener('input',()=>{state.testDistance=Number(els.testDistanceSlider.value);update();});
-  els.resetBtn.addEventListener('click',reset);
-}
-function reset(){Object.assign(state,{fixture:'halo60x',accessory:'softbox',cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;update();}
-
-function fixture(){return fixtures[state.fixture];}
-function accessory(fixtureKey=state.fixture,accessoryKey=state.accessory){return fixtures[fixtureKey].accessories[accessoryKey];}
-function ensureAccessoryAndCct(){
-  const f=fixture(); if(!f.accessories[state.accessory]) state.accessory=f.defaultAccessory;
-  const keys=Object.keys(accessory().data).map(Number); if(!keys.includes(state.cct)) state.cct=keys.includes(5600)?5600:keys[0];
-}
-function getPoints(fixtureKey=state.fixture,accessoryKey=state.accessory,cct=state.cct){
-  const a=accessory(fixtureKey,accessoryKey); const keys=Object.keys(a.data).map(Number); const use=keys.includes(Number(cct))?Number(cct):(keys.includes(5600)?5600:keys[0]); return a.data[use];
-}
-function update(){
-  ensureAccessoryAndCct(); renderFixtureHierarchy(); renderAccessoryButtons(); renderCctButtons(); syncActiveButtons();
-  const reqLux=requiredLux(state.iso,state.shutterDenom,state.aperture); const maxD=state.intensityPct<=0?0:solveDistanceForLux(reqLux);
-  els.intensityValue.textContent=`${state.intensityPct} %`; els.testDistanceValue.textContent=`${formatDistance(state.testDistance)} m`; els.maxDistance.textContent=maxD>0?formatDistance(maxD):'0,0';
-  els.cameraSummary.textContent=`ISO ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
-  if(els.lightSummary) els.lightSummary.textContent=`${BRAND_LABELS[brandForFixture()]} · ${fixture().label.replace(/^(amaran |Aputure |Nanlite |Godox )/,'')} · ${accessory().label}`;
-  els.labBadge.textContent=accessory().quality==='estimated'?'ESTIMATION':BRAND_LABELS[brandForFixture()].toUpperCase(); els.labBadge.classList.toggle('estimate-badge',accessory().quality==='estimated');
-  els.heroSummary.textContent=`${fixture().label} · ${accessory().label} · ${state.intensityPct} % · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
-  updateDistanceStatus(reqLux,maxD); updateAdvanced(reqLux,maxD,getPoints()); persistState();
-}
-function renderFixtureHierarchy(){
-  const brand=brandForFixture(), group=uiGroupForFixture();
-  els.brandGrid.style.gridTemplateColumns=`repeat(${Object.keys(BRAND_GROUPS).length},minmax(0,1fr))`;
-  els.brandGrid.innerHTML=Object.keys(BRAND_GROUPS).map(key=>`<button data-brand="${key}" class="brand-choice ${key===brand?'active':''}" type="button">${BRAND_LABELS[key]}</button>`).join('');
-  const groups=BRAND_GROUPS[brand];
-  els.familyGrid.style.gridTemplateColumns=`repeat(${Math.min(groups.length,4)},minmax(0,1fr))`;
-  els.familyGrid.innerHTML=groups.map(key=>`<button data-family="${key}" class="${key===group?'active':''}" type="button">${GROUP_LABELS[key]}</button>`).join('');
-  const keys=UI_GROUPS[group];
-  els.powerGrid.style.gridTemplateColumns=`repeat(${Math.min(keys.length,5)},minmax(0,1fr))`;
-  els.powerGrid.innerHTML=keys.map(key=>`<button data-fixture="${key}" class="${key===state.fixture?'active':''}" type="button">${POWER_LABELS[key]}</button>`).join('');
-}
-
-function renderAccessoryButtons(){
-  const entries=Object.entries(fixture().accessories); els.accessoryGrid.style.gridTemplateColumns=`repeat(${Math.min(entries.length,3)},minmax(0,1fr))`;
-  els.accessoryGrid.innerHTML=entries.map(([key,a])=>`<button data-accessory="${key}" class="${key===state.accessory?'active':''}" type="button">${a.label.toUpperCase()}</button>`).join('');
-  const a=accessory(); const notes=[]; if(a.quality==='single')notes.push('Ce mode repose sur un seul point constructeur : la distance est donc une estimation plus large.'); if(a.quality==='estimated')notes.push(`≈ ${a.estimateBasis || 'Valeur extrapolée : aucune photométrie constructeur n’est publiée pour ce modificateur.'}`); if(a.note)notes.push(a.note); if(fixture().note)notes.push(fixture().note); els.accessoryNote.textContent=notes.join(' ');
-}
-function renderCctButtons(){
-  const keys=Object.keys(accessory().data).map(Number).sort((a,b)=>a-b); const isSingle=keys.length===1;
-  els.cctSection.hidden=false; els.cctValue.textContent=`${state.cct} K`;
-  els.cctGrid.style.gridTemplateColumns=`repeat(${Math.min(keys.length,6)},minmax(0,1fr))`;
-  els.cctGrid.innerHTML=keys.map(k=>`<button data-cct="${k}" class="${k===state.cct?'active':''}" type="button">${k}</button>`).join('');
-  els.cctNote.textContent=isSingle?'Une seule température de référence est disponible dans les données publiées pour cette configuration.':'';
-}
-function syncActiveButtons(){document.querySelectorAll('[data-fixture]').forEach(b=>b.classList.toggle('active',b.dataset.fixture===state.fixture));}
-function requiredLux(iso,shutterDenom,aperture){const t=1/shutterDenom;return INCIDENT_C*aperture*aperture/(iso*t);}
-function estimatedLuxAtDistance(distance,fixtureKey=state.fixture,intensityPct=state.intensityPct,accessoryKey=null){if(intensityPct<=0)return 0;const aKey=accessoryKey||state.accessory;const points=getPoints(fixtureKey,aKey,state.cct);return curveLux(distance,points)*(intensityPct/100);}
-function curveLux(distance,points){
-  const d=Math.max(.05,distance); if(points.length===1){const [d1,e1]=points[0];return e1*Math.pow(d1/d,2);}
-  let a,b;if(d<=points[0][0])[a,b]=[points[0],points[1]];else if(d>=points[points.length-1][0])[a,b]=[points[points.length-2],points[points.length-1]];else{for(let i=0;i<points.length-1;i++){if(d>=points[i][0]&&d<=points[i+1][0]){a=points[i];b=points[i+1];break;}}}
-  const [d1,e1]=a,[d2,e2]=b;const exponent=Math.log(e2/e1)/Math.log(d2/d1);return e1*Math.pow(d/d1,exponent);
-}
-function solveDistanceForLux(targetLux){if(state.intensityPct<=0)return 0;if(estimatedLuxAtDistance(.1)<targetLux)return 0;let lo=.1,hi=1;while(estimatedLuxAtDistance(hi)>targetLux&&hi<200)hi*=2;if(hi>=200&&estimatedLuxAtDistance(hi)>targetLux)return 200;for(let i=0;i<80;i++){const mid=(lo+hi)/2;if(estimatedLuxAtDistance(mid)>=targetLux)lo=mid;else hi=mid;}return(lo+hi)/2;}
-
-function updateDistanceStatus(reqLux,maxD){
-  const d=state.testDistance,lux=estimatedLuxAtDistance(d),margin=lux>0?Math.log2(lux/reqLux):-Infinity,reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity,possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
-  els.statusBox.classList.remove('comfortable','just','insufficient');let title,text,cls;
-  if(state.intensityPct<=0||lux<=0){cls='insufficient';title='SOURCE ÉTEINTE';text='Le projecteur est à 0 %. Monte sa puissance pour commencer le calcul.';}
-  else if(margin>=.7){cls='comfortable';title='CONFORTABLE';text=`À ${formatDistance(d)} m, la lumière reçue au niveau du sujet suffit pour tes réglages caméra, avec encore de la marge.`;}
-  else if(margin>=0){cls='just';title='ÇA PASSE';text=`À ${formatDistance(d)} m, tu atteins l’exposition de référence avec tes réglages caméra, mais avec peu de marge.`;}
-  else{cls='insufficient';title='PAS ASSEZ DE LUMIÈRE';text=`À ${formatDistance(d)} m, la lumière reçue au niveau du sujet est insuffisante pour tes réglages caméra.`;}
-  els.statusBox.classList.add(cls);els.statusTitle.textContent=title;els.statusText.textContent=text;
-  const solutions=[];
-  if(state.intensityPct<=0){els.solutionIntro.textContent='Pour obtenir une exposition de référence, commence par :';solutions.push(['MONTE LA PUISSANCE','au-dessus de 0 %']);}
-  else if(margin>=0){els.solutionIntro.textContent='Tu es dans la bonne zone. Si tu veux modifier ton installation :';if(maxD>d+.1)solutions.push(['TU PEUX RECULER',`jusqu’à ${formatDistance(maxD)} m`]);const targetPct=state.intensityPct*reqLux/lux;if(targetPct<state.intensityPct-3&&targetPct>=1)solutions.push(['TU PEUX DIMMER',`vers ${Math.max(1,Math.round(targetPct))} %`]);const closeF=snapApertureForClosing(possibleF,state.aperture);if(closeF)solutions.push(['TU PEUX FERMER',`jusqu’à environ f/${formatAperture(closeF)}`]);}
-  else{
-    els.solutionIntro.textContent=`Pour obtenir une bonne exposition à ${formatDistance(d)} m, change au moins un de ces réglages :`;
-    if(maxD>0)solutions.push(['RAPPROCHE TA SOURCE',maxD>=1?`place-la à ${formatDistance(maxD)} m ou moins`:'il faudrait moins de 1 m']);
-    const neededPct=lux>0?state.intensityPct*reqLux/lux:Infinity;if(state.intensityPct<100&&neededPct<=100)solutions.push(['MONTE LA PUISSANCE',`vers ${Math.ceil(neededPct)} %`]);
-    const openF=snapApertureForOpening(possibleF,state.aperture);if(openF)solutions.push(['OUVRE TON DIAPH',`passe à f/${formatAperture(openF)} ou plus ouvert`]);
-    if(Number.isFinite(reqIso)&&reqIso>state.iso){const isoStep=snapIsoUp(reqIso);solutions.push(['MONTE TON ISO',isoStep?`passe à environ ISO ${isoStep}`:`il faudrait environ ISO ${formatIso(reqIso)}`]);}
-    const stronger=findStrongerFixture(reqLux,d);if(stronger)solutions.push(['PRENDS PLUS PUISSANT',`passe au ${fixtures[stronger].label}`]);
+function handleViewportPointerMove(e){
+  if(e.pointerType!=='touch'||!activeTouchPointers.has(e.pointerId))return;
+  activeTouchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(activeTouchPointers.size>=2){
+    if(!pinchGesture)beginPinchIfPossible();
+    const pts=[...activeTouchPointers.values()].slice(0,2),a=pts[0],b=pts[1],mx=(a.x+b.x)/2,my=(a.y+b.y)/2,d=Math.hypot(a.x-b.x,a.y-b.y);
+    stageViewport=viewportFromPinch(pinchGesture,mx,my,d);applyStageViewport();e.preventDefault();return;
   }
-  els.solutions.innerHTML=solutions.slice(0,4).map(([l,v])=>`<div class="solution"><span>${l}</span><strong>${v}</strong></div>`).join('');
+  if(panGesture&&panGesture.pointerId===e.pointerId){
+    const r=stage.getBoundingClientRect(),dx=(e.clientX-panGesture.startX)/Math.max(1,r.width)*panGesture.viewport.w,dy=(e.clientY-panGesture.startY)/Math.max(1,r.height)*panGesture.viewport.h;
+    stageViewport=clampViewport({x:panGesture.viewport.x-dx,y:panGesture.viewport.y-dy,w:panGesture.viewport.w,h:panGesture.viewport.h});
+    applyStageViewport();e.preventDefault();
+  }
 }
-function snapApertureForOpening(maxF,currentF){if(!Number.isFinite(maxF)||maxF<=0||maxF>=currentF)return null;const valid=APERTURES.filter(f=>f<=maxF&&f<currentF);return valid.length?valid[valid.length-1]:null;}
-function snapApertureForClosing(maxF,currentF){if(!Number.isFinite(maxF)||maxF<=currentF)return null;const valid=APERTURES.filter(f=>f<=maxF&&f>currentF);return valid.length?valid[valid.length-1]:null;}
-function snapIsoUp(requiredIso){return ISO_VALUES.find(v=>v>=requiredIso)||null;}
-function findStrongerFixture(reqLux,distance){
-  const group=uiGroupForFixture(),order=UI_GROUPS[group]||[],idx=order.indexOf(state.fixture),role=currentAccessoryRole();
-  for(let i=idx+1;i<order.length;i++){const key=order[i],candidateAccessory=findAccessoryByRole(key,role);if(candidateAccessory&&estimatedLuxAtDistance(distance,key,100,candidateAccessory)>=reqLux)return key;}return null;
+function handleViewportPointerEnd(e){
+  if(e.pointerType!=='touch')return;
+  activeTouchPointers.delete(e.pointerId);
+  if(activeTouchPointers.size<2)pinchGesture=null;
+  if(activeTouchPointers.size===1){
+    const [id,p]=[...activeTouchPointers.entries()][0];
+    panGesture={pointerId:id,startX:p.x,startY:p.y,viewport:{...stageViewport}};
+  }else if(activeTouchPointers.size===0)panGesture=null;
 }
-function accessoryRole(key,a){if(a?.role)return a.role;if(key==='bare')return'bare';if(key.toLowerCase().includes('reflector'))return'reflector';if(['reflector','miniReflector'].includes(key))return'reflector';if(key.includes('softbox')||key.includes('dome'))return'softbox';if(key.toLowerCase().includes('spot'))return'fresnelSpot';if(key.toLowerCase().includes('flood'))return'fresnelFlood';return key;}
-function currentAccessoryRole(){return accessoryRole(state.accessory,accessory());}
-function findAccessoryByRole(fixtureKey,role){const entries=Object.entries(fixtures[fixtureKey].accessories);return entries.find(([k,a])=>accessoryRole(k,a)===role)?.[0]||null;}
+stage.addEventListener('pointerdown',handleViewportPointerDown,{capture:true});
+stage.addEventListener('pointermove',handleViewportPointerMove,{capture:true});
+stage.addEventListener('pointerup',handleViewportPointerEnd,{capture:true});
+stage.addEventListener('pointercancel',handleViewportPointerEnd,{capture:true});
+if(resetViewBtn)resetViewBtn.addEventListener('click',resetStageViewport);
+let replaceLightId=null;
+let catalogBrand='Amaran';
+let catalogFamily='';
+let autosaveTimer=null;
+const SCALE=100;
 
-function updateAdvanced(reqLux,maxD,points){
-  const d=state.testDistance,lux=estimatedLuxAtDistance(d),margin=lux>0?Math.log2(lux/reqLux):-Infinity,reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity,possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
-  els.testLux.textContent=`${formatLux(lux)} lux`;els.stopMargin.textContent=Number.isFinite(margin)?`${margin>=0?'+':''}${margin.toFixed(1).replace('.',',')} stop${Math.abs(margin)>=1.5?'s':''}`:'—';els.requiredIso.textContent=Number.isFinite(reqIso)?`ISO ${formatIso(reqIso)}`:'—';els.possibleAperture.textContent=possibleF>0?`f/${formatAperture(possibleF)}`:'—';
-  const cctLabel=accessory().quality==='single'?'sortie max publiée':`${state.cct} K`;els.sourceDescriptor.textContent=`${fixture().label} · ${accessory().label} · ${cctLabel} · à 100 %`;
-  els.measurementRow.innerHTML=points.map(([md,mlux])=>`<div class="measure-chip"><span>${md} m</span><strong>${formatLux(mlux)} lux</strong></div>`).join('');
-  const rangeAtTest=classifyDistance(d,points,accessory().quality),rangeAtMax=classifyDistance(maxD,points,accessory().quality);const warning=rangeAtTest.warning||rangeAtMax.warning;
-  if(accessory().quality==='estimated') els.dataNote.textContent=`ESTIMATION MODIFICATEUR — ${accessory().estimateBasis || 'Aucune mesure constructeur directe pour cette configuration.'} ${accessory().estimateWarning || ''}`;
-  else if(accessory().quality==='single')els.dataNote.textContent='Un seul point constructeur est publié pour ce mode. LIGHT applique une décroissance en carré inverse : considère la distance comme une estimation, pas comme une mesure constructeur complète.';
-  else els.dataNote.textContent=warning?`Une partie du calcul sort de la plage mesurée (${rangeAtTest.label.toLowerCase()} / distance max : ${rangeAtMax.label.toLowerCase()}).`:'La distance testée et la distance max restent dans la plage de mesures constructeur ; LIGHT interpole entre les points publiés.';
-  els.dataNote.classList.toggle('warning',warning||accessory().quality==='single'||accessory().quality==='estimated');
-  if(state.intensityPct===100){els.dimmerNote.textContent=fixture().note?`Puissance 100 % : ${fixture().note}`:'Puissance 100 % : les points de départ sont les mesures publiées par le constructeur.';els.dimmerNote.classList.remove('warning');}
-  else{els.dimmerNote.textContent='Sous 100 %, LIGHT estime les lux proportionnellement au dimmer. Cette partie est moins fiable faute de courbe constructeur détaillée par pourcentage.';els.dimmerNote.classList.add('warning');}
+function uid(prefix){return prefix+'_'+Math.random().toString(36).slice(2,8)}
+function rad(d){return d*Math.PI/180}
+function deg(r){return r*180/Math.PI}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)/SCALE}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c))}
+function svgEl(tag,attrs={}){const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e}
+function deepClone(v){return JSON.parse(JSON.stringify(v))}
+function safeName(s){return String(s||'Plan Feu').trim().replace(/[\/:*?"<>|]+/g,'_').replace(/\s+/g,' ').slice(0,80)||'Plan Feu'}
+function snapValue(v){const step=Number(state.snap)||0;return step?Math.round(v/(step*SCALE))*step*SCALE:v}
+function ensureStateDefaults(){
+  if(!Array.isArray(state.objects))state.objects=[];
+  state.snap=[0,.1,.25,.5,1].includes(Number(state.snap))?Number(state.snap):.25;
+  if(!['full','names','hidden'].includes(state.labelsMode))state.labelsMode='full';
+  if(state.beamsVisible===undefined)state.beamsVisible=true;
+  state.gridOpacity=clamp(Number(state.gridOpacity)||.5,.1,1);
+  state.planName=state.planName||'Plan sans titre';
+  state.folderId=state.folderId||library.folders[0]?.id||'folder_general';
+  if(state.planId===undefined)state.planId=null;
 }
-function classifyDistance(distance,points,quality){if(!Number.isFinite(distance)||distance<=0)return{label:'source éteinte',warning:true};if(quality==='estimated')return{label:'estimation modificateur',warning:true};if(quality==='single')return{label:'estimation depuis 1 point',warning:true};const min=points[0][0],max=points[points.length-1][0];if(distance<min)return{label:`extrapolation < ${min} m`,warning:true};if(distance>max)return{label:`extrapolation > ${max} m`,warning:true};return{label:'interpolation constructeur',warning:false};}
-function formatLux(v){if(!Number.isFinite(v))return'—';if(v>=100)return Math.round(v).toLocaleString('fr-FR');if(v>=10)return v.toFixed(1).replace('.',',');return v.toFixed(2).replace('.',',');}
-function formatDistance(v){if(!Number.isFinite(v))return'—';if(v>=20)return v.toFixed(0).replace('.',',');return v.toFixed(1).replace('.',',');}
-function formatAperture(v){if(!Number.isFinite(v))return'—';return v.toFixed(1).replace(/\.0$/,'').replace('.',',');}
-function formatIso(v){if(!Number.isFinite(v))return'—';if(v>=1000)return Math.round(v/10)*10;return Math.max(1,Math.round(v));}
+function loadLibrary(){
+  try{const raw=localStorage.getItem(LIB_KEY),v=raw&&JSON.parse(raw);if(v&&Array.isArray(v.folders)&&Array.isArray(v.plans))library=v}catch{}
+  if(!library.folders.length)library.folders=[{id:'folder_general',name:'Plans'}];
+}
+function persistLibrary(){localStorage.setItem(LIB_KEY,JSON.stringify(library))}
+function updateGridOpacity(){
+  let raw=Number(state.gridOpacity);
+  const v=Number.isFinite(raw)?clamp(raw,.1,1):.5;
+  state.gridOpacity=v;
+  // Le curseur pilote maintenant à la fois l’opacité ET le contraste.
+  // À 100 %, la grille devient volontairement très lisible pour un usage de plan technique.
+  const dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const t=(v-.1)/.9;
+  const smallA=.07+t*.48, largeA=.13+t*.67;
+  const smallStroke=dark?`rgba(184,198,218,${smallA.toFixed(3)})`:`rgba(45,62,86,${smallA.toFixed(3)})`;
+  const largeStroke=dark?`rgba(216,226,240,${largeA.toFixed(3)})`:`rgba(27,44,68,${largeA.toFixed(3)})`;
+  stage.querySelectorAll('.grid-small').forEach(n=>{n.style.opacity='1';n.setAttribute('opacity','1');n.style.stroke=smallStroke;n.setAttribute('stroke',smallStroke)});
+  stage.querySelectorAll('.grid-large').forEach(n=>{n.style.opacity='1';n.setAttribute('opacity','1');n.style.stroke=largeStroke;n.setAttribute('stroke',largeStroke)});
+  if(gridOpacityRange)gridOpacityRange.value=String(Math.round(v*100));
+  if(gridOpacityValue)gridOpacityValue.textContent=`${Math.round(v*100)} %`;
+}
+function updatePlanBadge(){if(currentPlanBadge)currentPlanBadge.textContent=`${state.planName||'Plan sans titre'} · autosauvegarde`;if(snapSelect)snapSelect.value=String(Number(state.snap)||0);if(labelsModeSelect)labelsModeSelect.value=state.labelsMode||'full';if(toggleBeamsBtn){const on=state.beamsVisible!==false;toggleBeamsBtn.classList.toggle('active',on);toggleBeamsBtn.textContent=on?'Faisceaux ON':'Faisceaux OFF';toggleBeamsBtn.setAttribute('aria-pressed',String(on))}updateGridOpacity()}
+function snapshotState(){const copy=deepClone(state);copy.selected=null;return copy}
+function persistCurrent(){
+  try{localStorage.setItem(CURRENT_KEY,JSON.stringify(snapshotState()));if(state.planId){const rec=library.plans.find(p=>p.id===state.planId);if(rec){rec.name=state.planName;rec.folderId=state.folderId;rec.updatedAt=Date.now();rec.state=snapshotState();persistLibrary()}}}catch(e){console.warn('Autosave BOS',e)}
+  updatePlanBadge();
+}
+function scheduleAutosave(){clearTimeout(autosaveTimer);autosaveTimer=setTimeout(persistCurrent,350)}
+function formatSavedDate(ts){try{return new Intl.DateTimeFormat('fr-FR',{dateStyle:'short',timeStyle:'short'}).format(new Date(ts))}catch{return ''}}
+function downloadBlob(blob,filename){const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
+
+function presetForObject(o){
+  if(!o || o.kind!=='light')return null;
+  return lightCatalog.find(p=>p.name===o.name)||lightCatalog.find(p=>p.short===o.short)||null;
+}
+function lightCapability(o){
+  if(!o||o.kind!=='light')return 'daylight';
+  const txt=`${o.name||''} ${o.family||''} ${o.short||''} ${o.form||''}`.toLowerCase();
+  // Couleur complète : modèles explicitement "c" ou familles RGB/pixel/couleur.
+  if(/\b(?:[a-z]*\d+[a-z-]*c|b7c)\b/.test(txt) || /\b(?:cob couleur|nova|infinibar|infinimat|ray|pano|pixel|tubes|tube|go|mt pro|mc pro|\bmc\b|ace 25c)\b/.test(txt))return 'color';
+  // Bi-color / CCT variable : la plupart des modèles en "x" et la gamme Halo actuelle.
+  if(/\b[a-z]*\d+[a-z-]*x\b/.test(txt) || /\bhalo\b/.test(txt))return 'bicolor';
+  return 'daylight';
+}
+function normalizeLightObject(o){
+  if(o.kind!=='light')return o;
+  const p=presetForObject(o);
+  if(p){
+    o.brand=o.brand||p.brand;o.family=o.family||p.family;o.form=o.form||p.form;o.short=o.short||p.short;
+    o.beam=Number(o.beam)||p.beam;o.aspect=o.aspect||p.aspect;o.length=o.length||p.length;
+  } else {
+    o.brand=o.brand||((o.name||'').toLowerCase().includes('aputure')?'Aputure':'Amaran');
+    o.family=o.family||'Projecteur';o.form=o.form||'cob';o.short=o.short||String(o.name||'LIGHT').replace(/^amaran\s+|^Aputure\s+/i,'').slice(0,7);
+  }
+  o.modifier=o.modifier||'none';
+  if(o.beamVisible===undefined)o.beamVisible=true;
+  if(o.modifierSize===undefined)o.modifierSize=o.modifier==='softbox'?.9:(o.modifier?.startsWith('umbrella')?1.05:.9);
+  const capability=lightCapability(o);
+  if(capability!=='color')o.colorMode='cct';
+  else if(!['cct','hsi'].includes(o.colorMode))o.colorMode='cct';
+  o.cct=clamp(Number(o.cct)||5600,2000,10000);
+  o.hue=((Number(o.hue)||0)%360+360)%360;
+  o.saturation=clamp(Number(o.saturation ?? 100),0,100);
+  return o;
+}
+function seed(){
+  state.objects=[
+    {id:uid('cam'),kind:'camera',name:'Caméra A',x:500,y:505,rot:-90,height:1.55,cameraModel:'Sony FX3',focal:50,locked:false},
+    {id:uid('subj'),kind:'subject',name:'Sujet 1',x:500,y:300,rot:90,height:1.75,locked:false},
+    {id:uid('light'),kind:'light',name:'amaran Halo 200x',brand:'Amaran',family:'Halo',form:'halo',short:'H200',x:285,y:330,rot:-15,beam:55,beamVisible:true,intensity:60,height:2.0,modifier:'none',modifierSize:.9,colorMode:'cct',cct:5600,hue:0,saturation:100,locked:false}
+  ];
+  state.objects.forEach(o=>{o.labelVisible=true;o.labelPos='auto'});
+  state.selected=state.objects[2].id;
+  state.activePreviewCamera=state.objects[0].id;
+  state.openingBindingVersion=2;
+}
+function normalizeCameraObject(o){
+  if(!o||o.kind!=='camera')return o;
+  o.cameraModel=cameras[o.cameraModel]?o.cameraModel:(cameras[state.cameraModel]?state.cameraModel:'Sony FX3');
+  o.focal=clamp(Number(o.focal||state.focal||50),12,300);
+  o.height=clamp(Number(o.height||1.55),0.2,4);
+  return o;
+}
+function cameraSettings(o){normalizeCameraObject(o);return {sensor:cameras[o.cameraModel],focal:o.focal};}
+
+function renderCanvas(){
+  state.objects.filter(o=>o.kind==='decor'&&o.type==='wall').forEach(syncWallChildren);
+  beamsLayer.innerHTML='';objectsLayer.innerHTML='';
+  state.objects.filter(o=>o.kind==='camera').forEach(drawCameraFov);
+  if(state.beamsVisible!==false)state.objects.filter(o=>o.kind==='light'&&o.beamVisible!==false).forEach(drawLightBeam);
+  state.objects.forEach(drawObject);
+  renderPreview();
+  updatePlanBadge();
+  scheduleAutosave();
+}
+function render(){renderCanvas();renderInspector()}
+function drawCameraFov(o){
+  const {sensor,focal}=cameraSettings(o),hfov=2*Math.atan(sensor.w/(2*focal)),len=460,half=Math.tan(hfov/2)*len;
+  beamsLayer.appendChild(svgEl('polygon',{points:`0,0 ${len},${-half} ${len},${half}`,class:'camera-fov',transform:`translate(${o.x} ${o.y}) rotate(${o.rot})`}));
+}
+function kelvinToRgb(kelvin){
+  let temp=clamp(Number(kelvin)||5600,1000,40000)/100,r,g,b;
+  if(temp<=66){r=255;g=99.4708025861*Math.log(temp)-161.1195681661;b=temp<=19?0:138.5177312231*Math.log(temp-10)-305.0447927307}
+  else{r=329.698727446*Math.pow(temp-60,-.1332047592);g=288.1221695283*Math.pow(temp-60,-.0755148492);b=255}
+  return [Math.round(clamp(r,0,255)),Math.round(clamp(g,0,255)),Math.round(clamp(b,0,255))];
+}
+function lightColor(o,alpha=.14){
+  normalizeLightObject(o);
+  if(o.colorMode==='hsi')return {fill:`hsla(${o.hue},${o.saturation}%,50%,${alpha})`,stroke:`hsla(${o.hue},${Math.max(35,o.saturation)}%,48%,${Math.min(.72,alpha*4)})`};
+  const [r,g,b]=kelvinToRgb(o.cct);return {fill:`rgba(${r},${g},${b},${alpha})`,stroke:`rgba(${r},${g},${b},${Math.min(.72,alpha*4)})`};
+}
+function lightColorText(o){normalizeLightObject(o);return o.colorMode==='hsi'?`H ${Math.round(o.hue)}° · S ${Math.round(o.saturation)}%`:`${Math.round(o.cct)} K`}
+function fixtureBeamOffset(o){
+  // Les sources plates / linéaires sont représentées vues du dessus par leur longueur.
+  // Leur face lumineuse projette donc perpendiculairement au grand axe de l'icône.
+  return ['panel','panel-wide','nova','nova-narrow','mat','strip','tube','pixel-bar'].includes(o?.form)?90:0;
+}
+function displayBeamAngle(o){
+  const raw=clamp(Number(o.beam)||55,4,179);
+  // Le cône du plan reste un repère schématique. Les sources surfaciques ou linéaires
+  // très ouvertes sont volontairement plafonnées afin de garder le plan lisible.
+  if(o?.form==='nova-narrow')return raw;
+  if(['mat','panel','panel-wide','nova'].includes(o?.form))return Math.min(raw,68);
+  if(['strip','tube','pixel-bar'].includes(o?.form))return Math.min(raw,60);
+  return raw;
+}
+function fixtureEmitterBase(o){
+  if(['tube','pixel-bar','strip'].includes(o?.form)){
+    const L=clamp(Number(o.length)||62,28,90);
+    return {type:'line',span:Math.max(22,L*0.92),len:270};
+  }
+  if(['mat','panel','panel-wide','nova','nova-narrow'].includes(o?.form)){
+    const aspect=o.aspect||1.5,w=clamp(38*aspect,38,78);
+    return {type:'surface',span:Math.max(22,w-4),len:255};
+  }
+  return {type:'point',span:0,len:310};
+}
+function drawLightBeam(o){
+  const beam=displayBeamAngle(o),base=fixtureEmitterBase(o),len=base.len,half=Math.tan(rad(beam/2))*len,c=lightColor(o,.13),beamRot=o.rot+fixtureBeamOffset(o);
+  const points=base.type==='point'?`0,0 ${len},${-half} ${len},${half}`:`0,${-(base.span/2)} ${len},${-half} ${len},${half} 0,${base.span/2}`;
+  beamsLayer.appendChild(svgEl('polygon',{points,class:'beam',style:`fill:${c.fill};stroke:${c.stroke}`,transform:`translate(${o.x} ${o.y}) rotate(${beamRot})`}));
+}
+
+function supportsSoftbox(o){
+  const no=['tube','pixel-bar','strip','bulb','mat','pocket-round'];
+  return o.kind==='light'&&!no.includes(o.form);
+}
+function addLightModifier(g,o){
+  if(!o.modifier||o.modifier==='none')return;
+  if(o.modifier==='softbox'){
+    const linear=['ray','panel','panel-wide','nova','nova-narrow'].includes(o.form);
+    if(linear){
+      g.appendChild(svgEl('rect',{x:25,y:-25,width:30,height:50,rx:5,class:'softbox-shape'}));
+      g.appendChild(svgEl('line',{x1:20,y1:-14,x2:25,y2:-20,class:'softbox-strut'}));
+      g.appendChild(svgEl('line',{x1:20,y1:14,x2:25,y2:20,class:'softbox-strut'}));
+    } else {
+      g.appendChild(svgEl('polygon',{points:'18,-13 36,-28 66,-28 66,28 36,28 18,13',class:'softbox-shape'}));
+      g.appendChild(svgEl('line',{x1:18,y1:-10,x2:36,y2:-24,class:'softbox-strut'}));
+      g.appendChild(svgEl('line',{x1:18,y1:10,x2:36,y2:24,class:'softbox-strut'}));
+    }
+    return;
+  }
+  if(o.modifier==='umbrella-reflect'||o.modifier==='umbrella-diffusion'){
+    const cls=o.modifier==='umbrella-reflect'?'umbrella-reflect-shape':'umbrella-diffusion-shape';
+    g.appendChild(svgEl('line',{x1:18,y1:0,x2:43,y2:0,class:'umbrella-stem'}));
+    g.appendChild(svgEl('path',{d:'M 43 -34 Q 73 0 43 34',class:cls}));
+    g.appendChild(svgEl('line',{x1:43,y1:-34,x2:43,y2:34,class:'umbrella-rim'}));
+    const t=svgEl('text',{x:55,y:4,class:'umbrella-code','text-anchor':'middle'});t.textContent=o.modifier==='umbrella-reflect'?'R':'D';g.appendChild(t);
+  }
+}
+function addFixtureSymbol(g,o){
+  const form=o.form||'cob',modelText=(o.short||'L').slice(0,7),bodyClass=`fixture-body ${o.brand==='Aputure'?'aputure-fixture':'amaran-fixture'}`,lensClass='fixture-lens';
+  const addModelText=(x=0,y=4,size=8)=>{const t=svgEl('text',{x,y,class:'fixture-code','text-anchor':'middle','font-size':size});t.textContent=modelText;g.appendChild(t)};
+  if(form==='tube'||form==='pixel-bar'||form==='strip'){
+    const L=o.length||62;g.appendChild(svgEl('rect',{x:-L/2,y:-8,width:L,height:16,rx:7,class:bodyClass}));
+    if(form==='pixel-bar'){const count=Math.max(3,Math.round(L/12));for(let i=0;i<count;i++)g.appendChild(svgEl('rect',{x:-L/2+5+i*(L-10)/count,y:-4,width:5,height:8,rx:2,class:'fixture-pixel'}))}
+    else if(form==='strip')g.appendChild(svgEl('path',{d:`M ${-L/2+5} 0 Q ${-L/4} -6 0 0 T ${L/2-5} 0`,class:'fixture-strip-line'}));
+    addModelText(0,23,8);return;
+  }
+  if(['panel','panel-wide','nova','nova-narrow','mat'].includes(form)){
+    const aspect=o.aspect||1.5,w=clamp(38*aspect,38,78),h=clamp(38/aspect,18,42),cls=form==='mat'?'fixture-mat':(form==='nova-narrow'?'fixture-nova-narrow':bodyClass);
+    g.appendChild(svgEl('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:form==='mat'?3:7,class:cls}));
+    if(form==='mat')g.appendChild(svgEl('rect',{x:-w/2+4,y:-h/2+4,width:w-8,height:h-8,rx:2,class:'fixture-mat-inner'}));
+    else g.appendChild(svgEl('rect',{x:-w/2+5,y:-h/2+5,width:w-10,height:h-10,rx:4,class:'fixture-panel-face'}));
+    addModelText(0,3,Math.min(8,Math.max(6,42/modelText.length)));return;
+  }
+  if(form==='pocket'||form==='pocket-round'){
+    if(form==='pocket-round')g.appendChild(svgEl('circle',{cx:0,cy:0,r:20,class:bodyClass}));else g.appendChild(svgEl('rect',{x:-20,y:-16,width:40,height:32,rx:9,class:bodyClass}));
+    g.appendChild(svgEl('circle',{cx:14,cy:0,r:5,class:lensClass}));addModelText(-3,3,8);return;
+  }
+  if(form==='bulb'){g.appendChild(svgEl('circle',{cx:4,cy:0,r:17,class:'fixture-bulb'}));g.appendChild(svgEl('rect',{x:-23,y:-8,width:12,height:16,rx:3,class:bodyClass}));addModelText(4,3,8);return}
+  const heavy=form.includes('heavy'),storm=form.startsWith('storm'),ls=form.startsWith('ls'),halo=form==='halo',ray=form==='ray';
+  const w=heavy?46:(storm?40:(ls?38:36)),h=heavy?34:(storm?32:30);
+  g.appendChild(svgEl('rect',{x:-w/2-7,y:-h/2,width:w,height:h,rx:storm?5:8,class:bodyClass}));
+  if(storm)g.appendChild(svgEl('path',{d:`M ${-w/2-2} ${-h/2+5} L ${-w/2-8} 0 L ${-w/2-2} ${h/2-5}`,class:'fixture-storm-fin'}));
+  if(ls)g.appendChild(svgEl('line',{x1:-w/2,y1:-h/2+7,x2:w/2-7,y2:-h/2+7,class:'fixture-ridge'}));
+  if(halo)g.appendChild(svgEl('circle',{cx:w/2-4,cy:0,r:15,class:'fixture-halo-ring'}));
+  else if(ray)g.appendChild(svgEl('circle',{cx:w/2-3,cy:0,r:14,class:'fixture-ray-head'}));
+  else g.appendChild(svgEl('polygon',{points:`${w/2-7},${-h/2+3} ${w/2+14},-11 ${w/2+14},11 ${w/2-7},${h/2-3}`,class:lensClass}));
+  addModelText(-5,3,Math.min(8,Math.max(6,38/modelText.length)));
+}
+
+function drawAccessorySymbol(g,o){
+  const w=Math.max(50,(o.width||1.2)*55),h=Math.max(16,Math.min(82,(o.height||1.2)*32));
+  if(o.type==='diffusion'){
+    g.appendChild(svgEl('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:3,class:'diffusion-frame'}));
+    for(let x=-w/2+10;x<w/2;x+=14)g.appendChild(svgEl('line',{x1:x,y1:-h/2+3,x2:x+Math.min(h-6,18),y2:h/2-3,class:'diffusion-hatch'}));
+  } else if(o.type==='borniol'){
+    g.appendChild(svgEl('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:3,class:'borniol-shape'}));
+  } else if(o.type==='negative'){
+    g.appendChild(svgEl('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:3,class:'negative-shape'}));
+    g.appendChild(svgEl('text',{x:0,y:4,'text-anchor':'middle',class:'negative-code'})).textContent='NEG';
+  } else {
+    g.appendChild(svgEl('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:4,class:'reflector-shape'}));
+    g.appendChild(svgEl('line',{x1:-w/2+8,y1:h/2-5,x2:w/2-8,y2:-h/2+5,class:'reflector-line'}));
+  }
+  return {w,h};
+}
+function drawDecorSymbol(g,o){
+  const w=Math.max(45,(o.width||1)*55),h=Math.max(28,(o.height||.8)*48);
+  if(o.type==='wall'){
+    g.appendChild(svgEl('line',{x1:-w/2,y1:0,x2:w/2,y2:0,class:'wall-line'}));
+    g.appendChild(svgEl('line',{x1:-w/2,y1:-5,x2:-w/2,y2:5,class:'wall-cap'}));g.appendChild(svgEl('line',{x1:w/2,y1:-5,x2:w/2,y2:5,class:'wall-cap'}));
+    return {w,h:20};
+  }
+  if(o.type==='door'){
+    g.appendChild(svgEl('line',{x1:-w/2,y1:0,x2:w/2,y2:0,class:'door-frame'}));
+    g.appendChild(svgEl('line',{x1:-w/2,y1:0,x2:-w/2,y2:-w,class:'door-leaf'}));
+    g.appendChild(svgEl('path',{d:`M ${-w/2} ${-w} A ${w} ${w} 0 0 1 ${w/2} 0`,class:'door-arc'}));
+    return {w,h:w+15};
+  }
+  if(o.type==='window'){
+    g.appendChild(svgEl('line',{x1:-w/2,y1:-5,x2:w/2,y2:-5,class:'window-line'}));g.appendChild(svgEl('line',{x1:-w/2,y1:5,x2:w/2,y2:5,class:'window-line'}));
+    g.appendChild(svgEl('line',{x1:0,y1:-8,x2:0,y2:8,class:'window-mullion'}));return {w,h:22};
+  }
+  g.appendChild(svgEl('rect',{x:-w/2,y:-h/2,width:w,height:h,rx:7,class:'table-shape'}));g.appendChild(svgEl('rect',{x:-w/2+6,y:-h/2+6,width:w-12,height:h-12,rx:5,class:'table-inner'}));return {w,h};
+}
+
+function drawObject(o){
+  if(o.kind==='light')normalizeLightObject(o);
+  const g=svgEl('g',{class:`object ${state.selected===o.id?'selected':''} ${o.locked?'locked':''}`,transform:`translate(${o.x} ${o.y}) rotate(${o.rot})`,'data-id':o.id});
+  let hitW=96,hitH=96,labelY=50;
+  if(o.kind==='camera'){
+    g.appendChild(svgEl('circle',{r:36,class:'selection-ring'}));g.appendChild(svgEl('rect',{x:-21,y:-16,width:34,height:32,rx:7,class:'camera-body'}));g.appendChild(svgEl('polygon',{points:'13,-10 34,-17 34,17 13,10',class:'camera-lens'}));
+  } else if(o.kind==='subject'){
+    g.appendChild(svgEl('circle',{r:34,class:'selection-ring'}));g.appendChild(svgEl('ellipse',{cx:0,cy:0,rx:19,ry:29,class:'subject-body'}));g.appendChild(svgEl('circle',{cx:17,cy:0,r:9,class:'subject-head'}));
+  } else if(o.kind==='light'){
+    g.appendChild(svgEl('circle',{r:48,class:'selection-ring'}));addLightModifier(g,o);addFixtureSymbol(g,o);labelY=62;
+  } else if(o.kind==='accessory'){
+    const d=drawAccessorySymbol(g,o);hitW=d.w+24;hitH=d.h+24;labelY=d.h/2+28;g.appendChild(svgEl('rect',{x:-hitW/2,y:-hitH/2,width:hitW,height:hitH,rx:8,class:'selection-box'}));
+  } else if(o.kind==='decor'){
+    const d=drawDecorSymbol(g,o);hitW=d.w+24;hitH=d.h+24;labelY=d.h/2+28;g.appendChild(svgEl('rect',{x:-hitW/2,y:-hitH/2,width:hitW,height:hitH,rx:8,class:'selection-box'}));
+  }
+  g.appendChild(svgEl('rect',{x:-hitW/2,y:-hitH/2,width:hitW,height:hitH,class:'hit'}));
+  if(state.labelsMode!=='hidden'&&o.labelVisible!==false){
+    const pos=o.labelPos||'auto';let lx=0,ly=labelY,anchor='middle';
+    if(pos==='top'){ly=-hitH/2-18}else if(pos==='left'){lx=-hitW/2-12;ly=0;anchor='end'}else if(pos==='right'){lx=hitW/2+12;ly=0;anchor='start'}else if(pos==='bottom'){ly=hitH/2+24}
+    const label=svgEl('g',{transform:`rotate(${-o.rot}) translate(${lx} ${ly})`}),t=svgEl('text',{class:'object-label','text-anchor':anchor});t.textContent=o.name;label.appendChild(t);
+    if(state.labelsMode==='full'){
+      if(o.kind==='light'){const st=svgEl('text',{class:'object-sub','text-anchor':anchor,y:17});const modLabel=o.modifier==='softbox'?'Softbox':o.modifier==='umbrella-reflect'?'Parapluie réflexion':o.modifier==='umbrella-diffusion'?'Parapluie diffusion':'';st.textContent=`${o.family||'Lumière'}${modLabel?' · '+modLabel:''} · ${o.intensity}% · ${lightColorText(o)}`;label.appendChild(st)}
+      else if(o.kind==='accessory'||o.kind==='decor'){const st=svgEl('text',{class:'object-sub','text-anchor':anchor,y:17});st.textContent=`${(o.width||0).toFixed(1)} × ${(o.height||0).toFixed(1)} m${o.locked?' · verrouillé':''}`;label.appendChild(st)}
+    }
+    g.appendChild(label);
+  }
+  if(state.selected===o.id&&!o.locked){
+    const beamOffset=o.kind==='light'?fixtureBeamOffset(o):0;const gizmo=svgEl('g',{class:'rotation-gizmo',transform:beamOffset?`rotate(${beamOffset})`:''});gizmo.appendChild(svgEl('line',{x1:40,y1:0,x2:65,y2:0,class:'rotation-stem'}));const handle=svgEl('circle',{cx:74,cy:0,r:12,class:'rotation-handle','data-id':o.id});gizmo.appendChild(handle);const arrow=svgEl('path',{d:'M 69 -4 A 6 6 0 1 1 69 4 M 69 4 L 66 1 M 69 4 L 72 1',class:'rotation-icon','data-id':o.id});gizmo.appendChild(arrow);const angle=svgEl('text',{x:74,y:-19,class:'rotation-angle','text-anchor':'middle'});let shownAngle=o.rot+beamOffset;while(shownAngle>180)shownAngle-=360;while(shownAngle<=-180)shownAngle+=360;angle.textContent=`${Math.round(shownAngle)}°`;gizmo.appendChild(angle);handle.addEventListener('pointerdown',startRotate);arrow.addEventListener('pointerdown',startRotate);gizmo.addEventListener('pointerdown',e=>e.stopPropagation());g.appendChild(gizmo);
+  }
+  g.addEventListener('pointerdown',startDrag);objectsLayer.appendChild(g);
+}
+
+function pointerToStage(e){const pt=stage.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(stage.getScreenCTM().inverse())}
+function startDrag(e){
+  if(e.pointerType==='touch'&&activeTouchPointers.size>1)return;
+  e.preventDefault();e.stopPropagation();const id=e.currentTarget.dataset.id,o=state.objects.find(x=>x.id===id);if(!o)return;
+  if(state.selected!==id){state.selected=id;renderInspector()}
+  if(o.kind==='camera'){state.activePreviewCamera=o.id;renderPreview()}
+  if(o.locked){renderInspector();return}
+  const p=pointerToStage(e);drag={mode:'move',id,dx:p.x-o.x,dy:p.y-o.y,pointerId:e.pointerId};stage.setPointerCapture?.(e.pointerId);
+}
+function startRotate(e){if(e.pointerType==='touch'&&activeTouchPointers.size>1)return;e.preventDefault();e.stopPropagation();const id=e.currentTarget.dataset.id||e.currentTarget.closest?.('[data-id]')?.dataset.id,o=state.objects.find(x=>x.id===id);if(!o||o.locked)return;state.selected=id;if(o.kind==='camera')state.activePreviewCamera=o.id;drag={mode:'rotate',id,pointerId:e.pointerId,rotateOffset:o.kind==='light'?fixtureBeamOffset(o):0};stage.setPointerCapture?.(e.pointerId)}
+stage.addEventListener('pointermove',e=>{
+  if(!drag)return;const o=state.objects.find(x=>x.id===drag.id);if(!o)return;const p=pointerToStage(e);
+  if(drag.mode==='rotate'){
+    o.rot=deg(Math.atan2(p.y-o.y,p.x-o.x))-(drag.rotateOffset||0);if(o.rot>180)o.rot-=360;if(o.rot<=-180)o.rot+=360;
+  } else {
+    const targetX=clamp(snapValue(p.x-drag.dx),35,965),targetY=clamp(snapValue(p.y-drag.dy),35,585);
+    o.x=targetX;o.y=targetY;
+  }renderCanvas();
+});
+function endGesture(){if(!drag)return;try{stage.releasePointerCapture?.(drag.pointerId)}catch{}drag=null;render()}
+stage.addEventListener('pointerup',endGesture);stage.addEventListener('pointercancel',endGesture);
+stage.addEventListener('pointerdown',e=>{if(e.target.closest?.('.object'))return;if(state.selected!==null){state.selected=null;render()}});
+
+let inspectorCollapsed=false;
+function updateInspectorCollapse(){
+  if(!inspector||!inspectorBody||!toggleInspectorBtn)return;
+  inspector.classList.toggle('collapsed',inspectorCollapsed);
+  inspectorBody.hidden=inspectorCollapsed;
+  toggleInspectorBtn.setAttribute('aria-expanded',String(!inspectorCollapsed));
+  if(inspectorToggleLabel)inspectorToggleLabel.textContent=inspectorCollapsed?'Afficher':'Masquer';
+}
+if(toggleInspectorBtn)toggleInspectorBtn.addEventListener('click',()=>{inspectorCollapsed=!inspectorCollapsed;updateInspectorCollapse()});
+updateInspectorCollapse();
+
+function selected(){return state.objects.find(o=>o.id===state.selected)}
+function kindLabel(o){return o.kind==='camera'?'Caméra':o.kind==='subject'?'Personnage':o.kind==='light'?`${o.brand||''} · ${o.family||'Projecteur'}`:o.kind==='accessory'?'Accessoire':'Décor'}
+function toggleButtons(key,current,options){return `<div class="inspector-choice" data-choice="${key}">${options.map(([value,label])=>`<button data-value="${esc(value)}" class="${current===value?'active':''}">${esc(label)}</button>`).join('')}</div>`}
+function renderInspector(){
+  const o=selected();if(!o){inspectorEmpty.classList.remove('hidden');inspectorFields.classList.add('hidden');selectionHint.textContent='Sélectionne un élément';return}
+  inspectorEmpty.classList.add('hidden');inspectorFields.classList.remove('hidden');selectionHint.textContent=kindLabel(o);
+  if(o.kind==='camera')normalizeCameraObject(o);
+  let html=`<div class="field"><label>Nom</label><input data-k="name" value="${esc(o.name)}"></div>`;
+  if(o.kind==='light')html+=`<div class="fixture-summary"><span class="fixture-brand">${esc(o.brand||'')}</span><strong>${esc(o.name)}</strong><small>${esc(o.family||'')}</small></div>`;
+  if(o.kind==='camera'){
+    html+=`<div class="field"><label>Caméra / capteur</label><select id="selectedCameraModel">${Object.keys(cameras).map(name=>`<option value="${esc(name)}" ${o.cameraModel===name?'selected':''}>${esc(name)}</option>`).join('')}</select></div>`;
+    html+=`<div class="field-grid"><div class="field"><label>Focale</label><div class="field-inline"><input data-k="focal" type="number" min="12" max="300" step="1" value="${o.focal}"><span class="unit">mm</span></div></div><div class="field"><label>Hauteur caméra</label><div class="field-inline"><input data-k="height" type="number" min="0.2" max="4" step="0.05" value="${o.height}"><span class="unit">m</span></div></div></div>`;
+  }
+  html+=`<div class="direct-edit-note">Position et orientation : règle-les directement sur le plan du dessus.</div>`;
+  html+=`<div class="field-grid">`;
+  if(o.kind==='subject')html+=`<div class="field"><label>Taille</label><div class="field-inline"><input data-k="height" type="number" min="1" max="2.2" step="0.01" value="${o.height}"><span class="unit">m</span></div></div>`;
+  else if(o.kind==='light')html+=`<div class="field"><label>Hauteur source</label><div class="field-inline"><input data-k="height" type="number" min="0" max="5" step="0.1" value="${o.height}"><span class="unit">m</span></div></div>`;
+  else if(o.kind==='accessory'||o.kind==='decor')html+=`<div class="field"><label>Largeur</label><div class="field-inline"><input data-k="width" type="number" min="0.1" max="20" step="0.1" value="${o.width}"><span class="unit">m</span></div></div>`;
+  else if(o.kind!=='camera')html+=`<div class="field"><label>Distance sujet</label><div class="field-inline"><input disabled value="${nearestSubjectDistance(o).toFixed(2)}"><span class="unit">m</span></div></div>`;
+  html+='</div>';
+  if(o.kind==='accessory'||o.kind==='decor'){
+    const zDefault=o.kind==='accessory'?(o.height||1.2):(o.type==='wall'?2.5:o.type==='door'?2.04:o.type==='window'?1.2:o.type==='table'?.75:1);
+    o.zHeight=Number(o.zHeight||zDefault);
+    if(o.elevation===undefined)o.elevation=o.type==='window'?.9:(o.kind==='accessory'?.35:0);
+    const depthLabel=o.kind==='decor'&&['wall','door','window'].includes(o.type)?'Épaisseur':'Profondeur';
+    html+=`<div class="field-grid"><div class="field"><label>${depthLabel}</label><div class="field-inline"><input data-k="height" type="number" min="0.05" max="20" step="0.05" value="${o.height}"><span class="unit">m</span></div></div><div class="field"><label>Hauteur réelle</label><div class="field-inline"><input data-k="zHeight" type="number" min="0.05" max="10" step="0.05" value="${o.zHeight}"><span class="unit">m</span></div></div></div>`;
+    if(o.kind==='accessory'||o.type==='window')html+=`<div class="field"><label>Hauteur au sol</label><div class="field-inline"><input data-k="elevation" type="number" min="0" max="5" step="0.05" value="${o.elevation}"><span class="unit">m</span></div></div>`;
+  }
+  if(o.kind==='light'){
+    html+=`<div class="field"><label>Accessoire lumière</label>${toggleButtons('modifier',o.modifier||'none',supportsSoftbox(o)?[['none','Nu'],['softbox','Softbox'],['umbrella-reflect','Parapluie réflexion'],['umbrella-diffusion','Parapluie diffusion']]:[['none','Nu']])}</div>`;
+    if(o.modifier&&o.modifier!=='none')html+=`<div class="field"><label>${o.modifier.startsWith('umbrella')?'Diamètre parapluie':'Taille accessoire'}</label><div class="field-inline"><input data-k="modifierSize" type="number" min="0.3" max="3" step="0.05" value="${Number(o.modifierSize||.9).toFixed(2)}"><span class="unit">m</span></div></div>`;
+    const capability=lightCapability(o);
+    html+=`<label class="lock-row"><input id="beamVisibleSelected" type="checkbox" ${o.beamVisible!==false?'checked':''}> <span>Afficher le faisceau de ce projecteur</span></label>`;
+    html+=`<div class="field"><label>Intensité</label><div class="field-inline"><input data-k="intensity" type="range" min="0" max="100" value="${o.intensity}"><span class="unit">${o.intensity}%</span></div></div>`;
+    if(capability==='color'){
+      html+=`<div class="field"><label>Mode couleur</label>${toggleButtons('colorMode',o.colorMode||'cct',[['cct','Température'],['hsi','HSI']])}</div>`;
+      if((o.colorMode||'cct')==='hsi')html+=`<div class="field-grid"><div class="field"><label>Hue</label><div class="field-inline"><input data-k="hue" type="number" min="0" max="360" step="1" value="${Math.round(o.hue||0)}"><span class="unit">°</span></div></div><div class="field"><label>Saturation</label><div class="field-inline"><input data-k="saturation" type="range" min="0" max="100" step="1" value="${Math.round(o.saturation??100)}"><span class="unit">${Math.round(o.saturation??100)}%</span></div></div></div>`;
+      else html+=`<div class="field"><label>Température de couleur</label><div class="field-inline"><input data-k="cct" type="number" min="2000" max="10000" step="50" value="${Math.round(o.cct||5600)}"><span class="unit">K</span></div></div>`;
+    } else if(capability==='bicolor') {
+      html+=`<div class="field"><label>Température de couleur</label><div class="field-inline"><input data-k="cct" type="number" min="2000" max="10000" step="50" value="${Math.round(o.cct||5600)}"><span class="unit">K</span></div></div>`;
+    } else {
+      html+=`<div class="field"><label>Température fixe</label><div class="field-inline"><input disabled value="${Math.round(o.cct||5600)}"><span class="unit">K</span></div></div>`;
+    }
+    html+=`<div class="field"><label>Ouverture du cône (schématique)</label><div class="field-inline"><input data-k="beam" type="number" min="4" max="179" value="${o.beam}"><span class="unit">°</span></div><small class="field-help">Valeur indicative pour le dessin du plan, pas une donnée photométrique garantie.</small></div>`;
+    html+=`<div class="field"><label>Distance au sujet le plus proche</label><div class="field-inline"><input disabled value="${nearestSubjectDistance(o).toFixed(2)}"><span class="unit">m</span></div></div>`;
+    html+=`<button class="change-fixture" id="changeFixtureBtn">Changer de modèle</button>`;
+  }
+  if(o.labelVisible===undefined)o.labelVisible=true;if(!o.labelPos)o.labelPos='auto';
+  html+=`<div class="field-divider"></div><div class="field"><label>Informations sur le plan</label><label class="label-row"><span>Afficher les infos</span><input id="labelVisibleSelected" type="checkbox" ${o.labelVisible!==false?'checked':''}></label><div class="inspector-choice five" data-choice="labelPos">${[['auto','Auto'],['top','Haut'],['bottom','Bas'],['left','Gauche'],['right','Droite']].map(([v,l])=>`<button data-value="${v}" class="${o.labelPos===v?'active':''}">${l}</button>`).join('')}</div></div>`;
+  if(o.kind==='accessory'||o.kind==='decor')html+=`<label class="lock-row"><input id="lockSelected" type="checkbox" ${o.locked?'checked':''}> <span>Verrouiller la position</span></label>`;
+  html+=`<button class="danger" id="deleteSelected">Supprimer cet élément</button>`;inspectorFields.innerHTML=html;
+  inspectorFields.querySelectorAll('[data-k]').forEach(inp=>inp.addEventListener('input',()=>{const obj=selected();if(!obj)return;const key=inp.dataset.k;let val=inp.value;if(['height','width','zHeight','elevation','intensity','beam','focal','modifierSize','cct','hue','saturation'].includes(key))val=Number(val);obj[key]=val;if(key==='intensity'||key==='saturation'){const u=inp.parentElement?.querySelector('.unit');if(u)u.textContent=`${val}%`}if(obj.kind==='camera')state.activePreviewCamera=obj.id;renderCanvas()}));
+  const camModel=document.getElementById('selectedCameraModel');if(camModel)camModel.onchange=()=>{const obj=selected();if(!obj||obj.kind!=='camera')return;obj.cameraModel=camModel.value;state.activePreviewCamera=obj.id;renderCanvas()};
+  inspectorFields.querySelectorAll('[data-choice] button').forEach(btn=>btn.onclick=()=>{const obj=selected();if(!obj)return;const key=btn.parentElement.dataset.choice;obj[key]=btn.dataset.value;if(key==='modifier'){if(obj.modifier==='softbox'&&!obj.modifierSize)obj.modifierSize=.9;if(obj.modifier?.startsWith('umbrella'))obj.modifierSize=Number(obj.modifierSize)||1.05}render()});
+  const beamVisible=document.getElementById('beamVisibleSelected');if(beamVisible)beamVisible.onchange=()=>{o.beamVisible=beamVisible.checked;renderCanvas()};
+  const labelVisible=document.getElementById('labelVisibleSelected');if(labelVisible)labelVisible.onchange=()=>{o.labelVisible=labelVisible.checked;render()};
+  const lock=document.getElementById('lockSelected');if(lock)lock.onchange=()=>{o.locked=lock.checked;render()};
+  document.getElementById('deleteSelected').onclick=()=>{state.objects=state.objects.filter(x=>x.id!==o.id);if(state.activePreviewCamera===o.id)state.activePreviewCamera=state.objects.find(x=>x.kind==='camera')?.id||null;state.selected=null;render()};
+  const change=document.getElementById('changeFixtureBtn');if(change)change.onclick=()=>openLightChooser(o.id);
+}
+function nearestSubjectDistance(o){const ss=state.objects.filter(x=>x.kind==='subject');if(!ss.length)return 0;return Math.min(...ss.map(s=>dist(o,s)))}
+
+// V0.8 — association au mur explicite : aucun aimantage automatique.
+function isOpening(o){return o?.kind==='decor'&&['window','door'].includes(o.type)}
+function wallFrame(wall){
+  const a=rad(wall.rot||0);return{ux:{x:Math.cos(a),y:Math.sin(a)},uy:{x:-Math.sin(a),y:Math.cos(a)},half:(wall.width||3)*SCALE/2};
+}
+function openingPlacementOnWall(o,wall,x=o.x,y=o.y){
+  const f=wallFrame(wall),dx=x-wall.x,dy=y-wall.y,along=dx*f.ux.x+dy*f.ux.y,perp=dx*f.uy.x+dy*f.uy.y,halfOpening=(o.width||1)*SCALE/2;
+  const limit=Math.max(0,f.half-halfOpening),clamped=clamp(along,-limit,limit);
+  return{along,perp,clamped,x:wall.x+f.ux.x*clamped,y:wall.y+f.ux.y*clamped,rot:wall.rot||0};
+}
+function attachOpeningToWall(o,wall,x=o.x,y=o.y){
+  if(!isOpening(o)||!wall||wall.type!=='wall')return false;const p=openingPlacementOnWall(o,wall,x,y);o.wallId=wall.id;o.wallOffset=p.clamped/SCALE;o.x=p.x;o.y=p.y;o.rot=p.rot;return true;
+}
+function detachOpening(o){if(!o)return;delete o.wallId;delete o.wallOffset}
+function findNearbyWall(o,x=o.x,y=o.y,maxDistance=.32){
+  if(!isOpening(o))return null;let best=null;for(const wall of state.objects.filter(w=>w.kind==='decor'&&w.type==='wall')){
+    const p=openingPlacementOnWall(o,wall,x,y),halfOpening=(o.width||1)*SCALE/2,within=Math.abs(p.along)<=wallFrame(wall).half+halfOpening*.35;
+    if(!within)continue;const d=Math.abs(p.perp)/SCALE;if(d<=maxDistance&&(!best||d<best.d))best={wall,p,d};
+  }return best;
+}
+function syncOpeningToWall(o){
+  if(!isOpening(o)||!o.wallId)return;const wall=state.objects.find(w=>w.id===o.wallId&&w.type==='wall');if(!wall){detachOpening(o);return}
+  const f=wallFrame(wall),halfOpening=(o.width||1)*SCALE/2,limit=Math.max(0,f.half-halfOpening),off=clamp(Number(o.wallOffset??0)*SCALE,-limit,limit);o.wallOffset=off/SCALE;o.x=wall.x+f.ux.x*off;o.y=wall.y+f.ux.y*off;o.rot=wall.rot||0;
+}
+function syncWallChildren(wall){state.objects.filter(o=>o.wallId===wall.id).forEach(syncOpeningToWall)}
+function migrateOpeningBindings(){
+  // V1.0 simplifie le décor : fenêtres et portes restent toujours des objets libres.
+  state.objects.filter(isOpening).forEach(detachOpening);
+  state.openingBindingVersion=3;
+}
+
+function cameraSpace(cam,obj){const dx=(obj.x-cam.x)/SCALE,dy=(obj.y-cam.y)/SCALE,a=-rad(cam.rot);return{forward:dx*Math.cos(a)-dy*Math.sin(a),side:dx*Math.sin(a)+dy*Math.cos(a)}}
+function cameraFovs(cam){const {sensor,focal}=cameraSettings(cam),hfov=2*Math.atan(sensor.w/(2*focal)),effectiveH=Math.min(sensor.h,sensor.w*9/16),vfov=2*Math.atan(effectiveH/(2*focal));return{hfov,vfov,sensor,focal}}
+function projectWorld(cam,x,y,z,W=1600,H=900){
+  const cs=cameraSpace(cam,{x,y});if(cs.forward<=.03)return null;const {hfov,vfov}=cameraFovs(cam),halfW=cs.forward*Math.tan(hfov/2),halfH=cs.forward*Math.tan(vfov/2);return{x:W*(.5+cs.side/(2*halfW)),y:H*(.5-(z-(cam.height||1.55))/(2*halfH)),forward:cs.forward,side:cs.side};
+}
+function shotLabel(subjectPixelHeight,monitorH=900){const r=subjectPixelHeight/monitorH;if(r<.42)return'Plan pied large';if(r<.62)return'Plan pied';if(r<.86)return'Plan américain / taille';if(r<1.18)return'Plan poitrine';if(r<1.65)return'Gros plan';return'Très gros plan'}
+function objectAxisEndpoints(o,widthMeters){const a=rad(o.rot||0),dx=Math.cos(a)*widthMeters*SCALE/2,dy=Math.sin(a)*widthMeters*SCALE/2;return[{x:o.x-dx,y:o.y-dy},{x:o.x+dx,y:o.y+dy}]}
+function svgNode(tag,attrs={},text=''){const el=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))el.setAttribute(k,v);if(text)el.textContent=text;return el}
+function verticalPlanePoints(cam,o,width,z0,z1){
+  const [a,b]=objectAxisEndpoints(o,width),pts=[projectWorld(cam,a.x,a.y,z0),projectWorld(cam,b.x,b.y,z0),projectWorld(cam,b.x,b.y,z1),projectWorld(cam,a.x,a.y,z1)];return pts.some(p=>!p)?null:pts;
+}
+function projectedVerticalPlane(cam,o,width,z0,z1,cls,label){
+  const pts=verticalPlanePoints(cam,o,width,z0,z1);if(!pts)return null;const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),g=svgNode('g',{'data-depth':Math.max(...pts.map(p=>p.forward))});g.appendChild(svgNode('polygon',{points:pts.map(p=>`${p.x},${p.y}`).join(' '),class:cls}));
+  if(label){const cx=xs.reduce((a,b)=>a+b,0)/4,cy=ys.reduce((a,b)=>a+b,0)/4;g.appendChild(svgNode('text',{x:cx,y:cy,class:'preview-object-code','text-anchor':'middle','dominant-baseline':'middle'},label))}
+  return{node:g,depth:pts.reduce((a,p)=>a+p.forward,0)/4,bbox:{x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}};
+}
+function pathFromProjectedPoints(pts){return`M ${pts.map(p=>`${p.x} ${p.y}`).join(' L ')} Z`}
+function angleDistance180(a,b){let d=Math.abs((((Number(a||0)-Number(b||0))+90)%180+180)%180-90);return d}
+function previewWallMatch(o){
+  if(!isOpening(o))return null;
+  if(o.wallId){const wall=state.objects.find(w=>w.id===o.wallId&&w.kind==='decor'&&w.type==='wall');if(wall)return{wall,p:openingPlacementOnWall(o,wall,o.x,o.y),explicit:true}}
+  let best=null;
+  for(const wall of state.objects.filter(w=>w.kind==='decor'&&w.type==='wall')){
+    const p=openingPlacementOnWall(o,wall,o.x,o.y),angle=angleDistance180(o.rot,wall.rot),perp=Math.abs(p.perp)/SCALE,halfOpening=(o.width||1)*SCALE/2,within=Math.abs(p.along)<=wallFrame(wall).half-halfOpening*.55;
+    const tolerance=Math.max(.12,Number(wall.height||.1)/2+Number(o.height||.1)/2+.07);
+    if(!within||perp>tolerance||angle>12)continue;
+    const score=perp+angle/120;if(!best||score<best.score)best={wall,p,explicit:false,score};
+  }
+  return best;
+}
+function previewOpeningProxy(o,match){
+  if(!match)return o;const f=wallFrame(match.wall),halfOpening=(o.width||1)*SCALE/2,limit=Math.max(0,f.half-halfOpening),off=clamp(match.p.clamped,-limit,limit);
+  return{...o,x:match.wall.x+f.ux.x*off,y:match.wall.y+f.ux.y*off,rot:match.wall.rot||0};
+}
+function projectedWallWithOpenings(cam,wall){
+  const outer=verticalPlanePoints(cam,wall,wall.width||3,0,wall.zHeight||2.5);if(!outer)return null;
+  const children=state.objects.filter(isOpening).map(o=>({o,match:previewWallMatch(o)})).filter(x=>x.match?.wall?.id===wall.id);let d=pathFromProjectedPoints(outer),projectedChildren=[];
+  for(const {o,match} of children){const proxy=previewOpeningProxy(o,match),z0=o.type==='window'?(o.elevation??.9):0,z1=o.type==='window'?z0+(o.zHeight||1.2):(o.zHeight||2.04),pts=verticalPlanePoints(cam,proxy,o.width||(o.type==='window'?1.5:.9),z0,z1);if(!pts)continue;d+=' '+pathFromProjectedPoints(pts);projectedChildren.push({o,pts});}
+  const xs=outer.map(p=>p.x),ys=outer.map(p=>p.y),g=svgNode('g',{'data-depth':Math.max(...outer.map(p=>p.forward))});
+  g.appendChild(svgNode('path',{d,class:'preview-wall','fill-rule':'evenodd'}));
+  // Le trou est réellement découpé dans le mur. On ne redessine qu'un cadre, sans aplat opaque devant le mur.
+  for(const {o,pts} of projectedChildren){
+    const cls=o.type==='window'?'preview-window-frame':'preview-door-frame';
+    g.appendChild(svgNode('polygon',{points:pts.map(p=>`${p.x},${p.y}`).join(' '),class:cls}));
+    if(o.type==='window'){
+      const bottomMid={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2},topMid={x:(pts[2].x+pts[3].x)/2,y:(pts[2].y+pts[3].y)/2};
+      g.appendChild(svgNode('line',{x1:bottomMid.x,y1:bottomMid.y,x2:topMid.x,y2:topMid.y,class:'preview-window-mullion'}));
+    }
+  }
+  return{node:g,depth:outer.reduce((a,p)=>a+p.forward,0)/4,bbox:{x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}};
+}
+function projectedBillboard(cam,x,y,zCenter,width,height,cls,label){
+  const c=projectWorld(cam,x,y,zCenter);if(!c)return null;const {hfov,vfov}=cameraFovs(cam),W=1600,H=900,pxW=W*width/(2*c.forward*Math.tan(hfov/2)),pxH=H*height/(2*c.forward*Math.tan(vfov/2)),x0=c.x-pxW/2,y0=c.y-pxH/2;
+  const g=svgNode('g',{'data-depth':c.forward});g.appendChild(svgNode('rect',{x:x0,y:y0,width:pxW,height:pxH,rx:Math.min(18,Math.max(3,pxH*.08)),class:cls}));if(label&&pxW>28&&pxH>16)g.appendChild(svgNode('text',{x:c.x,y:c.y,class:'preview-object-code','text-anchor':'middle','dominant-baseline':'middle'},label));return{node:g,depth:c.forward,bbox:{x0,x1:x0+pxW,y0,y1:y0+pxH}};
+}
+function bboxTouchesFrame(b){return b&&b.x1>0&&b.x0<1600&&b.y1>0&&b.y0<900}
+function addSubjectPreview(cam,o){
+  const bottom=projectWorld(cam,o.x,o.y,0),top=projectWorld(cam,o.x,o.y,o.height||1.75);if(!bottom||!top)return null;const h=Math.abs(bottom.y-top.y),midX=(bottom.x+top.x)/2,w=Math.max(12,h*.28),g=svgNode('g',{'data-depth':bottom.forward});
+  const headR=Math.max(4,w*.27),headY=top.y+h*.12;g.appendChild(svgNode('circle',{cx:midX,cy:headY,r:headR,class:'preview-subject'}));g.appendChild(svgNode('rect',{x:midX-w*.38,y:top.y+h*.23,width:w*.76,height:h*.43,rx:w*.22,class:'preview-subject'}));g.appendChild(svgNode('rect',{x:midX-w*.32,y:top.y+h*.60,width:w*.25,height:h*.40,rx:w*.06,class:'preview-subject'}));g.appendChild(svgNode('rect',{x:midX+w*.07,y:top.y+h*.60,width:w*.25,height:h*.40,rx:w*.06,class:'preview-subject'}));g.appendChild(svgNode('text',{x:midX,y:Math.max(18,top.y-10),class:'preview-subject-label','text-anchor':'middle'},o.name));
+  return{node:g,depth:bottom.forward,bbox:{x0:midX-w/2,x1:midX+w/2,y0:top.y,y1:bottom.y},subjectHeight:h};
+}
+function addTablePreview(cam,o){
+  const a=rad(o.rot||0),ux={x:Math.cos(a),y:Math.sin(a)},uy={x:-Math.sin(a),y:Math.cos(a)},hw=(o.width||1.6)*SCALE/2,hd=(o.height||.8)*SCALE/2,z=o.zHeight||.75,ptsWorld=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([sx,sy])=>({x:o.x+ux.x*hw*sx+uy.x*hd*sy,y:o.y+ux.y*hw*sx+uy.y*hd*sy})),pts=ptsWorld.map(p=>projectWorld(cam,p.x,p.y,z));if(pts.some(p=>!p))return null;const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),g=svgNode('g');g.appendChild(svgNode('polygon',{points:pts.map(p=>`${p.x},${p.y}`).join(' '),class:'preview-table'}));const near=[...pts].sort((a,b)=>a.forward-b.forward).slice(0,2);near.forEach((pt,i)=>{const wp=ptsWorld[pts.indexOf(pt)],base=projectWorld(cam,wp.x,wp.y,0);if(base)g.appendChild(svgNode('line',{x1:pt.x,y1:pt.y,x2:base.x,y2:base.y,class:'preview-table-leg'}))});return{node:g,depth:pts.reduce((a,p)=>a+p.forward,0)/4,bbox:{x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}};
+}
+function previewItemForObject(cam,o){
+  if(o.id===cam.id)return null;
+  if(o.kind==='subject')return addSubjectPreview(cam,o);
+  if(o.kind==='decor'){
+    // V1.0 : la vue caméra est un contrôle de cadre/encombrement, pas une reconstruction 3D du décor.
+    if(o.type==='wall'||o.type==='door')return null;
+    if(o.type==='window')return projectedVerticalPlane(cam,o,o.width||1.5,o.elevation??.9,(o.elevation??.9)+(o.zHeight||1.2),'preview-window','FENÊTRE');
+    if(o.type==='table')return addTablePreview(cam,o);
+  }
+  if(o.kind==='accessory'){
+    const cls=o.type==='diffusion'?'preview-diffusion':o.type==='reflector'?'preview-reflector':o.type==='borniol'?'preview-borniol':'preview-negative';return projectedVerticalPlane(cam,o,o.width||1.2,o.elevation??.35,(o.elevation??.35)+(o.zHeight||o.height||1.5),cls,o.short||'');
+  }
+  if(o.kind==='light'){
+    const a=rad(o.rot||0),mod=o.modifier||'none',soft=mod==='softbox',umbrella=mod==='umbrella-reflect'||mod==='umbrella-diffusion',shift=(soft||umbrella)?.35:0,x=o.x+Math.cos(a)*shift*SCALE,y=o.y+Math.sin(a)*shift*SCALE;let w=.38,h=.30,label=o.short||'LIGHT',cls='preview-light';
+    if(soft){w=Number(o.modifierSize)||.9;h=w;label='SOFTBOX';cls='preview-softbox'}else if(umbrella){w=Number(o.modifierSize)||1.05;h=w;label=mod==='umbrella-reflect'?'PARA R':'PARA D';cls=mod==='umbrella-reflect'?'preview-umbrella-reflect':'preview-umbrella-diffusion'}else if(['tube','pixel-bar','strip'].includes(o.form)){w=(o.length||60)/55*.65;h=.10}else if(['panel','panel-wide','nova','nova-narrow','mat'].includes(o.form)){w=.75;h=.48}else if(o.form==='halo'){w=.48;h=.48;cls='preview-halo'};
+    return projectedBillboard(cam,x,y,o.height||2,w,h,cls,label);
+  }
+  if(o.kind==='camera')return projectedBillboard(cam,o.x,o.y,o.height||1.55,.48,.34,'preview-other-camera','CAM');
+  return null;
+}
+function makeMonitorCard(cam,compact=false){
+  normalizeCameraObject(cam);const card=document.createElement('div');card.className='camera-monitor-card'+(compact?' compact':'');card.dataset.cameraId=cam.id;
+  const head=document.createElement('div');head.className='camera-monitor-head';head.innerHTML=`<div><strong>${esc(cam.name)}</strong><span>${esc(cam.cameraModel)} · ${cam.focal} mm · H ${cam.height.toFixed(2)} m</span></div><button class="monitor-select" type="button">Sélectionner</button>`;head.querySelector('button').onclick=()=>{state.selected=cam.id;state.activePreviewCamera=cam.id;render()};card.appendChild(head);
+  const shell=document.createElement('div');shell.className='monitor-shell';const monitor=document.createElement('div');monitor.className='monitor';const svg=svgNode('svg',{viewBox:'0 0 1600 900',preserveAspectRatio:'xMidYMid slice',class:'preview-svg'});svg.appendChild(svgNode('rect',{x:0,y:0,width:1600,height:900,class:'preview-background'}));
+  const items=[];let visibleSubjects=[],technical=[],visibleWindows=[];state.objects.forEach(o=>{const item=previewItemForObject(cam,o);if(!item)return;item.object=o;items.push(item);if(bboxTouchesFrame(item.bbox)){if(o.kind==='subject')visibleSubjects.push(item);if(['light','accessory','camera'].includes(o.kind))technical.push(o);if(o.kind==='decor'&&o.type==='window')visibleWindows.push(o)}});items.sort((a,b)=>b.depth-a.depth).forEach(item=>svg.appendChild(item.node));
+  const guides=svgNode('g',{class:'preview-guides'});guides.appendChild(svgNode('rect',{x:80,y:45,width:1440,height:810,class:'preview-safe'}));[1600/3,3200/3].forEach(x=>guides.appendChild(svgNode('line',{x1:x,y1:0,x2:x,y2:900,class:'preview-third'})));[300,600].forEach(y=>guides.appendChild(svgNode('line',{x1:0,y1:y,x2:1600,y2:y,class:'preview-third'})));svg.appendChild(guides);monitor.appendChild(svg);
+  const label=document.createElement('div');label.className='preview-label';if(visibleSubjects.length){const main=visibleSubjects.sort((a,b)=>Math.abs((a.bbox.x0+a.bbox.x1)/2-800)-Math.abs((b.bbox.x0+b.bbox.x1)/2-800))[0];label.textContent=`${shotLabel(main.subjectHeight||0)} · ${visibleSubjects.length} sujet${visibleSubjects.length>1?'s':''} visible${visibleSubjects.length>1?'s':''}`}else label.textContent='Aucun sujet dans le cadre';monitor.appendChild(label);
+  if(visibleWindows.length){const info=document.createElement('div');info.className='preview-scene-info';info.textContent=`Fenêtre${visibleWindows.length>1?'s':''} visible${visibleWindows.length>1?'s':''} : ${visibleWindows.map(o=>o.name).slice(0,2).join(' · ')}${visibleWindows.length>2?` +${visibleWindows.length-2}`:''}`;monitor.appendChild(info)}
+  if(technical.length){const alert=document.createElement('div');alert.className='preview-warning';const names=[...new Set(technical.map(o=>o.kind==='light'?(o.modifier==='softbox'?`${o.short||o.name} + softbox`:o.modifier==='umbrella-reflect'?`${o.short||o.name} + parapluie réflexion`:o.modifier==='umbrella-diffusion'?`${o.short||o.name} + parapluie diffusion`:(o.short||o.name)):o.name))];alert.textContent=`⚠ Dans le champ : ${names.slice(0,3).join(' · ')}${names.length>3?` +${names.length-3}`:''}`;monitor.appendChild(alert)}
+  shell.appendChild(monitor);card.appendChild(shell);return card;
+}
+function renderPreview(){
+  const cams=state.objects.filter(o=>o.kind==='camera').map(normalizeCameraObject);cameraMonitors.innerHTML='';previewTabs.innerHTML='';
+  if(!cams.length){previewTabs.classList.add('hidden');cameraReadout.textContent='Ajoute une caméra pour afficher le cadre.';cameraMonitors.innerHTML='<div class="no-camera-preview">Ajoute une caméra au plan pour voir son cadre.</div>';return}
+  if(!cams.some(c=>c.id===state.activePreviewCamera))state.activePreviewCamera=cams[0].id;
+  if(cams.length===1){previewTabs.classList.add('hidden');cameraReadout.textContent='1 caméra · la prévisualisation suit sa position, sa focale et son capteur.';cameraMonitors.className='camera-monitors one';cameraMonitors.appendChild(makeMonitorCard(cams[0]));return}
+  if(cams.length===2){previewTabs.classList.add('hidden');cameraReadout.textContent='2 caméras · vues affichées simultanément.';cameraMonitors.className='camera-monitors two';cams.forEach(c=>cameraMonitors.appendChild(makeMonitorCard(c,true)));return}
+  previewTabs.classList.remove('hidden');cameraReadout.textContent=`${cams.length} caméras · sélectionne la vue à afficher.`;cams.forEach(c=>{const b=document.createElement('button');b.className='preview-tab'+(c.id===state.activePreviewCamera?' active':'');b.textContent=c.name;b.onclick=()=>{state.activePreviewCamera=c.id;renderPreview()};previewTabs.appendChild(b)});cameraMonitors.className='camera-monitors one';cameraMonitors.appendChild(makeMonitorCard(cams.find(c=>c.id===state.activePreviewCamera)||cams[0]));
+}
+
+function addSubject(){const n=state.objects.filter(o=>o.kind==='subject').length+1,o={id:uid('subj'),kind:'subject',name:`Sujet ${n}`,x:500+40*(n-1),y:300,rot:90,height:1.75,locked:false,labelVisible:true,labelPos:'auto'};state.objects.push(o);state.selected=o.id;closeAddDialog();render()}
+function addCamera(){const n=state.objects.filter(o=>o.kind==='camera').length+1,o={id:uid('cam'),kind:'camera',name:`Caméra ${String.fromCharCode(64+n)}`,x:500+(n-1)*55,y:520,rot:-90,height:1.55,cameraModel:'Sony FX3',focal:50,locked:false,labelVisible:true,labelPos:'auto'};state.objects.push(o);state.selected=o.id;state.activePreviewCamera=o.id;closeAddDialog();render()}
+function addLightFromPreset(p,replaceId=null){
+  if(replaceId){const o=state.objects.find(x=>x.id===replaceId);if(o){const mod=o.modifier||'none';Object.assign(o,{name:p.name,brand:p.brand,family:p.family,form:p.form,short:p.short,beam:p.beam,aspect:p.aspect,length:p.length,modifier:supportsSoftbox({kind:'light',form:p.form})?mod:'none'});state.selected=o.id;closeAddDialog();render();return}}
+  const n=state.objects.filter(o=>o.kind==='light').length,o={id:uid('light'),kind:'light',name:p.name,brand:p.brand,family:p.family,form:p.form,short:p.short,x:245+(n%5)*72,y:235+(n%3)*75,rot:0,beam:p.beam,beamVisible:true,intensity:50,height:2,aspect:p.aspect,length:p.length,modifier:'none',modifierSize:.9,colorMode:'cct',cct:5600,hue:0,saturation:100,locked:false,labelVisible:true,labelPos:'auto'};state.objects.push(o);state.selected=o.id;closeAddDialog();render();
+}
+function addAccessory(p){const n=state.objects.filter(o=>o.kind==='accessory').length,o={id:uid('acc'),kind:'accessory',type:p.type,name:p.name,short:p.short,x:360+(n%4)*80,y:190+(n%3)*70,rot:0,width:p.width,height:p.height,zHeight:p.height,elevation:p.type==='borniol'?.2:.35,locked:false,labelVisible:true,labelPos:'auto'};state.objects.push(o);state.selected=o.id;closeAddDialog();render()}
+function addDecor(p){const n=state.objects.filter(o=>o.kind==='decor').length,zHeight=p.type==='wall'?2.5:p.type==='door'?2.04:p.type==='window'?1.2:.75,elevation=p.type==='window'?.9:0,o={id:uid('decor'),kind:'decor',type:p.type,name:p.name,x:430+(n%4)*90,y:160+(n%3)*80,rot:0,width:p.width,height:p.height,zHeight,elevation,locked:false,labelVisible:true,labelPos:'auto'};state.objects.push(o);state.selected=o.id;closeAddDialog();render()}
+
+function openAddDialog(){replaceLightId=null;showKinds();if(typeof addDialog.showModal==='function')addDialog.showModal();else addDialog.setAttribute('open','')}
+function closeAddDialog(){if(addDialog.open&&typeof addDialog.close==='function')addDialog.close();else addDialog.removeAttribute('open');replaceLightId=null}
+function hideChoosers(){addKinds.classList.add('hidden');lightChooser.classList.add('hidden');simpleChooser.classList.add('hidden')}
+function showKinds(){hideChoosers();addKinds.classList.remove('hidden');dialogTitle.textContent='Choisir un élément'}
+function openLightChooser(replaceId=null){
+  replaceLightId=replaceId;hideChoosers();lightChooser.classList.remove('hidden');dialogTitle.textContent=replaceId?'Changer de projecteur':'Choisir une lumière';const obj=replaceId?state.objects.find(x=>x.id===replaceId):null;catalogBrand=obj?.brand||catalogBrand||'Amaran';catalogFamily=obj?.family||'';renderLightChooser();if(!addDialog.open){if(typeof addDialog.showModal==='function')addDialog.showModal();else addDialog.setAttribute('open','')}
+}
+function renderLightChooser(){
+  const brands=['Amaran','Aputure'];brandChoices.innerHTML=brands.map(b=>`<button class="choice-btn ${catalogBrand===b?'active':''}" data-brand="${b}">${b}</button>`).join('');
+  brandChoices.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{catalogBrand=btn.dataset.brand;catalogFamily='';renderLightChooser()});
+  const fams=[...new Set(lightCatalog.filter(p=>p.brand===catalogBrand).map(p=>p.family))];if(!fams.includes(catalogFamily))catalogFamily=fams[0]||'';
+  familyChoices.innerHTML=fams.map(f=>`<button class="choice-btn ${catalogFamily===f?'active':''}" data-family="${esc(f)}">${esc(f.toUpperCase())}</button>`).join('');
+  familyChoices.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{catalogFamily=btn.dataset.family;renderLightChooser()});
+  const items=lightCatalog.filter(p=>p.brand===catalogBrand&&p.family===catalogFamily);
+  modelChoices.innerHTML=items.map(p=>`<button class="choice-btn model-btn" data-light-index="${lightCatalog.indexOf(p)}">${esc(p.name.replace(/^amaran\s+|^Aputure\s+/i,''))}</button>`).join('');
+  modelChoices.querySelectorAll('button').forEach(btn=>btn.onclick=()=>addLightFromPreset(lightCatalog[Number(btn.dataset.lightIndex)],replaceLightId));
+  catalogCount.textContent=`${lightCatalog.filter(p=>p.brand===catalogBrand).length} modèles ${catalogBrand} · même catalogue matériel que BOS Light`;
+}
+function openSimpleChooser(kind){
+  hideChoosers();simpleChooser.classList.remove('hidden');const list=kind==='accessory'?accessoryCatalog:decorCatalog;dialogTitle.textContent=kind==='accessory'?'Ajouter un accessoire':'Ajouter un élément de décor';simpleLabel.textContent=kind==='accessory'?'ACCESSOIRE':'DÉCOR';simpleGrid.innerHTML=list.map((p,i)=>`<button class="simple-card" data-index="${i}"><span class="simple-picto ${kind}-${p.type}">${kind==='accessory'?(p.type==='diffusion'?'▧':p.type==='borniol'?'▬':p.type==='negative'?'■':'◇'):(p.type==='wall'?'━':p.type==='door'?'◿':p.type==='window'?'▥':'▭')}</span><strong>${esc(p.name)}</strong><small>${p.width} × ${p.height} m</small></button>`).join('');simpleGrid.querySelectorAll('button').forEach(btn=>btn.onclick=()=>kind==='accessory'?addAccessory(list[Number(btn.dataset.index)]):addDecor(list[Number(btn.dataset.index)]));
+}
+
+document.getElementById('openAddBtn').onclick=openAddDialog;document.getElementById('closeAddBtn').onclick=closeAddDialog;document.getElementById('backToKindsBtn').onclick=()=>{replaceLightId=null;showKinds()};document.getElementById('backSimpleBtn').onclick=showKinds;
+addKinds.querySelectorAll('[data-kind]').forEach(btn=>btn.onclick=()=>{const k=btn.dataset.kind;if(k==='light')openLightChooser();else if(k==='subject')addSubject();else if(k==='camera')addCamera();else openSimpleChooser(k)});
+addDialog.addEventListener('click',e=>{if(e.target===addDialog)closeAddDialog()});
+
+function populateFolderSelect(){
+  folderSelect.innerHTML=library.folders.map(f=>`<option value="${esc(f.id)}" ${f.id===state.folderId?'selected':''}>${esc(f.name)}</option>`).join('');
+}
+function renderLibraryList(){
+  populateFolderSelect();planNameInput.value=state.planName||'Plan sans titre';
+  planLibraryList.innerHTML='';
+  library.folders.forEach(folder=>{
+    const box=document.createElement('div');box.className='folder-block';
+    const title=document.createElement('div');title.className='folder-title';title.textContent=`📁 ${folder.name}`;box.appendChild(title);
+    const plans=library.plans.filter(p=>p.folderId===folder.id).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+    if(!plans.length){const empty=document.createElement('div');empty.className='folder-empty';empty.textContent='Aucun plan dans ce dossier.';box.appendChild(empty)}
+    plans.forEach(rec=>{
+      const row=document.createElement('div');row.className='plan-row';
+      row.innerHTML=`<div class="plan-row-main"><strong>${esc(rec.name)}</strong><small>${formatSavedDate(rec.updatedAt)}${rec.id===state.planId?' · plan ouvert':''}</small></div><div class="plan-row-actions"><button class="primary-mini" data-act="open">Ouvrir</button><button data-act="duplicate">Dupliquer</button><button data-act="share">Partager</button><button class="danger-mini" data-act="delete">Supprimer</button></div>`;
+      row.querySelector('[data-act="open"]').onclick=()=>openLibraryPlan(rec.id);
+      row.querySelector('[data-act="duplicate"]').onclick=()=>duplicateLibraryPlan(rec.id);
+      row.querySelector('[data-act="share"]').onclick=()=>shareProjectState(rec.state,rec.name);
+      row.querySelector('[data-act="delete"]').onclick=()=>deleteLibraryPlan(rec.id);
+      box.appendChild(row);
+    });planLibraryList.appendChild(box);
+  });
+}
+function openLibraryDialog(){loadLibrary();ensureStateDefaults();renderLibraryList();if(typeof libraryDialog.showModal==='function')libraryDialog.showModal();else libraryDialog.setAttribute('open','')}
+function closeLibraryDialog(){if(libraryDialog.open&&typeof libraryDialog.close==='function')libraryDialog.close();else libraryDialog.removeAttribute('open')}
+function savePlanToLibrary(){
+  const name=(planNameInput.value||'').trim()||'Plan sans titre',folderId=folderSelect.value||library.folders[0].id;
+  state.planName=name;state.folderId=folderId;
+  if(!state.planId)state.planId=uid('plan');
+  let rec=library.plans.find(p=>p.id===state.planId);if(!rec){rec={id:state.planId};library.plans.push(rec)}
+  rec.name=name;rec.folderId=folderId;rec.updatedAt=Date.now();rec.state=snapshotState();persistLibrary();persistCurrent();renderLibraryList();flash('Plan enregistré');
+}
+function openLibraryPlan(id){const rec=library.plans.find(p=>p.id===id);if(!rec)return;resetStageViewport();state=deepClone(rec.state);state.planId=rec.id;state.planName=rec.name;state.folderId=rec.folderId;ensureStateDefaults();state.objects.forEach(normalizeSceneObject);migrateOpeningBindings();state.selected=null;if(!state.activePreviewCamera)state.activePreviewCamera=state.objects.find(o=>o.kind==='camera')?.id||null;persistCurrent();render();closeLibraryDialog()}
+function duplicateLibraryPlan(id){const rec=library.plans.find(p=>p.id===id);if(!rec)return;const copy=deepClone(rec);copy.id=uid('plan');copy.name=`${rec.name} copie`;copy.updatedAt=Date.now();copy.state.planId=copy.id;copy.state.planName=copy.name;library.plans.push(copy);persistLibrary();renderLibraryList()}
+function deleteLibraryPlan(id){const rec=library.plans.find(p=>p.id===id);if(!rec||!confirm(`Supprimer « ${rec.name} » ?`))return;library.plans=library.plans.filter(p=>p.id!==id);if(state.planId===id)state.planId=null;persistLibrary();persistCurrent();renderLibraryList()}
+function newPlan(){persistCurrent();resetStageViewport();const folder=folderSelect.value||library.folders[0].id;state.planId=null;state.planName='Plan sans titre';state.folderId=folder;state.snap=.25;state.labelsMode='full';state.gridOpacity=.5;seed();render();renderLibraryList()}
+function projectPayload(planState=snapshotState()){return {format:'BOS_PLAN_FEU',version:'1.6',exportedAt:new Date().toISOString(),plan:deepClone(planState)}}
+function projectFile(planState=snapshotState(),name=state.planName){const payload=projectPayload(planState),blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});return new File([blob],`${safeName(name)}.bosplan.json`,{type:'application/json'})}
+async function shareProjectState(planState=snapshotState(),name=state.planName){
+  const file=projectFile(planState,name);
+  try{
+    if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({title:`BOS · Plan Feu — ${name}`,text:'Copie modifiable du plan feu BOS.',files:[file]});return}
+  }catch(e){if(e?.name==='AbortError')return;console.warn('Partage BOS',e)}
+  downloadBlob(file, file.name);
+  alert('Le partage direct de fichiers n’est pas disponible sur ce navigateur. La copie modifiable a été téléchargée : tu peux l’envoyer par AirDrop, Mail, Messages, etc.');
+}
+async function importProjectFile(file){
+  if(!file)return;
+  try{
+    const raw=JSON.parse(await file.text()),incoming=raw?.format==='BOS_PLAN_FEU'?raw.plan:raw;
+    if(!incoming||!Array.isArray(incoming.objects))throw new Error('Format invalide');
+    resetStageViewport();state=deepClone(incoming);state.planId=null;state.planName=state.planName||file.name.replace(/\.bosplan\.json$|\.json$/i,'')||'Plan reçu';state.folderId=library.folders[0]?.id||'folder_general';
+    ensureStateDefaults();state.objects.forEach(normalizeSceneObject);migrateOpeningBindings();state.selected=null;if(!state.activePreviewCamera)state.activePreviewCamera=state.objects.find(o=>o.kind==='camera')?.id||null;
+    persistCurrent();render();closeLibraryDialog();flash('Projet importé');
+  }catch(e){console.warn(e);alert('Ce fichier ne semble pas être un projet BOS Plan Feu valide.')}
+}
+
+document.getElementById('libraryBtn').onclick=openLibraryDialog;
+document.getElementById('closeLibraryBtn').onclick=closeLibraryDialog;
+libraryDialog.addEventListener('click',e=>{if(e.target===libraryDialog)closeLibraryDialog()});
+document.getElementById('newFolderBtn').onclick=()=>{const name=prompt('Nom du nouveau dossier :');if(!name?.trim())return;const f={id:uid('folder'),name:name.trim()};library.folders.push(f);persistLibrary();state.folderId=f.id;renderLibraryList();folderSelect.value=f.id};
+document.getElementById('newPlanBtn').onclick=newPlan;
+document.getElementById('saveToLibraryBtn').onclick=savePlanToLibrary;
+if(shareProjectBtn)shareProjectBtn.onclick=()=>shareProjectState();
+if(importProjectBtn)importProjectBtn.onclick=()=>importProjectInput?.click();
+if(importProjectInput)importProjectInput.onchange=async()=>{const f=importProjectInput.files?.[0];importProjectInput.value='';await importProjectFile(f)};
+document.getElementById('saveBtn').onclick=()=>{if(!state.planId){openLibraryDialog();planNameInput.focus()}else{persistCurrent();flash('Plan sauvé')}};
+document.getElementById('resetBtn').onclick=()=>{if(confirm('Réinitialiser le contenu de ce plan ?')){resetStageViewport();const meta={planId:state.planId,planName:state.planName,folderId:state.folderId,snap:state.snap,labelsMode:state.labelsMode,gridOpacity:state.gridOpacity};seed();Object.assign(state,meta);render()}};
+function flash(txt){const b=document.getElementById('saveBtn'),old=b.textContent;b.textContent='✓ '+txt;setTimeout(()=>b.textContent=old,1200)}
+function inlineSvgStyles(original,clone){
+  const props=['fill','stroke','stroke-width','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','font-family','font-size','font-weight','letter-spacing','paint-order','color'];
+  const os=[original,...original.querySelectorAll('*')],cs=[clone,...clone.querySelectorAll('*')];
+  os.forEach((node,i)=>{const target=cs[i];if(!target)return;const st=getComputedStyle(node);const css=props.map(p=>`${p}:${st.getPropertyValue(p)}`).join(';');target.setAttribute('style',`${target.getAttribute('style')||''};${css}`)});
+}
+function exportPng(){
+  const clone=stage.cloneNode(true);clone.setAttribute('xmlns',NS);clone.setAttribute('width','1600');clone.setAttribute('height','992');clone.setAttribute('viewBox','0 0 1000 620');
+  inlineSvgStyles(stage,clone);
+  clone.querySelectorAll('.rotation-gizmo,.selection-ring,.selection-box,.hit').forEach(n=>n.remove());
+  const source=new XMLSerializer().serializeToString(clone),blob=new Blob([source],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob),img=new Image();
+  img.onload=()=>{const c=document.createElement('canvas');c.width=1600;c.height=992;const ctx=c.getContext('2d');ctx.fillStyle=getComputedStyle(document.querySelector('.stage-bg')).getPropertyValue('fill')||'#fbfcfe';ctx.fillRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>{if(b)downloadBlob(b,`${safeName(state.planName)}_Plan_Feu.png`)},'image/png')};
+  img.onerror=()=>{URL.revokeObjectURL(url);alert("L’export PNG n’a pas pu être généré sur ce navigateur.")};img.src=url;
+}
+document.getElementById('exportBtn').onclick=exportPng;
+snapSelect.onchange=()=>{state.snap=Number(snapSelect.value)||0;renderCanvas()};
+labelsModeSelect.onchange=()=>{state.labelsMode=labelsModeSelect.value;renderCanvas()};
+toggleBeamsBtn.onclick=()=>{state.beamsVisible=state.beamsVisible===false;updatePlanBadge();renderCanvas()};
+if(gridOpacityRange){gridOpacityRange.oninput=()=>{state.gridOpacity=clamp(Number(gridOpacityRange.value)/100,.1,1);updateGridOpacity();scheduleAutosave()};gridOpacityRange.onchange=()=>persistCurrent()}
+
+function normalizeSceneObject(o){
+  if(o.kind==='light')normalizeLightObject(o);
+  if(o.kind==='camera')normalizeCameraObject(o);
+  if(o.kind==='decor'){if(o.zHeight===undefined)o.zHeight=o.type==='wall'?2.5:o.type==='door'?2.04:o.type==='window'?1.2:.75;if(o.elevation===undefined)o.elevation=o.type==='window'?.9:0}
+  if(o.kind==='accessory'){if(o.zHeight===undefined)o.zHeight=o.height||1.5;if(o.elevation===undefined)o.elevation=o.type==='borniol'?.2:.35;if(!o.short)o.short=o.type==='diffusion'?'DIFF':o.type==='negative'?'NEG':o.type==='reflector'?'REF':'BOR'}
+  if(o.locked===undefined)o.locked=false;if(o.labelVisible===undefined)o.labelVisible=true;if(!o.labelPos)o.labelPos='auto';return o;
+}
+function load(){
+  loadLibrary();
+  try{
+    const raw=localStorage.getItem(CURRENT_KEY)||localStorage.getItem('bos-plan-feu-v05')||localStorage.getItem('bos-plan-feu-v04')||localStorage.getItem('bos-plan-feu-v03')||localStorage.getItem('bos-plan-feu-v02')||localStorage.getItem('bos-plan-feu-v01');
+    const saved=raw&&JSON.parse(raw);
+    if(saved&&Array.isArray(saved.objects)){state=saved;if(!state.planName)state.planName=localStorage.getItem(CURRENT_KEY)?'Plan sans titre':'Plan importé V0.5';state.objects.forEach(normalizeSceneObject);migrateOpeningBindings();if(!state.activePreviewCamera)state.activePreviewCamera=state.objects.find(o=>o.kind==='camera')?.id||null}else seed();
+  }catch{seed()}
+  ensureStateDefaults();if(!cameras[state.cameraModel])state.cameraModel='Sony FX3';state.focal=Number(state.focal)||50;resetStageViewport();updatePlanBadge();render();
+}
+window.addEventListener('resize',renderPreview);load();

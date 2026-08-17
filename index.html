@@ -1,208 +1,242 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#07090d" />
-  <title>BOS Light — V0.12</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b6cff" />
+  <title>BOS · Plan Feu</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=0.12" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="app-shell">
+  <div class="app-shell">
     <header class="topbar">
       <div class="brand">
-        <span class="brand-badge">BOS</span>
+        <div class="brand-badge">BOS</div>
         <div>
-          <div class="brand-title">LIGHT</div>
-          <div class="brand-subtitle">Est-ce que ma lumière va suffire ? · V0.12</div>
+          <div class="brand-title">Plan Feu</div>
+          <div class="brand-subtitle">Bruno OnSet</div>
         </div>
       </div>
-      <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
+      <div class="top-actions">
+        <button class="ghost" id="resetBtn">Réinitialiser</button>
+        <button class="ghost" id="libraryBtn">Mes plans</button>
+        <button class="ghost" id="saveBtn">Sauver</button>
+        <button class="primary" id="exportBtn">Exporter PNG</button>
+      </div>
     </header>
 
-    <!-- 01 — caméra -->
-    <details class="controls-card camera-card first-card collapsible-card" id="cameraDetails">
-      <summary class="card-heading collapsible-heading">
-        <span class="step">01</span>
-        <div class="heading-copy">
-          <h2>Mes réglages caméra</h2>
-          <p>Définis l’exposition que tu veux pouvoir tenir.</p>
+    <main>
+      <section class="toolbar card">
+        <div class="tool-group grow">
+          <label>Éléments du plan</label>
+          <button class="add-main" id="openAddBtn"><span class="plus">+</span> Ajouter un élément</button>
         </div>
-        <div class="summary-value" id="cameraSummary">ISO 800 · f/2,8 · 1/50</div>
-        <span class="chevron">⌄</span>
-      </summary>
-      <div class="camera-grid">
-        <label class="select-control">
-          <span>ISO MAX ACCEPTÉ</span>
-          <select id="isoSelect" aria-label="ISO maximum accepté"></select>
-        </label>
-        <label class="select-control">
-          <span>OUVERTURE</span>
-          <select id="apertureSelect" aria-label="Ouverture"></select>
-        </label>
-        <label class="select-control">
-          <span>VITESSE</span>
-          <select id="shutterSelect" aria-label="Vitesse d'obturation"></select>
-        </label>
-      </div>
-    </details>
-
-    <!-- 02 — choix du projecteur -->
-    <details class="controls-card light-card collapsible-card" id="lightDetails">
-      <summary class="card-heading collapsible-heading">
-        <span class="step">02</span>
-        <div class="heading-copy">
-          <h2>Ma lumière</h2>
-          <p>Marque, gamme, modèle et accessoire.</p>
-        </div>
-        <div class="summary-value light-summary" id="lightSummary">amaran · Halo 60x · Softbox 60</div>
-        <span class="chevron">⌄</span>
-      </summary>
-
-      <div class="control-block compact-block">
-        <label class="control-label">MARQUE</label>
-        <div class="brand-grid" id="brandGrid"></div>
-      </div>
-
-      <div class="control-block compact-block">
-        <label class="control-label">GAMME</label>
-        <div class="family-grid" id="familyGrid"></div>
-      </div>
-
-      <div class="control-block compact-block">
-        <label class="control-label">PUISSANCE / MODÈLE</label>
-        <div class="power-grid" id="powerGrid"></div>
-      </div>
-
-      <div class="control-block compact-block">
-        <label class="control-label">ACCESSOIRE</label>
-        <div class="accessory-grid" id="accessoryGrid"></div>
-        <div class="accessory-note" id="accessoryNote"></div>
-      </div>
-    </details>
-
-    <!-- 03 — réglages de la lumière -->
-    <section class="controls-card light-settings-card">
-      <div class="card-heading">
-        <span class="step">03</span>
-        <div>
-          <h2>Mes réglages lumière</h2>
-          <p>Règle la puissance, la température et la distance réelle sur le plateau.</p>
-        </div>
-      </div>
-
-      <div class="control-block slider-block">
-        <div class="control-head">
-          <label for="intensitySlider">INTENSITÉ</label>
-          <output id="intensityValue">100 %</output>
-        </div>
-        <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
-        <div class="range-labels"><span>0 %</span><span>100 %</span></div>
-      </div>
-
-      <div class="control-block" id="cctSection">
-        <div class="control-head compact-head">
-          <label>TEMPÉRATURE</label>
-          <output id="cctValue">5600 K</output>
-        </div>
-        <div class="cct-grid" id="cctGrid"></div>
-        <div class="accessory-note" id="cctNote"></div>
-      </div>
-
-      <div class="control-block distance-control-block">
-        <div class="section-head compact-distance-head">
-          <div>
-            <div class="control-label">DISTANCE SOURCE / SUJET</div>
-            <div class="distance-help">Distance réelle de ta lumière sur le tournage.</div>
+        <div class="plan-tools">
+          <label title="Aimante les déplacements au pas choisi. La grille visuelle reste à 25 cm / 1 m.">Aimantation
+            <select id="snapSelect">
+              <option value="0">Libre</option>
+              <option value="0.1">10 cm</option>
+              <option value="0.25" selected>25 cm</option>
+              <option value="0.5">50 cm</option>
+              <option value="1">1 m</option>
+            </select>
+          </label>
+          <label>Infos
+            <select id="labelsModeSelect">
+              <option value="full">Complet</option>
+              <option value="names">Noms</option>
+              <option value="hidden">Masqué</option>
+            </select>
+          </label>
+          <div class="grid-opacity-control">
+            <div class="grid-opacity-head"><span>Opacité grille</span><output id="gridOpacityValue">50 %</output></div>
+            <input id="gridOpacityRange" type="range" min="10" max="100" step="5" value="50" aria-label="Opacité de la grille" />
           </div>
-          <strong class="distance-readout" id="testDistanceValue">2,0 m</strong>
-        </div>
-        <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
-        <div class="range-labels"><span>1 m</span><span>20 m</span></div>
-      </div>
-    </section>
-
-    <!-- 04 — résultat -->
-    <section class="controls-card result-section" aria-live="polite">
-      <div class="card-heading">
-        <span class="step">04</span>
-        <div>
-          <h2>Résultat</h2>
-          <p>LIGHT compare ta configuration à l’exposition incidente de référence.</p>
-        </div>
-      </div>
-
-      <div class="hero-card result-card-inner">
-        <div class="eyebrow">DISTANCE MAXIMUM</div>
-        <div class="hero-title">Tu peux placer ta lumière jusqu’à</div>
-        <div class="hero-distance"><strong id="maxDistance">—</strong><span>m</span></div>
-        <div class="setup-line" aria-hidden="true">
-          <div class="setup-icon lamp">✦</div>
-          <div class="setup-track"><div class="setup-fill"></div></div>
-          <div class="setup-icon person">●</div>
-        </div>
-        <div class="hero-summary" id="heroSummary">—</div>
-      </div>
-
-      <div class="result-body">
-        <div class="status-box" id="statusBox">
-          <span class="status-dot"></span>
-          <div>
-            <strong id="statusTitle">—</strong>
-            <p id="statusText">—</p>
+          <div class="beam-global-control">
+            <span>Faisceaux lumière</span>
+            <button id="toggleBeamsBtn" class="beam-toggle active" type="button" aria-pressed="true">Faisceaux ON</button>
           </div>
         </div>
-
-        <div class="solution-intro" id="solutionIntro"></div>
-        <div class="solutions" id="solutions"></div>
-
-        <div class="exposure-explainer compact-explainer">
-          <strong>Par rapport à quoi ?</strong>
-          <span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span>
+        <div class="toolbar-note">
+          <strong>V1.5</strong>
+          <span id="currentPlanBadge">Plan sans titre · autosauvegarde</span>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- technique -->
-    <details class="advanced-card tech-card">
-      <summary>
-        <div>
-          <strong>Détails techniques</strong>
-          <span>Lux, marge, exposition et mesures constructeur</span>
-        </div>
-        <span class="chevron">⌄</span>
-      </summary>
-      <div class="advanced-content">
-        <div class="tech-grid">
-          <div><span>À LA DISTANCE TESTÉE</span><strong id="testLux">— lux</strong></div>
-          <div><span>MARGE</span><strong id="stopMargin">—</strong></div>
-          <div><span>ISO POUR CETTE EXPO</span><strong id="requiredIso">—</strong></div>
-          <div><span>OUVERTURE À ISO MAX</span><strong id="possibleAperture">—</strong></div>
-        </div>
-
-        <div class="source-data">
-          <div class="source-title-row">
+      <section class="workspace-grid">
+        <div class="stage-card card">
+          <div class="section-head">
             <div>
-              <span class="control-label">DONNÉES DE CALCUL</span>
-              <p id="sourceDescriptor">—</p>
+              <h2>Plan</h2>
+              <p>Vue du dessus · déplacer et orienter directement les éléments</p>
             </div>
-            <span class="lab-badge" id="labBadge">AMARAN</span>
+            <div class="legend">
+              <span><i class="dot camera-dot"></i>caméra</span>
+              <span><i class="dot subject-dot"></i>sujet</span>
+              <span><i class="dot light-dot"></i>lumière</span>
+              <span><i class="dot accessory-dot"></i>accessoire</span>
+              <span><i class="dot decor-dot"></i>décor</span>
+            </div>
           </div>
-          <div class="measurement-row" id="measurementRow"></div>
-          <div class="technical-note" id="dataNote">—</div>
-          <div class="technical-note" id="dimmerNote">—</div>
+          <div class="stage-wrap" id="stageWrap">
+            <div class="stage-view-controls" aria-label="Navigation du plan">
+              <button id="resetViewBtn" type="button" class="stage-view-btn" title="Afficher tout le plan">Recentrer</button>
+              <span id="zoomReadout" class="stage-zoom-readout">100 %</span>
+            </div>
+            <svg id="stage" viewBox="0 0 1000 620" aria-label="Plan feu vue du dessus">
+              <defs>
+                <pattern id="smallGrid" width="25" height="25" patternUnits="userSpaceOnUse">
+                  <path d="M 25 0 L 0 0 0 25" fill="none" class="grid-small"/>
+                </pattern>
+                <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                  <rect width="100" height="100" fill="url(#smallGrid)"/>
+                  <path d="M 100 0 L 0 0 0 100" fill="none" class="grid-large"/>
+                </pattern>
+              </defs>
+              <rect width="1000" height="620" class="stage-bg" />
+              <rect width="1000" height="620" fill="url(#grid)" />
+              <g id="beamsLayer"></g>
+              <g id="objectsLayer"></g>
+            </svg>
+            <div class="scale-note"><strong>1 grand carreau = 1 m</strong><span>petit carreau = 25 cm</span></div>
+          </div>
+        </div>
+
+        <aside class="inspector card" id="inspector">
+          <button class="inspector-head" id="toggleInspectorBtn" type="button" aria-expanded="true" aria-controls="inspectorBody">
+            <div>
+              <h2>Réglages</h2>
+              <p id="selectionHint">Sélectionne un élément</p>
+            </div>
+            <span class="inspector-toggle-label" id="inspectorToggleLabel">Masquer</span>
+            <span class="inspector-chevron" aria-hidden="true">⌃</span>
+          </button>
+          <div id="inspectorBody">
+            <div id="inspectorEmpty" class="empty-state">
+              <div class="empty-icon">↖</div>
+              <p>Clique sur une caméra, un personnage ou un projecteur pour modifier ses paramètres.</p>
+            </div>
+            <div id="inspectorFields" class="fields hidden"></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="camera-preview card">
+        <div class="section-head preview-head">
+          <div>
+            <h2>Vues caméra</h2>
+            <p id="cameraReadout">Chaque caméra utilise sa propre focale et son propre capteur.</p>
+          </div>
+          <div class="preview-tabs hidden" id="previewTabs"></div>
+        </div>
+        <div class="camera-monitors" id="cameraMonitors"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="addDialog" class="add-dialog">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <div>
+          <div class="dialog-kicker">Ajouter</div>
+          <h2 id="dialogTitle">Choisir un élément</h2>
+        </div>
+        <button class="dialog-close" id="closeAddBtn" aria-label="Fermer">×</button>
+      </div>
+
+      <div id="addKinds" class="kind-grid">
+        <button class="kind-card" data-kind="light">
+          <span class="kind-icon light-kind-icon">✦</span>
+          <strong>Lumière</strong>
+          <small>Catalogue BOS Light</small>
+        </button>
+        <button class="kind-card" data-kind="subject">
+          <span class="kind-icon subject-kind-icon">●</span>
+          <strong>Sujet</strong>
+          <small>Ajouter un personnage</small>
+        </button>
+        <button class="kind-card" data-kind="camera">
+          <span class="kind-icon camera-kind-icon">▰</span>
+          <strong>Caméra</strong>
+          <small>Ajouter une caméra</small>
+        </button>
+        <button class="kind-card" data-kind="accessory">
+          <span class="kind-icon accessory-kind-icon">◇</span>
+          <strong>Accessoire</strong>
+          <small>Diffusion · borniol · négatif · réflecteur</small>
+        </button>
+        <button class="kind-card" data-kind="decor">
+          <span class="kind-icon decor-kind-icon">⌑</span>
+          <strong>Décor</strong>
+          <small>Mur · porte · fenêtre · table</small>
+        </button>
+      </div>
+
+      <div id="lightChooser" class="light-chooser hidden">
+        <div class="chooser-topline">
+          <button class="back-btn" id="backToKindsBtn">← Éléments</button>
+          <div class="catalog-badge">Catalogue BOS Light</div>
+        </div>
+        <div class="choice-section">
+          <div class="choice-label">MARQUE</div>
+          <div class="choice-buttons two" id="brandChoices"></div>
+        </div>
+        <div class="choice-section">
+          <div class="choice-label">GAMME</div>
+          <div class="choice-buttons" id="familyChoices"></div>
+        </div>
+        <div class="choice-section">
+          <div class="choice-label">PUISSANCE / MODÈLE</div>
+          <div class="choice-buttons models" id="modelChoices"></div>
+        </div>
+        <div class="chooser-footnote" id="catalogCount"></div>
+      </div>
+
+      <div id="simpleChooser" class="simple-chooser hidden">
+        <div class="chooser-topline">
+          <button class="back-btn" id="backSimpleBtn">← Éléments</button>
+        </div>
+        <div class="choice-section">
+          <div class="choice-label" id="simpleLabel">TYPE</div>
+          <div class="simple-grid" id="simpleGrid"></div>
         </div>
       </div>
-    </details>
+    </div>
+  </dialog>
 
-    <footer>
-      <span>BOS LIGHT · aide de préparation et de tournage</span>
-      <span>Le résultat reste indicatif : vérifie au posemètre sur le plateau si l’exposition est critique.</span>
-    </footer>
-  </main>
+  <dialog id="libraryDialog" class="library-dialog">
+    <div class="library-shell">
+      <div class="dialog-head">
+        <div>
+          <div class="dialog-kicker">BOS · PLAN FEU</div>
+          <h2>Mes plans</h2>
+        </div>
+        <button class="dialog-close" id="closeLibraryBtn" aria-label="Fermer">×</button>
+      </div>
+      <div class="library-current">
+        <div class="choice-label">PLAN ACTUEL</div>
+        <div class="library-save-grid">
+          <label>Nom<input id="planNameInput" type="text" placeholder="Nom du plan"></label>
+          <label>Dossier<select id="folderSelect"></select></label>
+        </div>
+        <div class="library-actions">
+          <button class="ghost" id="newFolderBtn">+ Nouveau dossier</button>
+          <button class="ghost" id="newPlanBtn">Nouveau plan</button>
+          <button class="primary" id="saveToLibraryBtn">Enregistrer dans Mes plans</button>
+        </div>
+      </div>
+      <div class="library-list-head">
+        <div>
+          <div class="choice-label">BIBLIOTHÈQUE</div>
+          <p>Les plans sont stockés sur cet appareil et se mettent à jour automatiquement.</p>
+        </div>
+        <div class="library-share-actions"><button class="ghost small-btn" id="importProjectBtn">Importer un projet</button><button class="ghost small-btn" id="shareProjectBtn">Partager une copie</button><input id="importProjectInput" type="file" accept=".json,.bosplan.json,application/json" hidden></div>
+      </div>
+      <div id="planLibraryList" class="plan-library-list"></div>
+    </div>
+  </dialog>
 
-  <script src="app.js?v=0.12"></script>
+  <script src="app.js"></script>
 </body>
 </html>
