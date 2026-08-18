@@ -275,3 +275,7 @@ html,body{background:var(--bg);color:var(--text);font-family:-apple-system,Blink
 footer{color:var(--technical);font-size:9px;padding:16px 2px 0}
 @media(max-width:520px){.app-shell{padding-left:16px;padding-right:16px}.controls-card,.advanced-card,.result-card-inner{border-radius:20px}.utility-note{max-width:240px}}
 @media(max-width:380px){.app-shell{padding-left:12px;padding-right:12px}.topbar{padding:13px 14px 14px;border-radius:20px}.utility-note{display:none}.brand-grid button,.family-grid button,.power-grid button,.accessory-grid button,.cct-grid button{border-radius:999px}}
+
+/* V0.15 — état de la base LIGHT commune */
+.db-status-note{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-weight:650;}
+body[data-db-error="1"] .db-status-note{color:#b55f5f;}

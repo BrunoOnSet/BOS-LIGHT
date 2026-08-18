@@ -1,33 +1,24 @@
-BOS LIGHT — V0.14
+BOS LIGHT — V0.16
 =================
 
-Nouveautés
-----------
-- Ajout de Nanlite et Godox au catalogue multi-marques.
-- Nanlite : FC (FC-60B, FC-120B, FC-720B) et FORZA (Forza 60B II, Forza 150B).
-- Godox : SL (SL60IIBi), ML (ML80Bi, ML150Bi) et LITEMONS (LA600Bi).
-- Softbox estimées ajoutées quand le constructeur ne publie pas de photométrie directe pour ce modificateur.
-- Les valeurs mesurées et les estimations restent clairement distinguées dans Détails techniques.
-- Structure conservée : 01 Caméra / 02 Ma lumière / 03 Réglages lumière / 04 Résultat / Détails techniques.
+Nouveauté principale
+--------------------
+LIGHT utilise désormais BOS-PROJECTEURS-DB comme source de référence commune :
+https://raw.githubusercontent.com/BrunoOnSet/BOS-PROJECTEURS-DB/main/lights.json
 
-Données Nanlite / Godox
------------------------
-Pour cette première intégration, LIGHT n'utilise que les photométries que nous avons pu rattacher clairement à une configuration constructeur.
-Quand un seul point (souvent 1 m) est publié, LIGHT le signale et extrapole la distance selon le carré inverse : le résultat est alors une estimation.
+Principe
+--------
+- Aucun catalogue projecteur indépendant n'est maintenu dans app.js.
+- LIGHT charge la base centrale et filtre automatiquement les fiches avec :
+  capabilities.lightCalculator = true
+- La même base peut être utilisée par Plan Feu avec :
+  capabilities.planFeu = true
+- La copie locale lights.json est uniquement un secours si GitHub est indisponible.
+  Elle doit rester une copie de BOS-PROJECTEURS-DB, pas une base parallèle.
 
-Les softbox marquées ≈ ne sont PAS des mesures constructeur. Elles utilisent le même moteur d'estimation que les autres marques, à partir d'une sortie mesurée du projecteur.
+Ordre de chargement
+-------------------
+1. BOS-PROJECTEURS-DB sur GitHub (source principale)
+2. lights.json local (fallback de secours)
 
-Important
----------
-- Sous 100 % de dimmer, LIGHT estime la baisse de lux proportionnellement au pourcentage, faute de courbe de gradation détaillée pour chaque modèle.
-- Le calcul d'exposition incidente utilise C = 340 (logique Lumisphere Sekonic).
-- LIGHT reste une aide de préparation/tournage : une mesure réelle au posemètre reste la référence quand l'exposition est critique.
-
-Historique récent
------------------
-V0.10 : ajout des softbox estimées et du marquage ≈ / ESTIMATION.
-V0.14 : ajout initial de Nanlite et Godox.
-
-V0.14 : Godox élargi (SL III, ML30/ML30Bi/ML100Bi, VL II, SZ200Bi) et Nanlite élargi (FC, Forza, FS). Les mesures constructeur restent prioritaires ; softboxes non mesurées = ≈.
-
-V0.14 : dans l’interface simple, les réflecteurs constructeur sont présentés comme « Bol ». Le nom constructeur exact reste affiché dans Détails techniques. Le résultat indique aussi si le modificateur concentre ou élargit le faisceau.
+Le fonctionnement, les calculs et le design de LIGHT V0.15 sont conservés.
