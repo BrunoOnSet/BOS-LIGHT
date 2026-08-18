@@ -1,4 +1,4 @@
-BOS LIGHT — V0.13
+BOS LIGHT — V0.14
 =================
 
 Nouveautés
@@ -26,8 +26,8 @@ Important
 Historique récent
 -----------------
 V0.10 : ajout des softbox estimées et du marquage ≈ / ESTIMATION.
-V0.13 : ajout initial de Nanlite et Godox.
+V0.14 : ajout initial de Nanlite et Godox.
 
-V0.13 : Godox élargi (SL III, ML30/ML30Bi/ML100Bi, VL II, SZ200Bi) et Nanlite élargi (FC, Forza, FS). Les mesures constructeur restent prioritaires ; softboxes non mesurées = ≈.
+V0.14 : Godox élargi (SL III, ML30/ML30Bi/ML100Bi, VL II, SZ200Bi) et Nanlite élargi (FC, Forza, FS). Les mesures constructeur restent prioritaires ; softboxes non mesurées = ≈.
 
-V0.13 : dans l’interface simple, les réflecteurs constructeur sont présentés comme « Bol ». Le nom constructeur exact reste affiché dans Détails techniques. Le résultat indique aussi si le modificateur concentre ou élargit le faisceau.
+V0.14 : dans l’interface simple, les réflecteurs constructeur sont présentés comme « Bol ». Le nom constructeur exact reste affiché dans Détails techniques. Le résultat indique aussi si le modificateur concentre ou élargit le faisceau.

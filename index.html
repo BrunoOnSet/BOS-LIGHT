@@ -3,24 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#07090d" />
-  <title>BOS Light — V0.13</title>
+  <meta name="theme-color" id="themeColor" content="#F3F1EC" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LIGHT · BOS" />
+  <title>BRUNO ONSET / LIGHT</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=0.13" />
+  <link rel="stylesheet" href="styles.css?v=0.14" />
 </head>
 <body>
   <main class="app-shell">
     <header class="topbar">
-      <div class="brand">
-        <span class="brand-badge">BOS</span>
-        <div>
-          <div class="brand-title">LIGHT</div>
-          <div class="brand-subtitle">Est-ce que ma lumière va suffire ? · V0.13</div>
+      <div class="top-inner">
+        <div class="top-title">
+          <a class="tool-eyebrow" href="https://www.brunoguillard.com/" target="_blank" rel="noopener noreferrer" aria-label="Site de Bruno Guillard">
+            <span class="eyebrow-logo" aria-hidden="true">BOS</span>
+            <span class="eyebrow-brand" aria-label="Bruno OnSet"><span class="bos-letter">B</span>RUNO <span class="bos-letter">O</span>N<span class="bos-letter">S</span>ET</span>
+          </a>
+          <h1>LIGHT</h1>
         </div>
+        <button class="mode-btn" id="themeToggle" type="button" aria-label="Changer de thème">DARK</button>
       </div>
-      <button id="resetBtn" class="ghost-btn" type="button">Reset</button>
     </header>
+    <div class="utility-row">
+      <button class="utility-link" id="resetBtn" type="button">RESET</button>
+      <span class="utility-note">EST-CE QUE MA LUMIÈRE VA SUFFIRE ?</span>
+    </div>
 
     <!-- 01 — caméra -->
     <details class="controls-card camera-card first-card collapsible-card" id="cameraDetails">
@@ -204,6 +213,6 @@
     </footer>
   </main>
 
-  <script src="app.js?v=0.13"></script>
+  <script src="app.js?v=0.14"></script>
 </body>
 </html>

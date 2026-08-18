@@ -1,9 +1,9 @@
 {
-  "name": "BOS Light",
-  "short_name": "BOS Light",
+  "name": "BRUNO ONSET / LIGHT",
+  "short_name": "LIGHT · BOS",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#07090d",
-  "theme_color": "#07090d",
+  "background_color": "#F3F1EC",
+  "theme_color": "#F3F1EC",
   "icons": []
 }

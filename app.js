@@ -1,4 +1,4 @@
-// BOS LIGHT V0.13 — assistant de puissance/exposition pour le tournage
+// BOS LIGHT V0.14 — assistant de puissance/exposition pour le tournage
 // Mesures constructeur Aputure/amaran. Exposition incidente : C = 340 (Lumisphere Sekonic).
 
 const INCIDENT_C = 340;
@@ -390,12 +390,13 @@ const els={
   cctGrid:$('#cctGrid'),cctSection:$('#cctSection'),cctValue:$('#cctValue'),cctNote:$('#cctNote'),
   intensitySlider:$('#intensitySlider'),intensityValue:$('#intensityValue'),isoSelect:$('#isoSelect'),shutterSelect:$('#shutterSelect'),apertureSelect:$('#apertureSelect'),cameraSummary:$('#cameraSummary'),lightSummary:$('#lightSummary'),
   maxDistance:$('#maxDistance'),heroSummary:$('#heroSummary'),beamHint:$('#beamHint'),testDistanceSlider:$('#testDistanceSlider'),testDistanceValue:$('#testDistanceValue'),statusBox:$('#statusBox'),statusTitle:$('#statusTitle'),statusText:$('#statusText'),solutionIntro:$('#solutionIntro'),solutions:$('#solutions'),
-  testLux:$('#testLux'),stopMargin:$('#stopMargin'),requiredIso:$('#requiredIso'),possibleAperture:$('#possibleAperture'),sourceDescriptor:$('#sourceDescriptor'),measurementRow:$('#measurementRow'),dataNote:$('#dataNote'),dimmerNote:$('#dimmerNote'),labBadge:$('#labBadge'),resetBtn:$('#resetBtn')
+  testLux:$('#testLux'),stopMargin:$('#stopMargin'),requiredIso:$('#requiredIso'),possibleAperture:$('#possibleAperture'),sourceDescriptor:$('#sourceDescriptor'),measurementRow:$('#measurementRow'),dataNote:$('#dataNote'),dimmerNote:$('#dimmerNote'),labBadge:$('#labBadge'),resetBtn:$('#resetBtn'),themeToggle:$('#themeToggle'),themeColor:$('#themeColor')
 };
 
 init();
 
 function init(){
+  applyTheme(localStorage.getItem("bg-set-tools-theme") || "light");
   loadSavedState();
   populateSelect(els.isoSelect,ISO_VALUES,v=>`ISO ${v}`,state.iso);
   populateSelect(els.apertureSelect,APERTURES,v=>`f/${formatAperture(v)}`,state.aperture);
@@ -435,6 +436,20 @@ function bindUI(){
   els.shutterSelect.addEventListener('change',()=>{state.shutterDenom=Number(els.shutterSelect.value);update();});
   els.testDistanceSlider.addEventListener('input',()=>{state.testDistance=Number(els.testDistanceSlider.value);update();});
   els.resetBtn.addEventListener('click',reset);
+  els.themeToggle?.addEventListener('click',()=>{
+    const next=document.body.classList.contains('dark')?'light':'dark';
+    try{localStorage.setItem('bg-set-tools-theme',next);}catch(_){}
+    applyTheme(next);
+  });
+}
+function applyTheme(theme){
+  const isDark=theme==='dark';
+  document.body.classList.toggle('dark',isDark);
+  if(els.themeToggle){
+    els.themeToggle.textContent=isDark?'LIGHT':'DARK';
+    els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');
+  }
+  els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
 function reset(){Object.assign(state,{fixture:'halo60x',accessory:'softbox',cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;update();}
 
