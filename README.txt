@@ -1,4 +1,4 @@
-BOS LIGHT — V0.16
+BOS LIGHT — V0.17
 =================
 
 Nouveauté principale
@@ -22,3 +22,6 @@ Ordre de chargement
 2. lights.json local (fallback de secours)
 
 Le fonctionnement, les calculs et le design de LIGHT V0.15 sont conservés.
+
+
+V0.17 — Ajout optionnel d’une Fill Light avec mêmes réglages que la Key, mémorisation, écart Key/Fill en stops, ratio des sources et contraste d’éclairage théorique (Key+Fill)/Fill.

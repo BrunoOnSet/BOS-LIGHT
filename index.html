@@ -10,7 +10,7 @@
   <title>BRUNO ONSET / LIGHT</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=0.16" />
+  <link rel="stylesheet" href="styles.css?v=0.17" />
 </head>
 <body>
   <main class="app-shell">
@@ -58,13 +58,13 @@
       </div>
     </details>
 
-    <!-- 02 — choix du projecteur -->
+    <!-- 02 — Key Light -->
     <details class="controls-card light-card collapsible-card" id="lightDetails">
       <summary class="card-heading collapsible-heading">
         <span class="step">02</span>
         <div class="heading-copy">
-          <h2>Ma lumière</h2>
-          <p>Marque, gamme, modèle et accessoire.</p>
+          <h2>Key Light</h2>
+          <p>Ta source principale : projecteur, accessoire, puissance et distance.</p>
         </div>
         <div class="summary-value light-summary" id="lightSummary">amaran · Halo 60x · Softbox 60</div>
         <span class="chevron">⌄</span>
@@ -74,34 +74,19 @@
         <label class="control-label">MARQUE</label>
         <div class="brand-grid" id="brandGrid"></div>
       </div>
-
       <div class="control-block compact-block">
         <label class="control-label">GAMME</label>
         <div class="family-grid" id="familyGrid"></div>
       </div>
-
       <div class="control-block compact-block">
         <label class="control-label">PUISSANCE / MODÈLE</label>
         <div class="power-grid" id="powerGrid"></div>
       </div>
-
       <div class="control-block compact-block">
         <label class="control-label">ACCESSOIRE</label>
         <div class="accessory-grid" id="accessoryGrid"></div>
         <div class="accessory-note" id="accessoryNote"></div>
       </div>
-    </details>
-
-    <!-- 03 — réglages de la lumière -->
-    <section class="controls-card light-settings-card">
-      <div class="card-heading">
-        <span class="step">03</span>
-        <div>
-          <h2>Mes réglages lumière</h2>
-          <p>Règle la puissance, la température et la distance réelle sur le plateau.</p>
-        </div>
-      </div>
-
       <div class="control-block slider-block">
         <div class="control-head">
           <label for="intensitySlider">INTENSITÉ</label>
@@ -110,7 +95,6 @@
         <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
         <div class="range-labels"><span>0 %</span><span>100 %</span></div>
       </div>
-
       <div class="control-block" id="cctSection">
         <div class="control-head compact-head">
           <label>TEMPÉRATURE</label>
@@ -119,19 +103,89 @@
         <div class="cct-grid" id="cctGrid"></div>
         <div class="accessory-note" id="cctNote"></div>
       </div>
-
       <div class="control-block distance-control-block">
         <div class="section-head compact-distance-head">
           <div>
             <div class="control-label">DISTANCE SOURCE / SUJET</div>
-            <div class="distance-help">Distance réelle de ta lumière sur le tournage.</div>
+            <div class="distance-help">Distance réelle entre ta Key Light et le sujet.</div>
           </div>
           <strong class="distance-readout" id="testDistanceValue">2,0 m</strong>
         </div>
         <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
         <div class="range-labels"><span>1 m</span><span>20 m</span></div>
       </div>
-    </section>
+    </details>
+
+    <!-- 03 — Fill Light -->
+    <details class="controls-card light-card fill-card collapsible-card" id="fillDetails">
+      <summary class="card-heading collapsible-heading">
+        <span class="step">03</span>
+        <div class="heading-copy">
+          <h2>Fill Light</h2>
+          <p>Ajoute une seconde source pour préparer ton ratio Key / Fill.</p>
+        </div>
+        <div class="summary-value light-summary" id="fillSummary">Désactivée</div>
+        <span class="chevron">⌄</span>
+      </summary>
+
+      <div class="fill-disabled" id="fillDisabled">
+        <button class="fill-add-btn" id="enableFillBtn" type="button">+ AJOUTER UNE FILL LIGHT</button>
+        <p>La Fill est optionnelle. Active-la pour comparer précisément son niveau à la Key.</p>
+      </div>
+
+      <div class="fill-controls" id="fillControls" hidden>
+        <div class="control-block compact-block">
+          <label class="control-label">MARQUE</label>
+          <div class="brand-grid" id="fillBrandGrid"></div>
+        </div>
+        <div class="control-block compact-block">
+          <label class="control-label">GAMME</label>
+          <div class="family-grid" id="fillFamilyGrid"></div>
+        </div>
+        <div class="control-block compact-block">
+          <label class="control-label">PUISSANCE / MODÈLE</label>
+          <div class="power-grid" id="fillPowerGrid"></div>
+        </div>
+        <div class="control-block compact-block">
+          <label class="control-label">ACCESSOIRE</label>
+          <div class="accessory-grid" id="fillAccessoryGrid"></div>
+          <div class="accessory-note" id="fillAccessoryNote"></div>
+        </div>
+        <div class="control-block slider-block">
+          <div class="control-head">
+            <label for="fillIntensitySlider">INTENSITÉ</label>
+            <output id="fillIntensityValue">50 %</output>
+          </div>
+          <input id="fillIntensitySlider" type="range" min="0" max="100" value="50" step="1" />
+          <div class="range-labels"><span>0 %</span><span>100 %</span></div>
+        </div>
+        <div class="control-block" id="fillCctSection">
+          <div class="control-head compact-head">
+            <label>TEMPÉRATURE</label>
+            <output id="fillCctValue">5600 K</output>
+          </div>
+          <div class="cct-grid" id="fillCctGrid"></div>
+          <div class="accessory-note" id="fillCctNote"></div>
+        </div>
+        <div class="control-block distance-control-block">
+          <div class="section-head compact-distance-head">
+            <div>
+              <div class="control-label">DISTANCE SOURCE / SUJET</div>
+              <div class="distance-help">Distance réelle entre ta Fill Light et le sujet.</div>
+            </div>
+            <strong class="distance-readout" id="fillDistanceValue">2,0 m</strong>
+          </div>
+          <input id="fillDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
+          <div class="range-labels"><span>1 m</span><span>20 m</span></div>
+        </div>
+        <div class="fill-inline-result" id="fillInlineResult">
+          <div><span>KEY LIGHT</span><strong id="fillInlineKeyLux">— lux</strong></div>
+          <div><span>FILL LIGHT</span><strong id="fillInlineFillLux">— lux</strong></div>
+          <div class="fill-inline-main"><span>ÉCART KEY / FILL</span><strong id="fillInlineStops">—</strong><small id="fillInlineRatio">—</small></div>
+        </div>
+        <button class="fill-remove-btn" id="disableFillBtn" type="button">RETIRER LA FILL LIGHT</button>
+      </div>
+    </details>
 
     <!-- 04 — résultat -->
     <section class="controls-card result-section" aria-live="polite">
@@ -144,8 +198,8 @@
       </div>
 
       <div class="hero-card result-card-inner">
-        <div class="eyebrow">DISTANCE MAXIMUM</div>
-        <div class="hero-title">Tu peux placer ta lumière jusqu’à</div>
+        <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
+        <div class="hero-title">Tu peux placer ta Key Light jusqu’à</div>
         <div class="hero-distance"><strong id="maxDistance">—</strong><span>m</span></div>
         <div class="setup-line" aria-hidden="true">
           <div class="setup-icon lamp">✦</div>
@@ -157,6 +211,24 @@
       </div>
 
       <div class="result-body">
+        <div class="contrast-card" id="contrastCard" hidden>
+          <div class="contrast-head">
+            <div><span class="control-label">KEY / FILL</span><strong>Contraste d’éclairage</strong></div>
+            <span class="contrast-character" id="contrastCharacter">—</span>
+          </div>
+          <div class="contrast-grid">
+            <div><span>KEY LIGHT</span><strong id="keyLuxResult">— lux</strong></div>
+            <div><span>FILL LIGHT</span><strong id="fillLuxResult">— lux</strong></div>
+            <div><span>ÉCART ENTRE LES SOURCES</span><strong id="sourceGapResult">—</strong><small id="sourceGapDetail">—</small></div>
+            <div><span>RATIO DES SOURCES</span><strong id="sourceRatioResult">—</strong></div>
+          </div>
+          <div class="estimated-contrast">
+            <span>CONTRASTE D’ÉCLAIRAGE ESTIMÉ</span>
+            <strong id="estimatedContrastResult">—</strong>
+            <p>Estimation théorique (Key + Fill) / Fill. Le contraste réel dépend du placement des sources, des réflexions, du décor et du sujet.</p>
+          </div>
+        </div>
+
         <div class="status-box" id="statusBox">
           <span class="status-dot"></span>
           <div>
@@ -215,6 +287,6 @@
   </main>
 
   <script src="bos-projecteurs-db.js?v=1.0"></script>
-  <script src="app.js?v=0.16"></script>
+  <script src="app.js?v=0.17"></script>
 </body>
 </html>
