@@ -484,3 +484,19 @@ body.dark .dialog-close{background:var(--panel2)}
   .tech-toggle-bottom{padding-left:16px;padding-right:16px}
   .manufacturer-tech-popover{margin-left:16px;margin-right:16px}
 }
+
+
+.tech-inline-bottom{padding:0 24px 24px}
+.inline-source-data{margin-top:0;padding-top:0;border-top:1px solid var(--line)}
+.inline-source-data .source-title-row{padding-top:16px}
+.manufacturer-inline .measurement-row{margin-top:10px}
+
+.result-tech-kicker{font-size:10px;letter-spacing:.16em;font-weight:850;color:var(--muted);margin:0 0 12px}
+
+
+/* V0.23 — Résultat Key Light repliable */
+.result-key-card > summary.card-heading{border-bottom:0}
+.result-key-card[open] > summary.card-heading{border-bottom:1px solid var(--line)}
+.result-distance-summary{font-size:12px;font-weight:850;color:var(--accent);white-space:nowrap;margin-left:auto;padding-right:24px}
+@media (max-width:520px){.result-distance-summary{font-size:11px;max-width:165px;overflow:hidden;text-overflow:ellipsis}}
+@media (max-width:390px){.result-key-card:not([open]) .heading-copy p{display:none}.result-key-card:not([open]) .result-distance-summary{display:block;max-width:none}}

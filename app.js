@@ -1,4 +1,4 @@
-// BOS LIGHT V0.20 — Key + Fill, détails constructeur séparés du résultat
+// BOS LIGHT V0.23 — Key + Fill, détails constructeur séparés du résultat
 const INCIDENT_C = 340;
 const STORAGE_KEY = 'bos-light-settings-v1';
 
@@ -28,7 +28,7 @@ const els = {
   accessoryGrid:$('#accessoryGrid'), accessoryNote:$('#accessoryNote'), cctGrid:$('#cctGrid'), cctSection:$('#cctSection'), cctValue:$('#cctValue'), cctNote:$('#cctNote'),
   intensitySlider:$('#intensitySlider'), intensityValue:$('#intensityValue'), isoSelect:$('#isoSelect'), shutterSelect:$('#shutterSelect'), apertureSelect:$('#apertureSelect'), cameraSummary:$('#cameraSummary'), lightSummary:$('#lightSummary'),
   keyModelPickerBtn:$('#keyModelPickerBtn'), keyModelPickerLabel:$('#keyModelPickerLabel'),
-  maxDistance:$('#maxDistance'), heroSummary:$('#heroSummary'), beamHint:$('#beamHint'), testDistanceSlider:$('#testDistanceSlider'), testDistanceValue:$('#testDistanceValue'), statusBox:$('#statusBox'), statusTitle:$('#statusTitle'), statusText:$('#statusText'), solutionIntro:$('#solutionIntro'), solutions:$('#solutions'), contrastSection:$('#contrastSection'),
+  maxDistance:$('#maxDistance'), resultDistanceSummary:$('#resultDistanceSummary'), heroSummary:$('#heroSummary'), beamHint:$('#beamHint'), testDistanceSlider:$('#testDistanceSlider'), testDistanceValue:$('#testDistanceValue'), statusBox:$('#statusBox'), statusTitle:$('#statusTitle'), statusText:$('#statusText'), solutionIntro:$('#solutionIntro'), solutions:$('#solutions'), contrastSection:$('#contrastSection'),
   keyTechBtn:$('#keyTechBtn'), keyTechPopover:$('#keyTechPopover'), keyTechSourceDescriptor:$('#keyTechSourceDescriptor'), keyTechMeasurementRow:$('#keyTechMeasurementRow'), keyTechLabBadge:$('#keyTechLabBadge'),
   resultTechBtn:$('#resultTechBtn'), resultTechPopover:$('#resultTechPopover'), resultTechLux:$('#resultTechLux'), resultTechMargin:$('#resultTechMargin'), resultTechRequiredIso:$('#resultTechRequiredIso'), resultTechPossibleAperture:$('#resultTechPossibleAperture'), resultTechDataNote:$('#resultTechDataNote'),
   resetBtn:$('#resetBtn'), themeToggle:$('#themeToggle'), themeColor:$('#themeColor'),
@@ -160,9 +160,7 @@ function bindUI(){
   els.fillIntensitySlider.addEventListener('input',()=>{state.fillIntensityPct=Number(els.fillIntensitySlider.value);update();});
   els.fillDistanceSlider.addEventListener('input',()=>{state.fillDistance=Number(els.fillDistanceSlider.value);update();});
 
-  els.keyTechBtn?.addEventListener('click',()=>{els.keyTechPopover.hidden=!els.keyTechPopover.hidden;});
   els.resultTechBtn?.addEventListener('click',()=>{els.resultTechPopover.hidden=!els.resultTechPopover.hidden;});
-  els.fillTechBtn?.addEventListener('click',()=>{els.fillTechPopover.hidden=!els.fillTechPopover.hidden;});
 
   els.resetBtn.addEventListener('click',reset);
   els.themeToggle?.addEventListener('click',()=>{const next=document.body.classList.contains('dark')?'light':'dark';try{localStorage.setItem('bg-set-tools-theme',next);}catch(_){}applyTheme(next);});
@@ -173,7 +171,7 @@ function applyTheme(theme){
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
-function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;els.keyTechPopover.hidden=true;els.resultTechPopover.hidden=true;els.fillTechPopover.hidden=true;update();}
+function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;if(els.resultTechPopover) els.resultTechPopover.hidden=true; update();}
 
 function update(){
   ensureAccessoryAndCct(); ensureFillAccessoryAndCct();
@@ -186,6 +184,7 @@ function update(){
   els.intensityValue.textContent=`${state.intensityPct} %`;
   els.testDistanceValue.textContent=`${formatDistance(state.testDistance)} m`;
   els.maxDistance.textContent=maxD>0?formatDistance(maxD):'0,0';
+  if(els.resultDistanceSummary) els.resultDistanceSummary.textContent=`Distance possible : ${maxD>0?formatDistance(maxD):'0,0'} m`;
   els.cameraSummary.textContent=`ISO ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
 
   const brandLabel=BRAND_LABELS[brandForFixture()]||brandForFixture();

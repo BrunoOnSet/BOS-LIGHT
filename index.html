@@ -79,23 +79,21 @@
         <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
         <div class="range-labels"><span>1 m</span><span>20 m</span></div>
       </div>
-      <div class="tech-toggle-row tech-toggle-bottom">
-        <button class="utility-link tech-mini-btn" id="keyTechBtn" type="button">DÉTAILS TECHNIQUES CONSTRUCTEUR</button>
-      </div>
-      <div class="tech-popover manufacturer-tech-popover" id="keyTechPopover" hidden>
-        <div class="tech-popover-head"><strong>Détails techniques constructeur · Key Light</strong><span class="lab-badge" id="keyTechLabBadge">AMARAN</span></div>
-        <div class="source-data compact-source-data manufacturer-only">
+      <div class="tech-inline-bottom manufacturer-inline" id="keyTechPopover">
+        <div class="source-data compact-source-data manufacturer-only inline-source-data">
           <div class="source-title-row"><div><span class="control-label">DONNÉES CONSTRUCTEUR</span><p id="keyTechSourceDescriptor">—</p></div></div>
           <div class="measurement-row" id="keyTechMeasurementRow"></div>
         </div>
       </div>
     </details>
 
-    <section class="controls-card result-section" aria-live="polite">
-      <div class="card-heading">
+    <details class="controls-card result-section collapsible-card result-key-card" id="resultKeyDetails" open aria-live="polite">
+      <summary class="card-heading collapsible-heading">
         <span class="step">03</span>
-        <div><h2>Résultat Key Light</h2><p>Vérifie d’abord si ta source principale suffit pour tes réglages caméra.</p></div>
-      </div>
+        <div class="heading-copy"><h2>Résultat Key Light</h2><p>Vérifie d’abord si ta source principale suffit pour tes réglages caméra.</p></div>
+        <div class="summary-value result-distance-summary" id="resultDistanceSummary">Distance possible : — m</div>
+        <span class="chevron">⌄</span>
+      </summary>
       <div class="hero-card result-card-inner">
         <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
         <div class="hero-title">Tu peux placer ta Key Light jusqu’à</div>
@@ -113,7 +111,7 @@
           <button class="utility-link tech-mini-btn" id="resultTechBtn" type="button">DÉTAILS TECHNIQUES</button>
         </div>
         <div class="tech-popover result-tech-popover" id="resultTechPopover" hidden>
-          <div class="tech-popover-head"><strong>Détails techniques · Résultat Key Light</strong></div>
+          <div class="result-tech-kicker">DÉTAILS TECHNIQUES</div>
           <div class="tech-grid">
             <div><span>À LA DISTANCE TESTÉE</span><strong id="resultTechLux">— lux</strong></div>
             <div><span>MARGE</span><strong id="resultTechMargin">—</strong></div>
@@ -123,7 +121,7 @@
           <div class="technical-note result-tech-note" id="resultTechDataNote">—</div>
         </div>
       </div>
-    </section>
+    </details>
 
     <details class="controls-card light-card fill-card collapsible-card" id="fillDetails">
       <summary class="card-heading collapsible-heading">
@@ -159,12 +157,8 @@
           <input id="fillDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
           <div class="range-labels"><span>1 m</span><span>20 m</span></div>
         </div>
-        <div class="tech-toggle-row tech-toggle-bottom">
-          <button class="utility-link tech-mini-btn" id="fillTechBtn" type="button">DÉTAILS TECHNIQUES CONSTRUCTEUR</button>
-        </div>
-        <div class="tech-popover manufacturer-tech-popover" id="fillTechPopover" hidden>
-          <div class="tech-popover-head"><strong>Détails techniques constructeur · Fill Light</strong><span class="lab-badge" id="fillTechLabBadge">AMARAN</span></div>
-          <div class="source-data compact-source-data manufacturer-only">
+        <div class="tech-inline-bottom manufacturer-inline" id="fillTechPopover">
+          <div class="source-data compact-source-data manufacturer-only inline-source-data">
             <div class="source-title-row"><div><span class="control-label">DONNÉES CONSTRUCTEUR</span><p id="fillTechSourceDescriptor">—</p></div></div>
             <div class="measurement-row" id="fillTechMeasurementRow"></div>
           </div>
