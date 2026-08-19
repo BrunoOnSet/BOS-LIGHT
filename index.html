@@ -10,7 +10,7 @@
   <title>BRUNO ONSET / LIGHT</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=0.17" />
+  <link rel="stylesheet" href="styles.css?v=0.19" />
 </head>
 <body>
   <main class="app-shell">
@@ -31,7 +31,6 @@
       <span class="utility-note">EST-CE QUE MA LUMIÈRE VA SUFFIRE ?</span>
     </div>
 
-    <!-- 01 — caméra -->
     <details class="controls-card camera-card first-card collapsible-card" id="cameraDetails">
       <summary class="card-heading collapsible-heading">
         <span class="step">01</span>
@@ -43,22 +42,12 @@
         <span class="chevron">⌄</span>
       </summary>
       <div class="camera-grid">
-        <label class="select-control">
-          <span>ISO MAX ACCEPTÉ</span>
-          <select id="isoSelect" aria-label="ISO maximum accepté"></select>
-        </label>
-        <label class="select-control">
-          <span>OUVERTURE</span>
-          <select id="apertureSelect" aria-label="Ouverture"></select>
-        </label>
-        <label class="select-control">
-          <span>VITESSE</span>
-          <select id="shutterSelect" aria-label="Vitesse d'obturation"></select>
-        </label>
+        <label class="select-control"><span>ISO MAX ACCEPTÉ</span><select id="isoSelect" aria-label="ISO maximum accepté"></select></label>
+        <label class="select-control"><span>OUVERTURE</span><select id="apertureSelect" aria-label="Ouverture"></select></label>
+        <label class="select-control"><span>VITESSE</span><select id="shutterSelect" aria-label="Vitesse d'obturation"></select></label>
       </div>
     </details>
 
-    <!-- 02 — Key Light -->
     <details class="controls-card light-card collapsible-card" id="lightDetails">
       <summary class="card-heading collapsible-heading">
         <span class="step">02</span>
@@ -71,59 +60,71 @@
       </summary>
 
       <div class="control-block compact-block">
-        <label class="control-label">MARQUE</label>
-        <div class="brand-grid" id="brandGrid"></div>
+        <label class="control-label">PROJECTEUR / MODÈLE</label>
+        <button id="keyModelPickerBtn" class="model-picker-btn" type="button"><span id="keyModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
       </div>
-      <div class="control-block compact-block">
-        <label class="control-label">GAMME</label>
-        <div class="family-grid" id="familyGrid"></div>
+      <div class="control-block compact-block"><label class="control-label">ACCESSOIRE</label><div class="accessory-grid" id="accessoryGrid"></div><div class="accessory-note" id="accessoryNote"></div></div>
+      <div class="tech-toggle-row">
+        <button class="utility-link tech-mini-btn" id="keyTechBtn" type="button">DÉTAILS TECHNIQUES</button>
       </div>
-      <div class="control-block compact-block">
-        <label class="control-label">PUISSANCE / MODÈLE</label>
-        <div class="power-grid" id="powerGrid"></div>
-      </div>
-      <div class="control-block compact-block">
-        <label class="control-label">ACCESSOIRE</label>
-        <div class="accessory-grid" id="accessoryGrid"></div>
-        <div class="accessory-note" id="accessoryNote"></div>
+      <div class="tech-popover" id="keyTechPopover" hidden>
+        <div class="tech-popover-head"><strong>Détails techniques · Key Light</strong><span class="lab-badge" id="keyTechLabBadge">AMARAN</span></div>
+        <div class="tech-grid">
+          <div><span>À LA DISTANCE TESTÉE</span><strong id="keyTechLux">— lux</strong></div>
+          <div><span>MARGE</span><strong id="keyTechMargin">—</strong></div>
+          <div><span>ISO POUR CETTE EXPO</span><strong id="keyTechRequiredIso">—</strong></div>
+          <div><span>OUVERTURE À ISO MAX</span><strong id="keyTechPossibleAperture">—</strong></div>
+        </div>
+        <div class="source-data compact-source-data">
+          <div class="source-title-row"><div><span class="control-label">DONNÉES DE CALCUL</span><p id="keyTechSourceDescriptor">—</p></div></div>
+          <div class="measurement-row" id="keyTechMeasurementRow"></div>
+          <div class="technical-note" id="keyTechDataNote">—</div>
+          <div class="technical-note" id="keyTechDimmerNote">—</div>
+          <div class="technical-note db-status-note" id="keyTechDatabaseNote">BOS-PROJECTEURS-DB · chargement…</div>
+        </div>
       </div>
       <div class="control-block slider-block">
-        <div class="control-head">
-          <label for="intensitySlider">INTENSITÉ</label>
-          <output id="intensityValue">100 %</output>
-        </div>
+        <div class="control-head"><label for="intensitySlider">INTENSITÉ</label><output id="intensityValue">100 %</output></div>
         <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
         <div class="range-labels"><span>0 %</span><span>100 %</span></div>
       </div>
       <div class="control-block" id="cctSection">
-        <div class="control-head compact-head">
-          <label>TEMPÉRATURE</label>
-          <output id="cctValue">5600 K</output>
-        </div>
+        <div class="control-head compact-head"><label>TEMPÉRATURE</label><output id="cctValue">5600 K</output></div>
         <div class="cct-grid" id="cctGrid"></div>
         <div class="accessory-note" id="cctNote"></div>
       </div>
       <div class="control-block distance-control-block">
-        <div class="section-head compact-distance-head">
-          <div>
-            <div class="control-label">DISTANCE SOURCE / SUJET</div>
-            <div class="distance-help">Distance réelle entre ta Key Light et le sujet.</div>
-          </div>
-          <strong class="distance-readout" id="testDistanceValue">2,0 m</strong>
-        </div>
+        <div class="section-head compact-distance-head"><div><div class="control-label">DISTANCE SOURCE / SUJET</div><div class="distance-help">Distance réelle entre ta Key Light et le sujet.</div></div><strong class="distance-readout" id="testDistanceValue">2,0 m</strong></div>
         <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
         <div class="range-labels"><span>1 m</span><span>20 m</span></div>
       </div>
     </details>
 
-    <!-- 03 — Fill Light -->
+    <section class="controls-card result-section" aria-live="polite">
+      <div class="card-heading">
+        <span class="step">03</span>
+        <div><h2>Résultat Key Light</h2><p>Vérifie d’abord si ta source principale suffit pour tes réglages caméra.</p></div>
+      </div>
+      <div class="hero-card result-card-inner">
+        <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
+        <div class="hero-title">Tu peux placer ta Key Light jusqu’à</div>
+        <div class="hero-distance"><strong id="maxDistance">—</strong><span>m</span></div>
+        <div class="setup-line" aria-hidden="true"><div class="setup-icon lamp">✦</div><div class="setup-track"><div class="setup-fill"></div></div><div class="setup-icon person">●</div></div>
+        <div class="hero-summary" id="heroSummary">—</div>
+        <div class="beam-hint" id="beamHint">—</div>
+      </div>
+      <div class="result-body">
+        <div class="status-box" id="statusBox"><span class="status-dot"></span><div><strong id="statusTitle">—</strong><p id="statusText">—</p></div></div>
+        <div class="solution-intro" id="solutionIntro"></div>
+        <div class="solutions" id="solutions"></div>
+        <div class="exposure-explainer compact-explainer"><strong>Par rapport à quoi ?</strong><span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span></div>
+      </div>
+    </section>
+
     <details class="controls-card light-card fill-card collapsible-card" id="fillDetails">
       <summary class="card-heading collapsible-heading">
-        <span class="step">03</span>
-        <div class="heading-copy">
-          <h2>Fill Light</h2>
-          <p>Ajoute une seconde source pour préparer ton ratio Key / Fill.</p>
-        </div>
+        <span class="step">04</span>
+        <div class="heading-copy"><h2>Fill Light</h2><p>Ajoute une seconde source pour préparer ton ratio Key / Fill.</p></div>
         <div class="summary-value light-summary" id="fillSummary">Désactivée</div>
         <span class="chevron">⌄</span>
       </summary>
@@ -135,150 +136,66 @@
 
       <div class="fill-controls" id="fillControls" hidden>
         <div class="control-block compact-block">
-          <label class="control-label">MARQUE</label>
-          <div class="brand-grid" id="fillBrandGrid"></div>
+          <label class="control-label">PROJECTEUR / MODÈLE</label>
+          <button id="fillModelPickerBtn" class="model-picker-btn" type="button"><span id="fillModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
         </div>
-        <div class="control-block compact-block">
-          <label class="control-label">GAMME</label>
-          <div class="family-grid" id="fillFamilyGrid"></div>
+        <div class="control-block compact-block"><label class="control-label">ACCESSOIRE</label><div class="accessory-grid" id="fillAccessoryGrid"></div><div class="accessory-note" id="fillAccessoryNote"></div></div>
+        <div class="tech-toggle-row">
+          <button class="utility-link tech-mini-btn" id="fillTechBtn" type="button">DÉTAILS TECHNIQUES</button>
         </div>
-        <div class="control-block compact-block">
-          <label class="control-label">PUISSANCE / MODÈLE</label>
-          <div class="power-grid" id="fillPowerGrid"></div>
-        </div>
-        <div class="control-block compact-block">
-          <label class="control-label">ACCESSOIRE</label>
-          <div class="accessory-grid" id="fillAccessoryGrid"></div>
-          <div class="accessory-note" id="fillAccessoryNote"></div>
+        <div class="tech-popover" id="fillTechPopover" hidden>
+          <div class="tech-popover-head"><strong>Détails techniques · Fill Light</strong><span class="lab-badge" id="fillTechLabBadge">AMARAN</span></div>
+          <div class="tech-grid">
+            <div><span>À LA DISTANCE TESTÉE</span><strong id="fillTechLux">— lux</strong></div>
+            <div><span>MARGE</span><strong id="fillTechMargin">—</strong></div>
+            <div><span>ISO POUR CETTE EXPO</span><strong id="fillTechRequiredIso">—</strong></div>
+            <div><span>OUVERTURE À ISO MAX</span><strong id="fillTechPossibleAperture">—</strong></div>
+          </div>
+          <div class="source-data compact-source-data">
+            <div class="source-title-row"><div><span class="control-label">DONNÉES DE CALCUL</span><p id="fillTechSourceDescriptor">—</p></div></div>
+            <div class="measurement-row" id="fillTechMeasurementRow"></div>
+            <div class="technical-note" id="fillTechDataNote">—</div>
+            <div class="technical-note" id="fillTechDimmerNote">—</div>
+            <div class="technical-note db-status-note" id="fillTechDatabaseNote">BOS-PROJECTEURS-DB · chargement…</div>
+          </div>
         </div>
         <div class="control-block slider-block">
-          <div class="control-head">
-            <label for="fillIntensitySlider">INTENSITÉ</label>
-            <output id="fillIntensityValue">50 %</output>
-          </div>
+          <div class="control-head"><label for="fillIntensitySlider">INTENSITÉ</label><output id="fillIntensityValue">50 %</output></div>
           <input id="fillIntensitySlider" type="range" min="0" max="100" value="50" step="1" />
           <div class="range-labels"><span>0 %</span><span>100 %</span></div>
         </div>
         <div class="control-block" id="fillCctSection">
-          <div class="control-head compact-head">
-            <label>TEMPÉRATURE</label>
-            <output id="fillCctValue">5600 K</output>
-          </div>
+          <div class="control-head compact-head"><label>TEMPÉRATURE</label><output id="fillCctValue">5600 K</output></div>
           <div class="cct-grid" id="fillCctGrid"></div>
           <div class="accessory-note" id="fillCctNote"></div>
         </div>
         <div class="control-block distance-control-block">
-          <div class="section-head compact-distance-head">
-            <div>
-              <div class="control-label">DISTANCE SOURCE / SUJET</div>
-              <div class="distance-help">Distance réelle entre ta Fill Light et le sujet.</div>
-            </div>
-            <strong class="distance-readout" id="fillDistanceValue">2,0 m</strong>
-          </div>
+          <div class="section-head compact-distance-head"><div><div class="control-label">DISTANCE SOURCE / SUJET</div><div class="distance-help">Distance réelle entre ta Fill Light et le sujet.</div></div><strong class="distance-readout" id="fillDistanceValue">2,0 m</strong></div>
           <input id="fillDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
           <div class="range-labels"><span>1 m</span><span>20 m</span></div>
-        </div>
-        <div class="fill-inline-result" id="fillInlineResult">
-          <div><span>KEY LIGHT</span><strong id="fillInlineKeyLux">— lux</strong></div>
-          <div><span>FILL LIGHT</span><strong id="fillInlineFillLux">— lux</strong></div>
-          <div class="fill-inline-main"><span>ÉCART KEY / FILL</span><strong id="fillInlineStops">—</strong><small id="fillInlineRatio">—</small></div>
         </div>
         <button class="fill-remove-btn" id="disableFillBtn" type="button">RETIRER LA FILL LIGHT</button>
       </div>
     </details>
 
-    <!-- 04 — résultat -->
-    <section class="controls-card result-section" aria-live="polite">
+    <section class="controls-card result-section" id="contrastSection" aria-live="polite" hidden>
       <div class="card-heading">
-        <span class="step">04</span>
-        <div>
-          <h2>Résultat</h2>
-          <p>LIGHT compare ta configuration à l’exposition incidente de référence.</p>
-        </div>
+        <span class="step">05</span>
+        <div><h2>Résultat Key / Fill</h2><p>Compare les deux sources et estime le contraste d’éclairage créé.</p></div>
       </div>
-
-      <div class="hero-card result-card-inner">
-        <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
-        <div class="hero-title">Tu peux placer ta Key Light jusqu’à</div>
-        <div class="hero-distance"><strong id="maxDistance">—</strong><span>m</span></div>
-        <div class="setup-line" aria-hidden="true">
-          <div class="setup-icon lamp">✦</div>
-          <div class="setup-track"><div class="setup-fill"></div></div>
-          <div class="setup-icon person">●</div>
-        </div>
-        <div class="hero-summary" id="heroSummary">—</div>
-        <div class="beam-hint" id="beamHint">—</div>
-      </div>
-
       <div class="result-body">
-        <div class="contrast-card" id="contrastCard" hidden>
-          <div class="contrast-head">
-            <div><span class="control-label">KEY / FILL</span><strong>Contraste d’éclairage</strong></div>
-            <span class="contrast-character" id="contrastCharacter">—</span>
-          </div>
+        <div class="contrast-card" id="contrastCard">
+          <div class="contrast-head"><div><span class="control-label">KEY / FILL</span><strong>Contraste d’éclairage</strong></div><span class="contrast-character" id="contrastCharacter">—</span></div>
           <div class="contrast-grid">
             <div><span>KEY LIGHT</span><strong id="keyLuxResult">— lux</strong></div>
             <div><span>FILL LIGHT</span><strong id="fillLuxResult">— lux</strong></div>
             <div><span>ÉCART ENTRE LES SOURCES</span><strong id="sourceGapResult">—</strong><small id="sourceGapDetail">—</small></div>
             <div><span>RATIO DES SOURCES</span><strong id="sourceRatioResult">—</strong></div>
           </div>
-          <div class="estimated-contrast">
-            <span>CONTRASTE D’ÉCLAIRAGE ESTIMÉ</span>
-            <strong id="estimatedContrastResult">—</strong>
-            <p>Estimation théorique (Key + Fill) / Fill. Le contraste réel dépend du placement des sources, des réflexions, du décor et du sujet.</p>
-          </div>
-        </div>
-
-        <div class="status-box" id="statusBox">
-          <span class="status-dot"></span>
-          <div>
-            <strong id="statusTitle">—</strong>
-            <p id="statusText">—</p>
-          </div>
-        </div>
-
-        <div class="solution-intro" id="solutionIntro"></div>
-        <div class="solutions" id="solutions"></div>
-
-        <div class="exposure-explainer compact-explainer">
-          <strong>Par rapport à quoi ?</strong>
-          <span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span>
+          <div class="estimated-contrast"><span>CONTRASTE D’ÉCLAIRAGE ESTIMÉ</span><strong id="estimatedContrastResult">—</strong><p>Estimation théorique (Key + Fill) / Fill. Le contraste réel dépend du placement des sources, des réflexions, du décor et du sujet.</p></div>
         </div>
       </div>
     </section>
-
-    <!-- technique -->
-    <details class="advanced-card tech-card">
-      <summary>
-        <div>
-          <strong>Détails techniques</strong>
-          <span>Lux, marge, exposition et mesures constructeur</span>
-        </div>
-        <span class="chevron">⌄</span>
-      </summary>
-      <div class="advanced-content">
-        <div class="tech-grid">
-          <div><span>À LA DISTANCE TESTÉE</span><strong id="testLux">— lux</strong></div>
-          <div><span>MARGE</span><strong id="stopMargin">—</strong></div>
-          <div><span>ISO POUR CETTE EXPO</span><strong id="requiredIso">—</strong></div>
-          <div><span>OUVERTURE À ISO MAX</span><strong id="possibleAperture">—</strong></div>
-        </div>
-
-        <div class="source-data">
-          <div class="source-title-row">
-            <div>
-              <span class="control-label">DONNÉES DE CALCUL</span>
-              <p id="sourceDescriptor">—</p>
-            </div>
-            <span class="lab-badge" id="labBadge">AMARAN</span>
-          </div>
-          <div class="measurement-row" id="measurementRow"></div>
-          <div class="technical-note" id="dataNote">—</div>
-          <div class="technical-note" id="dimmerNote">—</div>
-          <div class="technical-note db-status-note" id="databaseNote">BOS-PROJECTEURS-DB · chargement…</div>
-        </div>
-      </div>
-    </details>
 
     <footer>
       <span>BOS LIGHT · aide de préparation et de tournage</span>
@@ -286,7 +203,37 @@
     </footer>
   </main>
 
+
+  <dialog id="projectorDialog" class="add-dialog projector-dialog">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <div>
+          <div class="dialog-kicker">Changer</div>
+          <h2 id="projectorDialogTitle">Changer de projecteur</h2>
+        </div>
+        <button class="dialog-close" id="closeProjectorDialogBtn" type="button" aria-label="Fermer">×</button>
+      </div>
+      <div class="chooser-topline">
+        <span class="chooser-context" id="projectorChooserContext">Key Light</span>
+        <div class="catalog-badge">Catalogue BOS Light</div>
+      </div>
+      <div class="choice-section">
+        <div class="choice-label">MARQUE</div>
+        <div class="choice-buttons two" id="pickerBrandChoices"></div>
+      </div>
+      <div class="choice-section">
+        <div class="choice-label">GAMME</div>
+        <div class="choice-buttons" id="pickerFamilyChoices"></div>
+      </div>
+      <div class="choice-section">
+        <div class="choice-label">PUISSANCE / MODÈLE</div>
+        <div class="choice-buttons models" id="pickerModelChoices"></div>
+      </div>
+      <div class="chooser-footnote" id="pickerCatalogCount"></div>
+    </div>
+  </dialog>
+
   <script src="bos-projecteurs-db.js?v=1.0"></script>
-  <script src="app.js?v=0.17"></script>
+  <script src="app.js?v=0.19"></script>
 </body>
 </html>
