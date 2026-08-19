@@ -29,13 +29,13 @@ const els = {
   intensitySlider:$('#intensitySlider'), intensityValue:$('#intensityValue'), isoSelect:$('#isoSelect'), shutterSelect:$('#shutterSelect'), apertureSelect:$('#apertureSelect'), cameraSummary:$('#cameraSummary'), lightSummary:$('#lightSummary'),
   keyModelPickerBtn:$('#keyModelPickerBtn'), keyModelPickerLabel:$('#keyModelPickerLabel'),
   maxDistance:$('#maxDistance'), resultDistanceSummary:$('#resultDistanceSummary'), heroSummary:$('#heroSummary'), beamHint:$('#beamHint'), testDistanceSlider:$('#testDistanceSlider'), testDistanceValue:$('#testDistanceValue'), statusBox:$('#statusBox'), statusTitle:$('#statusTitle'), statusText:$('#statusText'), solutionIntro:$('#solutionIntro'), solutions:$('#solutions'), contrastSection:$('#contrastSection'),
-  keyTechBtn:$('#keyTechBtn'), keyTechPopover:$('#keyTechPopover'), keyTechSourceDescriptor:$('#keyTechSourceDescriptor'), keyTechMeasurementRow:$('#keyTechMeasurementRow'), keyTechLabBadge:$('#keyTechLabBadge'),
-  resultTechBtn:$('#resultTechBtn'), resultTechPopover:$('#resultTechPopover'), resultTechLux:$('#resultTechLux'), resultTechMargin:$('#resultTechMargin'), resultTechRequiredIso:$('#resultTechRequiredIso'), resultTechPossibleAperture:$('#resultTechPossibleAperture'), resultTechDataNote:$('#resultTechDataNote'),
+  keyTechPopover:$('#keyTechPopover'), keyTechSourceDescriptor:$('#keyTechSourceDescriptor'), keyTechMeasurementRow:$('#keyTechMeasurementRow'),
+  resultTechPopover:$('#resultTechPopover'), resultTechLux:$('#resultTechLux'), resultTechMargin:$('#resultTechMargin'), resultTechRequiredIso:$('#resultTechRequiredIso'), resultTechPossibleAperture:$('#resultTechPossibleAperture'), resultTechDataNote:$('#resultTechDataNote'),
   resetBtn:$('#resetBtn'), themeToggle:$('#themeToggle'), themeColor:$('#themeColor'),
   fillDetails:$('#fillDetails'), fillSummary:$('#fillSummary'), fillDisabled:$('#fillDisabled'), fillControls:$('#fillControls'), enableFillBtn:$('#enableFillBtn'), disableFillBtn:$('#disableFillBtn'),
   fillModelPickerBtn:$('#fillModelPickerBtn'), fillModelPickerLabel:$('#fillModelPickerLabel'), fillAccessoryGrid:$('#fillAccessoryGrid'), fillAccessoryNote:$('#fillAccessoryNote'),
   fillIntensitySlider:$('#fillIntensitySlider'), fillIntensityValue:$('#fillIntensityValue'), fillCctSection:$('#fillCctSection'), fillCctGrid:$('#fillCctGrid'), fillCctValue:$('#fillCctValue'), fillCctNote:$('#fillCctNote'), fillDistanceSlider:$('#fillDistanceSlider'), fillDistanceValue:$('#fillDistanceValue'),
-  fillTechBtn:$('#fillTechBtn'), fillTechPopover:$('#fillTechPopover'), fillTechSourceDescriptor:$('#fillTechSourceDescriptor'), fillTechMeasurementRow:$('#fillTechMeasurementRow'), fillTechLabBadge:$('#fillTechLabBadge'),
+  fillTechPopover:$('#fillTechPopover'), fillTechSourceDescriptor:$('#fillTechSourceDescriptor'), fillTechMeasurementRow:$('#fillTechMeasurementRow'),
   contrastCard:$('#contrastCard'), contrastCharacter:$('#contrastCharacter'), keyLuxResult:$('#keyLuxResult'), fillLuxResult:$('#fillLuxResult'), sourceGapResult:$('#sourceGapResult'), sourceGapDetail:$('#sourceGapDetail'), sourceRatioResult:$('#sourceRatioResult'), estimatedContrastResult:$('#estimatedContrastResult'),
   projectorDialog:$('#projectorDialog'), projectorDialogTitle:$('#projectorDialogTitle'), projectorChooserContext:$('#projectorChooserContext'), closeProjectorDialogBtn:$('#closeProjectorDialogBtn'), pickerBrandChoices:$('#pickerBrandChoices'), pickerFamilyChoices:$('#pickerFamilyChoices'), pickerModelChoices:$('#pickerModelChoices'), pickerCatalogCount:$('#pickerCatalogCount')
 };
@@ -160,7 +160,6 @@ function bindUI(){
   els.fillIntensitySlider.addEventListener('input',()=>{state.fillIntensityPct=Number(els.fillIntensitySlider.value);update();});
   els.fillDistanceSlider.addEventListener('input',()=>{state.fillDistance=Number(els.fillDistanceSlider.value);update();});
 
-  els.resultTechBtn?.addEventListener('click',()=>{els.resultTechPopover.hidden=!els.resultTechPopover.hidden;});
 
   els.resetBtn.addEventListener('click',reset);
   els.themeToggle?.addEventListener('click',()=>{const next=document.body.classList.contains('dark')?'light':'dark';try{localStorage.setItem('bg-set-tools-theme',next);}catch(_){}applyTheme(next);});
@@ -171,7 +170,7 @@ function applyTheme(theme){
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
-function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;if(els.resultTechPopover) els.resultTechPopover.hidden=true; update();}
+function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;update();}
 
 function update(){
   ensureAccessoryAndCct(); ensureFillAccessoryAndCct();
@@ -195,11 +194,11 @@ function update(){
   els.beamHint.textContent=modifierHint();
 
   updateDistanceStatus(reqLux,maxD);
-  updateManufacturerTech({sourceDescriptor:els.keyTechSourceDescriptor,measurementRow:els.keyTechMeasurementRow,labBadge:els.keyTechLabBadge}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct});
+  updateManufacturerTech({sourceDescriptor:els.keyTechSourceDescriptor,measurementRow:els.keyTechMeasurementRow}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct});
   updateResultTech({lux:els.resultTechLux,margin:els.resultTechMargin,requiredIso:els.resultTechRequiredIso,possibleAperture:els.resultTechPossibleAperture,dataNote:els.resultTechDataNote}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct,intensityPct:state.intensityPct,distance:state.testDistance}, reqLux);
   updateFillContrast();
   if(state.fillEnabled){
-    updateManufacturerTech({sourceDescriptor:els.fillTechSourceDescriptor,measurementRow:els.fillTechMeasurementRow,labBadge:els.fillTechLabBadge}, {fixtureKey:state.fillFixture,accessoryKey:state.fillAccessory,cct:state.fillCct});
+    updateManufacturerTech({sourceDescriptor:els.fillTechSourceDescriptor,measurementRow:els.fillTechMeasurementRow}, {fixtureKey:state.fillFixture,accessoryKey:state.fillAccessory,cct:state.fillCct});
   }
   persistState();
 }
@@ -278,7 +277,7 @@ function updateDistanceStatus(reqLux,maxD){
   els.statusBox.classList.add(cls); els.statusTitle.textContent=title; els.statusText.textContent=text;
   const solutions=[];
   if(state.intensityPct<=0){els.solutionIntro.textContent='Pour obtenir une exposition de référence, commence par :'; solutions.push(['MONTE LA PUISSANCE','au-dessus de 0 %']);}
-  else if(margin>=0){els.solutionIntro.textContent='Tu es dans la bonne zone. Si tu veux modifier ton installation :'; if(maxD>d+.1)solutions.push(['TU PEUX RECULER',`jusqu’à ${formatDistance(maxD)} m`]); const targetPct=state.intensityPct*reqLux/lux; if(targetPct<state.intensityPct-3&&targetPct>=1)solutions.push(['TU PEUX DIMMER',`vers ${Math.max(1,Math.round(targetPct))} %`]); const closeF=snapApertureForClosing(possibleF,state.aperture); if(closeF)solutions.push(['TU PEUX FERMER',`jusqu’à environ f/${formatAperture(closeF)}`]);}
+  else if(margin>=0){ if(maxD>d+.1)solutions.push(['TU PEUX RECULER',`jusqu’à ${formatDistance(maxD)} m`]); const targetPct=state.intensityPct*reqLux/lux; if(targetPct<state.intensityPct-3&&targetPct>=1)solutions.push(['TU PEUX DIMMER',`vers ${Math.max(1,Math.round(targetPct))} %`]); const closeF=snapApertureForClosing(possibleF,state.aperture); if(closeF)solutions.push(['TU PEUX FERMER',`jusqu’à environ f/${formatAperture(closeF)}`]); els.solutionIntro.textContent=solutions.length?'Tu es dans la bonne zone. Si tu veux modifier ton installation :':'Tu es dans la bonne zone.'; }
   else{
     els.solutionIntro.textContent=`Pour obtenir une bonne exposition à ${formatDistance(d)} m, change au moins un de ces réglages :`;
     if(maxD>0)solutions.push(['RAPPROCHE TA SOURCE',maxD>=1?`place-la à ${formatDistance(maxD)} m ou moins`:'il faudrait moins de 1 m']);
@@ -295,10 +294,8 @@ function updateManufacturerTech(ui,cfg){
   const accessoryObj=fixtureObj.accessories[cfg.accessoryKey];
   const points=getPoints(cfg.fixtureKey,cfg.accessoryKey,cfg.cct);
   const cctLabel=accessoryObj.quality==='single'?'sortie max publiée':`${cfg.cct} K`;
-  ui.sourceDescriptor.textContent=`${fixtureObj.label} · ${accessoryObj.label} · ${cctLabel} · à 100 %`;
-  ui.measurementRow.innerHTML=points.map(([md,mlux])=>`<div class="measure-chip"><span>${md} m</span><strong>${formatLux(mlux)} lux</strong></div>`).join('');
-  ui.labBadge.textContent=accessoryObj.quality==='estimated'?'ESTIMATION':(BRAND_LABELS[brandForFixture(cfg.fixtureKey)]||brandForFixture(cfg.fixtureKey)).toUpperCase();
-  ui.labBadge.classList.toggle('estimate-badge',accessoryObj.quality==='estimated');
+  if(ui.sourceDescriptor) ui.sourceDescriptor.textContent=`${fixtureObj.label} · ${accessoryObj.label} · ${cctLabel} · à 100 %`;
+  if(ui.measurementRow) ui.measurementRow.innerHTML=points.map(([md,mlux])=>`<div class="measure-chip"><span>${md} m</span><strong>${formatLux(mlux)} lux</strong></div>`).join('');
 }
 
 function updateResultTech(ui,cfg,reqLux){

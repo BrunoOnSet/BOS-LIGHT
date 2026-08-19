@@ -500,3 +500,9 @@ body.dark .dialog-close{background:var(--panel2)}
 .result-distance-summary{font-size:12px;font-weight:850;color:var(--accent);white-space:nowrap;margin-left:auto;padding-right:24px}
 @media (max-width:520px){.result-distance-summary{font-size:11px;max-width:165px;overflow:hidden;text-overflow:ellipsis}}
 @media (max-width:390px){.result-key-card:not([open]) .heading-copy p{display:none}.result-key-card:not([open]) .result-distance-summary{display:block;max-width:none}}
+
+
+.result-tech-inline{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.result-tech-inline .result-tech-kicker{margin-bottom:10px;font-size:11px;letter-spacing:.14em;font-weight:800;color:var(--muted);text-transform:uppercase}
+.result-tech-inline .tech-grid{margin-top:0}
+.result-tech-inline .result-tech-note{margin-top:12px}
