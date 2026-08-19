@@ -471,3 +471,16 @@ body.dark .dialog-close{background:var(--panel2)}
 @media(max-width:1100px){.choice-buttons.models{grid-template-columns:repeat(4,minmax(105px,1fr))}}
 @media(max-width:900px){.choice-buttons{grid-template-columns:repeat(2,minmax(120px,1fr))}.choice-buttons.models{grid-template-columns:repeat(3,minmax(105px,1fr))}.add-dialog{width:calc(100vw - 18px)}.dialog-shell{padding:14px;border-radius:20px}}
 @media(max-width:560px){.chooser-topline{align-items:flex-start;flex-direction:column}.choice-buttons.models{grid-template-columns:repeat(2,minmax(100px,1fr))}.catalog-badge{display:none}.choice-buttons.two{grid-template-columns:repeat(2,minmax(0,1fr));max-width:none}}
+
+/* V0.20 — séparation données constructeur / détails de résultat */
+.tech-toggle-bottom{padding-top:6px;padding-bottom:18px}
+.manufacturer-tech-popover .compact-source-data{margin-top:0;padding:0}
+.manufacturer-tech-popover .measurement-row{margin-top:12px}
+.result-tech-toggle{padding:14px 0 0}
+.result-tech-popover{margin:10px 0 0}
+.result-tech-popover .tech-grid{border-top:0}
+.result-tech-note{margin:12px 0 0}
+@media(max-width:520px){
+  .tech-toggle-bottom{padding-left:16px;padding-right:16px}
+  .manufacturer-tech-popover{margin-left:16px;margin-right:16px}
+}

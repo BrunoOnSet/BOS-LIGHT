@@ -1,4 +1,4 @@
-// BOS LIGHT V0.18 — Key + Fill, catalogue chargé depuis BOS-PROJECTEURS-DB
+// BOS LIGHT V0.20 — Key + Fill, détails constructeur séparés du résultat
 const INCIDENT_C = 340;
 const STORAGE_KEY = 'bos-light-settings-v1';
 
@@ -29,12 +29,13 @@ const els = {
   intensitySlider:$('#intensitySlider'), intensityValue:$('#intensityValue'), isoSelect:$('#isoSelect'), shutterSelect:$('#shutterSelect'), apertureSelect:$('#apertureSelect'), cameraSummary:$('#cameraSummary'), lightSummary:$('#lightSummary'),
   keyModelPickerBtn:$('#keyModelPickerBtn'), keyModelPickerLabel:$('#keyModelPickerLabel'),
   maxDistance:$('#maxDistance'), heroSummary:$('#heroSummary'), beamHint:$('#beamHint'), testDistanceSlider:$('#testDistanceSlider'), testDistanceValue:$('#testDistanceValue'), statusBox:$('#statusBox'), statusTitle:$('#statusTitle'), statusText:$('#statusText'), solutionIntro:$('#solutionIntro'), solutions:$('#solutions'), contrastSection:$('#contrastSection'),
-  keyTechBtn:$('#keyTechBtn'), keyTechPopover:$('#keyTechPopover'), keyTechLux:$('#keyTechLux'), keyTechMargin:$('#keyTechMargin'), keyTechRequiredIso:$('#keyTechRequiredIso'), keyTechPossibleAperture:$('#keyTechPossibleAperture'), keyTechSourceDescriptor:$('#keyTechSourceDescriptor'), keyTechMeasurementRow:$('#keyTechMeasurementRow'), keyTechDataNote:$('#keyTechDataNote'), keyTechDimmerNote:$('#keyTechDimmerNote'), keyTechDatabaseNote:$('#keyTechDatabaseNote'), keyTechLabBadge:$('#keyTechLabBadge'),
+  keyTechBtn:$('#keyTechBtn'), keyTechPopover:$('#keyTechPopover'), keyTechSourceDescriptor:$('#keyTechSourceDescriptor'), keyTechMeasurementRow:$('#keyTechMeasurementRow'), keyTechLabBadge:$('#keyTechLabBadge'),
+  resultTechBtn:$('#resultTechBtn'), resultTechPopover:$('#resultTechPopover'), resultTechLux:$('#resultTechLux'), resultTechMargin:$('#resultTechMargin'), resultTechRequiredIso:$('#resultTechRequiredIso'), resultTechPossibleAperture:$('#resultTechPossibleAperture'), resultTechDataNote:$('#resultTechDataNote'),
   resetBtn:$('#resetBtn'), themeToggle:$('#themeToggle'), themeColor:$('#themeColor'),
   fillDetails:$('#fillDetails'), fillSummary:$('#fillSummary'), fillDisabled:$('#fillDisabled'), fillControls:$('#fillControls'), enableFillBtn:$('#enableFillBtn'), disableFillBtn:$('#disableFillBtn'),
   fillModelPickerBtn:$('#fillModelPickerBtn'), fillModelPickerLabel:$('#fillModelPickerLabel'), fillAccessoryGrid:$('#fillAccessoryGrid'), fillAccessoryNote:$('#fillAccessoryNote'),
   fillIntensitySlider:$('#fillIntensitySlider'), fillIntensityValue:$('#fillIntensityValue'), fillCctSection:$('#fillCctSection'), fillCctGrid:$('#fillCctGrid'), fillCctValue:$('#fillCctValue'), fillCctNote:$('#fillCctNote'), fillDistanceSlider:$('#fillDistanceSlider'), fillDistanceValue:$('#fillDistanceValue'),
-  fillTechBtn:$('#fillTechBtn'), fillTechPopover:$('#fillTechPopover'), fillTechLux:$('#fillTechLux'), fillTechMargin:$('#fillTechMargin'), fillTechRequiredIso:$('#fillTechRequiredIso'), fillTechPossibleAperture:$('#fillTechPossibleAperture'), fillTechSourceDescriptor:$('#fillTechSourceDescriptor'), fillTechMeasurementRow:$('#fillTechMeasurementRow'), fillTechDataNote:$('#fillTechDataNote'), fillTechDimmerNote:$('#fillTechDimmerNote'), fillTechDatabaseNote:$('#fillTechDatabaseNote'), fillTechLabBadge:$('#fillTechLabBadge'),
+  fillTechBtn:$('#fillTechBtn'), fillTechPopover:$('#fillTechPopover'), fillTechSourceDescriptor:$('#fillTechSourceDescriptor'), fillTechMeasurementRow:$('#fillTechMeasurementRow'), fillTechLabBadge:$('#fillTechLabBadge'),
   contrastCard:$('#contrastCard'), contrastCharacter:$('#contrastCharacter'), keyLuxResult:$('#keyLuxResult'), fillLuxResult:$('#fillLuxResult'), sourceGapResult:$('#sourceGapResult'), sourceGapDetail:$('#sourceGapDetail'), sourceRatioResult:$('#sourceRatioResult'), estimatedContrastResult:$('#estimatedContrastResult'),
   projectorDialog:$('#projectorDialog'), projectorDialogTitle:$('#projectorDialogTitle'), projectorChooserContext:$('#projectorChooserContext'), closeProjectorDialogBtn:$('#closeProjectorDialogBtn'), pickerBrandChoices:$('#pickerBrandChoices'), pickerFamilyChoices:$('#pickerFamilyChoices'), pickerModelChoices:$('#pickerModelChoices'), pickerCatalogCount:$('#pickerCatalogCount')
 };
@@ -160,6 +161,7 @@ function bindUI(){
   els.fillDistanceSlider.addEventListener('input',()=>{state.fillDistance=Number(els.fillDistanceSlider.value);update();});
 
   els.keyTechBtn?.addEventListener('click',()=>{els.keyTechPopover.hidden=!els.keyTechPopover.hidden;});
+  els.resultTechBtn?.addEventListener('click',()=>{els.resultTechPopover.hidden=!els.resultTechPopover.hidden;});
   els.fillTechBtn?.addEventListener('click',()=>{els.fillTechPopover.hidden=!els.fillTechPopover.hidden;});
 
   els.resetBtn.addEventListener('click',reset);
@@ -171,7 +173,7 @@ function applyTheme(theme){
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
-function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;els.keyTechPopover.hidden=true;els.fillTechPopover.hidden=true;update();}
+function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;els.keyTechPopover.hidden=true;els.resultTechPopover.hidden=true;els.fillTechPopover.hidden=true;update();}
 
 function update(){
   ensureAccessoryAndCct(); ensureFillAccessoryAndCct();
@@ -194,10 +196,11 @@ function update(){
   els.beamHint.textContent=modifierHint();
 
   updateDistanceStatus(reqLux,maxD);
-  updateLightTech({lux:els.keyTechLux,margin:els.keyTechMargin,requiredIso:els.keyTechRequiredIso,possibleAperture:els.keyTechPossibleAperture,sourceDescriptor:els.keyTechSourceDescriptor,measurementRow:els.keyTechMeasurementRow,dataNote:els.keyTechDataNote,dimmerNote:els.keyTechDimmerNote,databaseNote:els.keyTechDatabaseNote,labBadge:els.keyTechLabBadge}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct,intensityPct:state.intensityPct,distance:state.testDistance}, reqLux);
+  updateManufacturerTech({sourceDescriptor:els.keyTechSourceDescriptor,measurementRow:els.keyTechMeasurementRow,labBadge:els.keyTechLabBadge}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct});
+  updateResultTech({lux:els.resultTechLux,margin:els.resultTechMargin,requiredIso:els.resultTechRequiredIso,possibleAperture:els.resultTechPossibleAperture,dataNote:els.resultTechDataNote}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct,intensityPct:state.intensityPct,distance:state.testDistance}, reqLux);
   updateFillContrast();
   if(state.fillEnabled){
-    updateLightTech({lux:els.fillTechLux,margin:els.fillTechMargin,requiredIso:els.fillTechRequiredIso,possibleAperture:els.fillTechPossibleAperture,sourceDescriptor:els.fillTechSourceDescriptor,measurementRow:els.fillTechMeasurementRow,dataNote:els.fillTechDataNote,dimmerNote:els.fillTechDimmerNote,databaseNote:els.fillTechDatabaseNote,labBadge:els.fillTechLabBadge}, {fixtureKey:state.fillFixture,accessoryKey:state.fillAccessory,cct:state.fillCct,intensityPct:state.fillIntensityPct,distance:state.fillDistance}, reqLux);
+    updateManufacturerTech({sourceDescriptor:els.fillTechSourceDescriptor,measurementRow:els.fillTechMeasurementRow,labBadge:els.fillTechLabBadge}, {fixtureKey:state.fillFixture,accessoryKey:state.fillAccessory,cct:state.fillCct});
   }
   persistState();
 }
@@ -288,7 +291,40 @@ function updateDistanceStatus(reqLux,maxD){
   els.solutions.innerHTML=solutions.slice(0,4).map(([l,v])=>`<div class="solution"><span>${l}</span><strong>${v}</strong></div>`).join('');
 }
 
-function updateLightTech(ui,cfg,reqLux){
+function updateManufacturerTech(ui,cfg){
+  const fixtureObj=fixtures[cfg.fixtureKey];
+  const accessoryObj=fixtureObj.accessories[cfg.accessoryKey];
+  const points=getPoints(cfg.fixtureKey,cfg.accessoryKey,cfg.cct);
+  const cctLabel=accessoryObj.quality==='single'?'sortie max publiée':`${cfg.cct} K`;
+  ui.sourceDescriptor.textContent=`${fixtureObj.label} · ${accessoryObj.label} · ${cctLabel} · à 100 %`;
+  ui.measurementRow.innerHTML=points.map(([md,mlux])=>`<div class="measure-chip"><span>${md} m</span><strong>${formatLux(mlux)} lux</strong></div>`).join('');
+  ui.labBadge.textContent=accessoryObj.quality==='estimated'?'ESTIMATION':(BRAND_LABELS[brandForFixture(cfg.fixtureKey)]||brandForFixture(cfg.fixtureKey)).toUpperCase();
+  ui.labBadge.classList.toggle('estimate-badge',accessoryObj.quality==='estimated');
+}
+
+function updateResultTech(ui,cfg,reqLux){
+  const accessoryObj=fixtures[cfg.fixtureKey].accessories[cfg.accessoryKey];
+  const points=getPoints(cfg.fixtureKey,cfg.accessoryKey,cfg.cct);
+  const lux=estimatedLuxAtDistance(cfg.distance,cfg.fixtureKey,cfg.intensityPct,cfg.accessoryKey,cfg.cct);
+  const margin=lux>0?Math.log2(lux/reqLux):-Infinity;
+  const reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity;
+  const possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
+  ui.lux.textContent=`${formatLux(lux)} lux`;
+  ui.margin.textContent=Number.isFinite(margin)?`${margin>=0?'+':''}${margin.toFixed(1).replace('.',',')} stop${Math.abs(margin)>=1.5?'s':''}`:'—';
+  ui.requiredIso.textContent=Number.isFinite(reqIso)?`ISO ${formatIso(reqIso)}`:'—';
+  ui.possibleAperture.textContent=possibleF>0?`f/${formatAperture(possibleF)}`:'—';
+  const maxD=solveDistanceForLuxForConfig(reqLux,cfg.fixtureKey,cfg.accessoryKey,cfg.cct,cfg.intensityPct);
+  const rangeAtTest=classifyDistance(cfg.distance,points,accessoryObj.quality);
+  const rangeAtMax=classifyDistance(maxD,points,accessoryObj.quality);
+  const warning=rangeAtTest.warning||rangeAtMax.warning;
+  if(accessoryObj.quality==='estimated') ui.dataNote.textContent='Cette configuration utilise une estimation pour le modificateur sélectionné.';
+  else if(accessoryObj.quality==='single') ui.dataNote.textContent='Le calcul de distance repose sur un seul point photométrique disponible ; la distance est donc une estimation.';
+  else if(warning) ui.dataNote.textContent=`Une partie du calcul sort de la plage mesurée (${rangeAtTest.label.toLowerCase()} / distance max : ${rangeAtMax.label.toLowerCase()}).`;
+  else ui.dataNote.textContent='La distance testée et la distance maximale restent dans la plage photométrique disponible.';
+  ui.dataNote.classList.toggle('warning',warning||accessoryObj.quality==='single'||accessoryObj.quality==='estimated');
+}
+
+function updateLightTechLegacy(ui,cfg,reqLux){
   const fixtureObj=fixtures[cfg.fixtureKey];
   const accessoryObj=fixtureObj.accessories[cfg.accessoryKey];
   const points=getPoints(cfg.fixtureKey,cfg.accessoryKey,cfg.cct);

@@ -10,7 +10,7 @@
   <title>BRUNO ONSET / LIGHT</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=0.19" />
+  <link rel="stylesheet" href="styles.css?v=0.20" />
 </head>
 <body>
   <main class="app-shell">
@@ -64,25 +64,6 @@
         <button id="keyModelPickerBtn" class="model-picker-btn" type="button"><span id="keyModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
       </div>
       <div class="control-block compact-block"><label class="control-label">ACCESSOIRE</label><div class="accessory-grid" id="accessoryGrid"></div><div class="accessory-note" id="accessoryNote"></div></div>
-      <div class="tech-toggle-row">
-        <button class="utility-link tech-mini-btn" id="keyTechBtn" type="button">DÉTAILS TECHNIQUES</button>
-      </div>
-      <div class="tech-popover" id="keyTechPopover" hidden>
-        <div class="tech-popover-head"><strong>Détails techniques · Key Light</strong><span class="lab-badge" id="keyTechLabBadge">AMARAN</span></div>
-        <div class="tech-grid">
-          <div><span>À LA DISTANCE TESTÉE</span><strong id="keyTechLux">— lux</strong></div>
-          <div><span>MARGE</span><strong id="keyTechMargin">—</strong></div>
-          <div><span>ISO POUR CETTE EXPO</span><strong id="keyTechRequiredIso">—</strong></div>
-          <div><span>OUVERTURE À ISO MAX</span><strong id="keyTechPossibleAperture">—</strong></div>
-        </div>
-        <div class="source-data compact-source-data">
-          <div class="source-title-row"><div><span class="control-label">DONNÉES DE CALCUL</span><p id="keyTechSourceDescriptor">—</p></div></div>
-          <div class="measurement-row" id="keyTechMeasurementRow"></div>
-          <div class="technical-note" id="keyTechDataNote">—</div>
-          <div class="technical-note" id="keyTechDimmerNote">—</div>
-          <div class="technical-note db-status-note" id="keyTechDatabaseNote">BOS-PROJECTEURS-DB · chargement…</div>
-        </div>
-      </div>
       <div class="control-block slider-block">
         <div class="control-head"><label for="intensitySlider">INTENSITÉ</label><output id="intensityValue">100 %</output></div>
         <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
@@ -97,6 +78,16 @@
         <div class="section-head compact-distance-head"><div><div class="control-label">DISTANCE SOURCE / SUJET</div><div class="distance-help">Distance réelle entre ta Key Light et le sujet.</div></div><strong class="distance-readout" id="testDistanceValue">2,0 m</strong></div>
         <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
         <div class="range-labels"><span>1 m</span><span>20 m</span></div>
+      </div>
+      <div class="tech-toggle-row tech-toggle-bottom">
+        <button class="utility-link tech-mini-btn" id="keyTechBtn" type="button">DÉTAILS TECHNIQUES CONSTRUCTEUR</button>
+      </div>
+      <div class="tech-popover manufacturer-tech-popover" id="keyTechPopover" hidden>
+        <div class="tech-popover-head"><strong>Détails techniques constructeur · Key Light</strong><span class="lab-badge" id="keyTechLabBadge">AMARAN</span></div>
+        <div class="source-data compact-source-data manufacturer-only">
+          <div class="source-title-row"><div><span class="control-label">DONNÉES CONSTRUCTEUR</span><p id="keyTechSourceDescriptor">—</p></div></div>
+          <div class="measurement-row" id="keyTechMeasurementRow"></div>
+        </div>
       </div>
     </details>
 
@@ -118,6 +109,19 @@
         <div class="solution-intro" id="solutionIntro"></div>
         <div class="solutions" id="solutions"></div>
         <div class="exposure-explainer compact-explainer"><strong>Par rapport à quoi ?</strong><span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span></div>
+        <div class="tech-toggle-row result-tech-toggle">
+          <button class="utility-link tech-mini-btn" id="resultTechBtn" type="button">DÉTAILS TECHNIQUES</button>
+        </div>
+        <div class="tech-popover result-tech-popover" id="resultTechPopover" hidden>
+          <div class="tech-popover-head"><strong>Détails techniques · Résultat Key Light</strong></div>
+          <div class="tech-grid">
+            <div><span>À LA DISTANCE TESTÉE</span><strong id="resultTechLux">— lux</strong></div>
+            <div><span>MARGE</span><strong id="resultTechMargin">—</strong></div>
+            <div><span>ISO POUR CETTE EXPO</span><strong id="resultTechRequiredIso">—</strong></div>
+            <div><span>OUVERTURE À ISO MAX</span><strong id="resultTechPossibleAperture">—</strong></div>
+          </div>
+          <div class="technical-note result-tech-note" id="resultTechDataNote">—</div>
+        </div>
       </div>
     </section>
 
@@ -140,25 +144,6 @@
           <button id="fillModelPickerBtn" class="model-picker-btn" type="button"><span id="fillModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
         </div>
         <div class="control-block compact-block"><label class="control-label">ACCESSOIRE</label><div class="accessory-grid" id="fillAccessoryGrid"></div><div class="accessory-note" id="fillAccessoryNote"></div></div>
-        <div class="tech-toggle-row">
-          <button class="utility-link tech-mini-btn" id="fillTechBtn" type="button">DÉTAILS TECHNIQUES</button>
-        </div>
-        <div class="tech-popover" id="fillTechPopover" hidden>
-          <div class="tech-popover-head"><strong>Détails techniques · Fill Light</strong><span class="lab-badge" id="fillTechLabBadge">AMARAN</span></div>
-          <div class="tech-grid">
-            <div><span>À LA DISTANCE TESTÉE</span><strong id="fillTechLux">— lux</strong></div>
-            <div><span>MARGE</span><strong id="fillTechMargin">—</strong></div>
-            <div><span>ISO POUR CETTE EXPO</span><strong id="fillTechRequiredIso">—</strong></div>
-            <div><span>OUVERTURE À ISO MAX</span><strong id="fillTechPossibleAperture">—</strong></div>
-          </div>
-          <div class="source-data compact-source-data">
-            <div class="source-title-row"><div><span class="control-label">DONNÉES DE CALCUL</span><p id="fillTechSourceDescriptor">—</p></div></div>
-            <div class="measurement-row" id="fillTechMeasurementRow"></div>
-            <div class="technical-note" id="fillTechDataNote">—</div>
-            <div class="technical-note" id="fillTechDimmerNote">—</div>
-            <div class="technical-note db-status-note" id="fillTechDatabaseNote">BOS-PROJECTEURS-DB · chargement…</div>
-          </div>
-        </div>
         <div class="control-block slider-block">
           <div class="control-head"><label for="fillIntensitySlider">INTENSITÉ</label><output id="fillIntensityValue">50 %</output></div>
           <input id="fillIntensitySlider" type="range" min="0" max="100" value="50" step="1" />
@@ -173,6 +158,16 @@
           <div class="section-head compact-distance-head"><div><div class="control-label">DISTANCE SOURCE / SUJET</div><div class="distance-help">Distance réelle entre ta Fill Light et le sujet.</div></div><strong class="distance-readout" id="fillDistanceValue">2,0 m</strong></div>
           <input id="fillDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
           <div class="range-labels"><span>1 m</span><span>20 m</span></div>
+        </div>
+        <div class="tech-toggle-row tech-toggle-bottom">
+          <button class="utility-link tech-mini-btn" id="fillTechBtn" type="button">DÉTAILS TECHNIQUES CONSTRUCTEUR</button>
+        </div>
+        <div class="tech-popover manufacturer-tech-popover" id="fillTechPopover" hidden>
+          <div class="tech-popover-head"><strong>Détails techniques constructeur · Fill Light</strong><span class="lab-badge" id="fillTechLabBadge">AMARAN</span></div>
+          <div class="source-data compact-source-data manufacturer-only">
+            <div class="source-title-row"><div><span class="control-label">DONNÉES CONSTRUCTEUR</span><p id="fillTechSourceDescriptor">—</p></div></div>
+            <div class="measurement-row" id="fillTechMeasurementRow"></div>
+          </div>
         </div>
         <button class="fill-remove-btn" id="disableFillBtn" type="button">RETIRER LA FILL LIGHT</button>
       </div>
@@ -234,6 +229,6 @@
   </dialog>
 
   <script src="bos-projecteurs-db.js?v=1.0"></script>
-  <script src="app.js?v=0.19"></script>
+  <script src="app.js?v=0.20"></script>
 </body>
 </html>

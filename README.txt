@@ -1,4 +1,4 @@
-BOS LIGHT — V0.17
+BOS LIGHT — V0.20
 =================
 
 Nouveauté principale
@@ -25,3 +25,10 @@ Le fonctionnement, les calculs et le design de LIGHT V0.15 sont conservés.
 
 
 V0.17 — Ajout optionnel d’une Fill Light avec mêmes réglages que la Key, mémorisation, écart Key/Fill en stops, ratio des sources et contraste d’éclairage théorique (Key+Fill)/Fill.
+
+V0.20 — Détails techniques
+--------------------------
+- Key Light et Fill Light : bouton « Détails techniques constructeur » placé tout en bas du panneau.
+- Ces bulles n'affichent que la configuration photométrique de référence et les points constructeur utilisés.
+- Résultat Key Light : bouton « Détails techniques » séparé avec lux au sujet, marge, ISO équivalent, ouverture possible et statut interpolation/extrapolation.
+- Suppression dans le résultat des mesures constructeur, de la note « Puissance 100 % » et du statut BOS-PROJECTEURS-DB.
