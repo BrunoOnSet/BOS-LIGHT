@@ -29,7 +29,7 @@ const els = {
   accessoryGrid:$('#accessoryGrid'), accessoryNote:$('#accessoryNote'), cctGrid:$('#cctGrid'), cctSection:$('#cctSection'), cctValue:$('#cctValue'), cctNote:$('#cctNote'),
   intensitySlider:$('#intensitySlider'), intensityValue:$('#intensityValue'), isoSelect:$('#isoSelect'), shutterSelect:$('#shutterSelect'), apertureSelect:$('#apertureSelect'), cameraSummary:$('#cameraSummary'), lightSummary:$('#lightSummary'),
   keyModelPickerBtn:$('#keyModelPickerBtn'), keyModelPickerLabel:$('#keyModelPickerLabel'),
-  maxDistance:$('#maxDistance'), resultDistanceSummary:$('#resultDistanceSummary'), heroSummary:$('#heroSummary'), beamHint:$('#beamHint'), testDistanceSlider:$('#testDistanceSlider'), testDistanceValue:$('#testDistanceValue'), statusBox:$('#statusBox'), statusTitle:$('#statusTitle'), statusText:$('#statusText'), solutionIntro:$('#solutionIntro'), solutions:$('#solutions'), contrastSection:$('#contrastSection'),
+  maxDistance:$('#maxDistance'), resultDistanceSummary:$('#resultDistanceSummary'), heroSummary:$('#heroSummary'), beamHint:$('#beamHint'), resultHeroCard:$('#resultHeroCard'), testDistanceSlider:$('#testDistanceSlider'), testDistanceValue:$('#testDistanceValue'), statusBox:$('#statusBox'), statusTitle:$('#statusTitle'), statusText:$('#statusText'), solutionIntro:$('#solutionIntro'), solutions:$('#solutions'), contrastSection:$('#contrastSection'),
   keyTechPopover:$('#keyTechPopover'), keyTechSourceDescriptor:$('#keyTechSourceDescriptor'), keyTechMeasurementRow:$('#keyTechMeasurementRow'),
   resultTechPopover:$('#resultTechPopover'), resultTechLux:$('#resultTechLux'), resultTechMargin:$('#resultTechMargin'), resultTechRequiredIso:$('#resultTechRequiredIso'), resultTechPossibleAperture:$('#resultTechPossibleAperture'), resultTechDataNote:$('#resultTechDataNote'),
   resetBtn:$('#resetBtn'), themeToggle:$('#themeToggle'), themeColor:$('#themeColor'),
@@ -309,12 +309,13 @@ function solveDistanceForLuxForConfig(targetLux,fixtureKey,accessoryKey,cct,inte
 function updateDistanceStatus(reqLux,maxD){
   const d=state.testDistance,lux=estimatedLuxAtDistance(d),margin=lux>0?Math.log2(lux/reqLux):-Infinity,reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity,possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
   els.statusBox.classList.remove('comfortable','just','insufficient');
+  els.resultHeroCard?.classList.remove('status-comfortable','status-just','status-insufficient');
   let title,text,cls;
   if(state.intensityPct<=0||lux<=0){cls='insufficient';title='SOURCE ÉTEINTE';text='Le projecteur est à 0 %. Monte sa puissance pour commencer le calcul.';}
   else if(margin>=.7){cls='comfortable';title='CONFORTABLE';text=`À ${formatDistance(d)} m, la lumière reçue au niveau du sujet suffit pour tes réglages caméra, avec encore de la marge.`;}
   else if(margin>=0){cls='just';title='ÇA PASSE';text=`À ${formatDistance(d)} m, tu atteins l’exposition de référence avec tes réglages caméra, mais avec peu de marge.`;}
   else{cls='insufficient';title='PAS ASSEZ DE LUMIÈRE';text=`À ${formatDistance(d)} m, la lumière reçue au niveau du sujet est insuffisante pour tes réglages caméra.`;}
-  els.statusBox.classList.add(cls); els.statusTitle.textContent=title; els.statusText.textContent=text;
+  els.statusBox.classList.add(cls); if(els.resultHeroCard) els.resultHeroCard.classList.add(`status-${cls}`); els.statusTitle.textContent=title; els.statusText.textContent=text;
   const solutions=[];
   if(state.intensityPct<=0){els.solutionIntro.textContent='Pour obtenir une exposition de référence, commence par :'; solutions.push(['MONTE LA PUISSANCE','au-dessus de 0 %']);}
   else if(margin>=0){ if(maxD>d+.1)solutions.push(['TU PEUX RECULER',`jusqu’à ${formatDistance(maxD)} m`]); const targetPct=state.intensityPct*reqLux/lux; if(targetPct<state.intensityPct-3&&targetPct>=1)solutions.push(['TU PEUX DIMMER',`vers ${Math.max(1,Math.round(targetPct))} %`]); const closeF=snapApertureForClosing(possibleF,state.aperture); if(closeF)solutions.push(['TU PEUX FERMER',`jusqu’à environ f/${formatAperture(closeF)}`]); els.solutionIntro.textContent=solutions.length?'Tu es dans la bonne zone. Si tu veux modifier ton installation :':'Tu es dans la bonne zone.'; }

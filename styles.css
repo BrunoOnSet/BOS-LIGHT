@@ -582,3 +582,71 @@ body.dark .bos-header-name{color:#2F5B66}
   .compact-choice-row button{min-width:54px!important;padding:6px 8px!important;font-size:8px!important}
   .inline-choice-note{grid-column:1/-1;padding-left:100px}
 }
+
+
+/* V0.30 — données constructeur compactes sur une ligne */
+.manufacturer-inline{padding-top:12px;padding-bottom:14px}
+.manufacturer-inline .inline-source-data{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:nowrap;
+  margin-top:0;
+  padding-top:0;
+  border-top:1px solid var(--line);
+}
+.manufacturer-inline .source-title-row{
+  flex:1 1 auto;
+  min-width:0;
+  padding-top:12px;
+  margin:0;
+}
+.manufacturer-inline .source-title-row > div{min-width:0}
+.manufacturer-inline .source-title-row p{
+  margin:2px 0 0;
+  font-size:11px;
+  line-height:1.25;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.manufacturer-inline .measurement-row{
+  flex:0 0 auto;
+  margin-top:0;
+  display:flex;
+  gap:8px;
+  flex-wrap:nowrap;
+  align-items:stretch;
+}
+.manufacturer-inline .measure-chip{
+  min-width:auto;
+  padding:7px 10px;
+  border-radius:12px;
+  gap:2px;
+}
+.manufacturer-inline .measure-chip span{font-size:9px}
+.manufacturer-inline .measure-chip strong{font-size:12px;white-space:nowrap}
+@media (max-width:760px){
+  .manufacturer-inline .inline-source-data{
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .manufacturer-inline .measurement-row{width:100%;}
+}
+
+
+/* V0.31 — fusion hero + statut */
+.result-card-inner{position:relative;overflow:hidden}
+.result-card-inner.status-comfortable{background:linear-gradient(180deg, rgba(91,138,118,.12), rgba(91,138,118,.06));border-color:rgba(91,138,118,.42)}
+.result-card-inner.status-just{background:linear-gradient(180deg, rgba(164,126,62,.12), rgba(164,126,62,.06));border-color:rgba(164,126,62,.42)}
+.result-card-inner.status-insufficient{background:linear-gradient(180deg, rgba(184,88,94,.12), rgba(184,88,94,.06));border-color:rgba(184,88,94,.42)}
+.result-card-inner .merged-status-box{margin:18px auto 0;max-width:100%;text-align:left;border-radius:18px;background:rgba(255,255,255,.42)}
+.result-card-inner.status-comfortable .merged-status-box{border-color:rgba(91,138,118,.34);background:rgba(91,138,118,.10)}
+.result-card-inner.status-just .merged-status-box{border-color:rgba(164,126,62,.34);background:rgba(164,126,62,.10)}
+.result-card-inner.status-insufficient .merged-status-box{border-color:rgba(184,88,94,.34);background:rgba(184,88,94,.10)}
+.result-card-inner .merged-status-box strong{font-size:14px}
+.result-card-inner .merged-status-box p{font-size:12px;line-height:1.4}
+.result-body{padding-top:14px}
+.result-body .status-box{display:none}
