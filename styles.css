@@ -745,3 +745,23 @@ body.dark .plain-tech-info span{color:var(--text)}
   .manufacturer-inline .source-title-row p{white-space:normal}
   .manufacturer-inline .measurement-row{padding-top:2px;flex-wrap:wrap}
 }
+
+
+/* V0.34 — nettoyage constructeur + informations techniques compactes */
+.manufacturer-inline .inline-source-data{
+  border-top:0 !important;
+  padding-top:0 !important;
+}
+.manufacturer-inline{padding-top:6px;padding-bottom:10px}
+.plain-tech-info{margin-top:10px}
+.plain-tech-info strong{
+  margin-bottom:2px;
+  font-size:9.5px;
+  line-height:1.25;
+  letter-spacing:.10em;
+  font-weight:850;
+}
+.plain-tech-info span{
+  font-size:10.5px;
+  line-height:1.4;
+}
