@@ -650,3 +650,98 @@ body.dark .bos-header-name{color:#2F5B66}
 .result-card-inner .merged-status-box p{font-size:12px;line-height:1.4}
 .result-body{padding-top:14px}
 .result-body .status-box{display:none}
+
+
+/* V0.32 — info technique simple en bas, sans bulle */
+.plain-tech-info{margin-top:14px;padding:0;border:0;background:transparent;border-radius:0;max-width:none;text-align:left}
+.plain-tech-info strong{display:block;margin:0 0 4px;color:var(--text);font-size:11px;line-height:1.25;letter-spacing:.14em;font-weight:900;text-transform:uppercase}
+.plain-tech-info span{display:block;margin:0;color:#17191C;font-size:12px;line-height:1.5}
+body.dark .plain-tech-info span{color:var(--text)}
+.key-result-group .plain-tech-info{margin-left:0;margin-right:0}
+
+
+/* V0.33 — bandeau constructeur réellement compact */
+.manufacturer-inline{padding:10px 16px 12px}
+.manufacturer-inline .inline-source-data{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  padding:11px 0 0;
+  border-top:1px solid var(--line);
+}
+.manufacturer-inline .source-title-row{
+  display:contents;
+  padding:0;
+}
+.manufacturer-inline .source-title-row > div{
+  display:contents;
+}
+.manufacturer-inline .source-title-row .control-label{
+  grid-column:1;
+  margin:0;
+  white-space:nowrap;
+  font-size:9px;
+  letter-spacing:.12em;
+}
+.manufacturer-inline .source-title-row p{
+  grid-column:2;
+  margin:0;
+  min-width:0;
+  font-size:10.5px;
+  line-height:1.25;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.manufacturer-inline .measurement-row{
+  grid-column:3;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:14px;
+  margin:0;
+  width:auto;
+  min-width:0;
+  flex-wrap:nowrap;
+}
+.measure-inline{
+  display:inline-flex;
+  align-items:baseline;
+  gap:5px;
+  white-space:nowrap;
+  font-size:10px;
+  color:var(--muted);
+}
+.measure-inline b{
+  font-size:9px;
+  font-weight:800;
+  color:var(--muted);
+}
+.measure-inline strong{
+  font-size:11px;
+  font-weight:900;
+  color:var(--text);
+}
+@media (max-width:760px){
+  .manufacturer-inline .inline-source-data{
+    grid-template-columns:auto minmax(0,1fr);
+    gap:5px 10px;
+  }
+  .manufacturer-inline .source-title-row .control-label{grid-column:1}
+  .manufacturer-inline .source-title-row p{grid-column:2}
+  .manufacturer-inline .measurement-row{
+    grid-column:1/-1;
+    justify-content:flex-start;
+    gap:12px;
+    padding-top:3px;
+  }
+}
+@media (max-width:430px){
+  .manufacturer-inline .inline-source-data{grid-template-columns:1fr;gap:4px}
+  .manufacturer-inline .source-title-row .control-label,
+  .manufacturer-inline .source-title-row p,
+  .manufacturer-inline .measurement-row{grid-column:1}
+  .manufacturer-inline .source-title-row p{white-space:normal}
+  .manufacturer-inline .measurement-row{padding-top:2px;flex-wrap:wrap}
+}

@@ -336,7 +336,7 @@ function updateManufacturerTech(ui,cfg){
   const points=getPoints(cfg.fixtureKey,cfg.accessoryKey,cfg.cct);
   const cctLabel=accessoryObj.quality==='single'?'sortie max publiée':`${cfg.cct} K`;
   if(ui.sourceDescriptor) ui.sourceDescriptor.textContent=`${fixtureObj.label} · ${accessoryObj.label} · ${cctLabel} · à 100 %`;
-  if(ui.measurementRow) ui.measurementRow.innerHTML=points.map(([md,mlux])=>`<div class="measure-chip"><span>${md} m</span><strong>${formatLux(mlux)} lux</strong></div>`).join('');
+  if(ui.measurementRow) ui.measurementRow.innerHTML=points.map(([md,mlux])=>`<span class="measure-inline"><b>${md} m</b><strong>${formatLux(mlux)} lux</strong></span>`).join('');
 }
 
 function updateResultTech(ui,cfg,reqLux){
