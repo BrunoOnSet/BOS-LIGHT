@@ -5,5 +5,7 @@
   "display": "standalone",
   "background_color": "#F3F1EC",
   "theme_color": "#F3F1EC",
-  "icons": []
+  "icons": [
+    {"src": "assets/logo-light-header.png", "sizes": "1122x1402", "type": "image/png"}
+  ]
 }

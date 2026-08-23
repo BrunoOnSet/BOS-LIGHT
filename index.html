@@ -9,21 +9,25 @@
   <meta name="apple-mobile-web-app-title" content="LIGHT · BOS" />
   <title>BRUNO ONSET / LIGHT</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles.css?v=0.20" />
+  <link rel="icon" href="assets/logo-light-header.png" type="image/png" />
+  <link rel="stylesheet" href="styles.css?v=0.27" />
 </head>
 <body>
   <main class="app-shell">
-    <header class="topbar">
-      <div class="top-inner">
-        <div class="top-title">
-          <a class="tool-eyebrow" href="https://www.brunoguillard.com/" target="_blank" rel="noopener noreferrer" aria-label="Site de Bruno Guillard">
-            <span class="eyebrow-logo" aria-hidden="true">BOS</span>
-            <span class="eyebrow-brand" aria-label="Bruno OnSet"><span class="bos-letter">B</span>RUNO <span class="bos-letter">O</span>N<span class="bos-letter">S</span>ET</span>
-          </a>
-          <h1>LIGHT</h1>
+    <header class="topbar cardlike">
+      <div class="top-inner bos-top-inner">
+        <div class="top-title bos-top-title">
+          <div class="bos-brand-lockup" aria-label="Bruno OnSet">
+            <img class="bos-header-logo" src="assets/logo-light-header.png" alt="Logo Light Bruno On Set">
+            <div class="bos-brand-text">
+              <span class="bos-header-name">Bruno OnSet</span>
+              <span class="bos-header-tagline">Avec vous, sur chaque tournage.</span>
+            </div>
+          </div>
         </div>
-        <button class="mode-btn" id="themeToggle" type="button" aria-label="Changer de thème">DARK</button>
+        <div class="top-actions bos-top-actions">
+          <button class="mode-btn" id="themeToggle" type="button" aria-label="Changer de thème">DARK</button>
+        </div>
       </div>
     </header>
     <div class="utility-row">
@@ -85,44 +89,46 @@
           <div class="measurement-row" id="keyTechMeasurementRow"></div>
         </div>
       </div>
-    </details>
-
-    <details class="controls-card result-section collapsible-card result-key-card" id="resultKeyDetails" open aria-live="polite">
-      <summary class="card-heading collapsible-heading">
-        <span class="step">03</span>
-        <div class="heading-copy"><h2>Résultat Key Light</h2><p>Vérifie d’abord si ta source principale suffit pour tes réglages caméra.</p></div>
-        <div class="summary-value result-distance-summary" id="resultDistanceSummary">Distance possible : — m</div>
-        <span class="chevron">⌄</span>
-      </summary>
-      <div class="hero-card result-card-inner">
-        <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
-        <div class="hero-title">Tu peux placer ta Key Light jusqu’à</div>
-        <div class="hero-distance"><strong id="maxDistance">—</strong><span>m</span></div>
-        <div class="setup-line" aria-hidden="true"><div class="setup-icon lamp">✦</div><div class="setup-track"><div class="setup-fill"></div></div><div class="setup-icon person">●</div></div>
-        <div class="hero-summary" id="heroSummary">—</div>
-        <div class="beam-hint" id="beamHint">—</div>
-      </div>
-      <div class="result-body">
-        <div class="status-box" id="statusBox"><span class="status-dot"></span><div><strong id="statusTitle">—</strong><p id="statusText">—</p></div></div>
-        <div class="solution-intro" id="solutionIntro"></div>
-        <div class="solutions" id="solutions"></div>
-        <div class="exposure-explainer compact-explainer"><strong>Par rapport à quoi ?</strong><span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span></div>
-        <div class="result-tech-inline" id="resultTechPopover">
-          <div class="result-tech-kicker">DÉTAILS TECHNIQUES</div>
-          <div class="tech-grid">
-            <div><span>À LA DISTANCE TESTÉE</span><strong id="resultTechLux">— lux</strong></div>
-            <div><span>MARGE</span><strong id="resultTechMargin">—</strong></div>
-            <div><span>ISO POUR CETTE EXPO</span><strong id="resultTechRequiredIso">—</strong></div>
-            <div><span>OUVERTURE À ISO MAX</span><strong id="resultTechPossibleAperture">—</strong></div>
+      <div class="embedded-section key-result-group">
+        <div class="embedded-section-head with-summary">
+          <div>
+            <div class="embedded-kicker">RÉSULTAT</div>
+            <h3>Résultat Key Light</h3>
+            <p>Vérifie d’abord si ta source principale suffit pour tes réglages caméra.</p>
           </div>
-          <div class="technical-note result-tech-note" id="resultTechDataNote">—</div>
+          <div class="embedded-summary" id="resultDistanceSummary">Distance possible : — m</div>
+        </div>
+        <div class="hero-card result-card-inner">
+          <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
+          <div class="hero-title">Tu peux placer ta Key Light jusqu’à</div>
+          <div class="hero-distance"><strong id="maxDistance">—</strong><span>m</span></div>
+          <div class="setup-line" aria-hidden="true"><div class="setup-icon lamp">✦</div><div class="setup-track"><div class="setup-fill"></div></div><div class="setup-icon person">●</div></div>
+          <div class="hero-summary" id="heroSummary">—</div>
+          <div class="beam-hint" id="beamHint">—</div>
+        </div>
+        <div class="result-body">
+          <div class="status-box" id="statusBox"><span class="status-dot"></span><div><strong id="statusTitle">—</strong><p id="statusText">—</p></div></div>
+          <div class="solution-intro" id="solutionIntro"></div>
+          <div class="solutions" id="solutions"></div>
+          <div class="exposure-explainer compact-explainer"><strong>Par rapport à quoi ?</strong><span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span></div>
+          <div class="result-tech-inline" id="resultTechPopover">
+            <div class="result-tech-kicker">DÉTAILS TECHNIQUES</div>
+            <div class="tech-grid">
+              <div><span>À LA DISTANCE TESTÉE</span><strong id="resultTechLux">— lux</strong></div>
+              <div><span>MARGE</span><strong id="resultTechMargin">—</strong></div>
+              <div><span>ISO POUR CETTE EXPO</span><strong id="resultTechRequiredIso">—</strong></div>
+              <div><span>OUVERTURE À ISO MAX</span><strong id="resultTechPossibleAperture">—</strong></div>
+            </div>
+            <div class="technical-note result-tech-note" id="resultTechDataNote">—</div>
+          </div>
         </div>
       </div>
+
     </details>
 
     <details class="controls-card light-card fill-card collapsible-card" id="fillDetails">
       <summary class="card-heading collapsible-heading">
-        <span class="step">04</span>
+        <span class="step">03</span>
         <div class="heading-copy"><h2>Fill Light</h2><p>Ajoute une seconde source pour préparer ton ratio Key / Fill.</p></div>
         <div class="summary-value light-summary" id="fillSummary">Désactivée</div>
         <span class="chevron">⌄</span>
@@ -160,28 +166,31 @@
             <div class="measurement-row" id="fillTechMeasurementRow"></div>
           </div>
         </div>
+        <div class="embedded-section fill-result-group" id="contrastSection" aria-live="polite" hidden>
+          <div class="embedded-section-head">
+            <div>
+              <div class="embedded-kicker">RÉSULTAT</div>
+              <h3>Résultat Key / Fill</h3>
+              <p>Compare les deux sources et estime le contraste d’éclairage créé.</p>
+            </div>
+          </div>
+          <div class="result-body">
+            <div class="contrast-card" id="contrastCard">
+              <div class="contrast-head"><div><span class="control-label">KEY / FILL</span><strong>Contraste d’éclairage</strong></div><span class="contrast-character" id="contrastCharacter">—</span></div>
+              <div class="contrast-grid">
+                <div><span>KEY LIGHT</span><strong id="keyLuxResult">— lux</strong></div>
+                <div><span>FILL LIGHT</span><strong id="fillLuxResult">— lux</strong></div>
+                <div><span>ÉCART ENTRE LES SOURCES</span><strong id="sourceGapResult">—</strong><small id="sourceGapDetail">—</small></div>
+                <div><span>RATIO KEY / FILL</span><strong id="sourceRatioResult">—</strong></div>
+              </div>
+              <div class="estimated-contrast"><span>RATIO LUMIÈRE / OMBRE ESTIMÉ</span><strong id="estimatedContrastResult">—</strong><p>Estimation théorique : côté éclairé = Key + Fill, côté ombre = Fill. Le contraste réel dépend du placement des sources, des réflexions, du décor et du sujet.</p></div>
+            </div>
+          </div>
+        </div>
+
         <button class="fill-remove-btn" id="disableFillBtn" type="button">RETIRER LA FILL LIGHT</button>
       </div>
     </details>
-
-    <section class="controls-card result-section" id="contrastSection" aria-live="polite" hidden>
-      <div class="card-heading">
-        <span class="step">05</span>
-        <div><h2>Résultat Key / Fill</h2><p>Compare les deux sources et estime le contraste d’éclairage créé.</p></div>
-      </div>
-      <div class="result-body">
-        <div class="contrast-card" id="contrastCard">
-          <div class="contrast-head"><div><span class="control-label">KEY / FILL</span><strong>Contraste d’éclairage</strong></div><span class="contrast-character" id="contrastCharacter">—</span></div>
-          <div class="contrast-grid">
-            <div><span>KEY LIGHT</span><strong id="keyLuxResult">— lux</strong></div>
-            <div><span>FILL LIGHT</span><strong id="fillLuxResult">— lux</strong></div>
-            <div><span>ÉCART ENTRE LES SOURCES</span><strong id="sourceGapResult">—</strong><small id="sourceGapDetail">—</small></div>
-            <div><span>RATIO KEY / FILL</span><strong id="sourceRatioResult">—</strong></div>
-          </div>
-          <div class="estimated-contrast"><span>RATIO LUMIÈRE / OMBRE ESTIMÉ</span><strong id="estimatedContrastResult">—</strong><p>Estimation théorique : côté éclairé = Key + Fill, côté ombre = Fill. Le contraste réel dépend du placement des sources, des réflexions, du décor et du sujet.</p></div>
-        </div>
-      </div>
-    </section>
 
     <footer>
       <span>BOS LIGHT · aide de préparation et de tournage</span>
@@ -220,6 +229,6 @@
   </dialog>
 
   <script src="bos-projecteurs-db.js?v=1.0"></script>
-  <script src="app.js?v=0.20"></script>
+  <script src="app.js?v=0.27"></script>
 </body>
 </html>
