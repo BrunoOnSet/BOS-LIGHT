@@ -1,4 +1,4 @@
-// BOS LIGHT V0.23 — Key + Fill, détails constructeur séparés du résultat
+// BOS LIGHT V0.29 — UI numérique FRAME + choix compacts
 const INCIDENT_C = 340;
 const STORAGE_KEY = 'bos-light-settings-v1';
 
@@ -18,6 +18,7 @@ let GROUP_LABELS = {};
 let POWER_LABELS = {};
 let DATABASE_INFO = {version:'—', updated:'—', source:'—', fixtureCount:0};
 let pickerTarget='key', pickerBrand='', pickerFamily='';
+let numericEditConfig=null;
 
 const ISO_VALUES=[100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800];
 const SHUTTER_DENOMS=[24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,500,640,800,1000];
@@ -37,7 +38,8 @@ const els = {
   fillIntensitySlider:$('#fillIntensitySlider'), fillIntensityValue:$('#fillIntensityValue'), fillCctSection:$('#fillCctSection'), fillCctGrid:$('#fillCctGrid'), fillCctValue:$('#fillCctValue'), fillCctNote:$('#fillCctNote'), fillDistanceSlider:$('#fillDistanceSlider'), fillDistanceValue:$('#fillDistanceValue'),
   fillTechPopover:$('#fillTechPopover'), fillTechSourceDescriptor:$('#fillTechSourceDescriptor'), fillTechMeasurementRow:$('#fillTechMeasurementRow'),
   contrastCard:$('#contrastCard'), contrastCharacter:$('#contrastCharacter'), keyLuxResult:$('#keyLuxResult'), fillLuxResult:$('#fillLuxResult'), sourceGapResult:$('#sourceGapResult'), sourceGapDetail:$('#sourceGapDetail'), sourceRatioResult:$('#sourceRatioResult'), estimatedContrastResult:$('#estimatedContrastResult'),
-  projectorDialog:$('#projectorDialog'), projectorDialogTitle:$('#projectorDialogTitle'), projectorChooserContext:$('#projectorChooserContext'), closeProjectorDialogBtn:$('#closeProjectorDialogBtn'), pickerBrandChoices:$('#pickerBrandChoices'), pickerFamilyChoices:$('#pickerFamilyChoices'), pickerModelChoices:$('#pickerModelChoices'), pickerCatalogCount:$('#pickerCatalogCount')
+  projectorDialog:$('#projectorDialog'), projectorDialogTitle:$('#projectorDialogTitle'), projectorChooserContext:$('#projectorChooserContext'), closeProjectorDialogBtn:$('#closeProjectorDialogBtn'), pickerBrandChoices:$('#pickerBrandChoices'), pickerFamilyChoices:$('#pickerFamilyChoices'), pickerModelChoices:$('#pickerModelChoices'), pickerCatalogCount:$('#pickerCatalogCount'),
+  numericDialog:$('#numericDialog'), numericDialogForm:$('#numericDialogForm'), numericDialogTitle:$('#numericDialogTitle'), numericDialogInput:$('#numericDialogInput'), numericDialogUnit:$('#numericDialogUnit'), numericDialogValidate:$('#numericDialogValidate')
 };
 
 init().catch(err=>{console.error(err); document.body.dataset.dbError='1';});
@@ -148,6 +150,10 @@ function bindUI(){
   els.accessoryGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-accessory]');if(!b)return;state.accessory=b.dataset.accessory;ensureAccessoryAndCct();update();});
   els.cctGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-cct]');if(!b)return;state.cct=Number(b.dataset.cct);update();});
   els.intensitySlider.addEventListener('input',()=>{state.intensityPct=Number(els.intensitySlider.value);update();});
+  els.intensityValue.addEventListener('click',()=>openNumericEditor('intensity'));
+  els.testDistanceValue.addEventListener('click',()=>openNumericEditor('distance'));
+  els.fillIntensityValue.addEventListener('click',()=>openNumericEditor('fillIntensity'));
+  els.fillDistanceValue.addEventListener('click',()=>openNumericEditor('fillDistance'));
   els.isoSelect.addEventListener('change',()=>{state.iso=Number(els.isoSelect.value);update();});
   els.apertureSelect.addEventListener('change',()=>{state.aperture=Number(els.apertureSelect.value);update();});
   els.shutterSelect.addEventListener('change',()=>{state.shutterDenom=Number(els.shutterSelect.value);update();});
@@ -161,8 +167,42 @@ function bindUI(){
   els.fillDistanceSlider.addEventListener('input',()=>{state.fillDistance=Number(els.fillDistanceSlider.value);update();});
 
 
+  els.numericDialogValidate?.addEventListener('click',applyNumericEditor);
+  els.numericDialogInput?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyNumericEditor();}});
+  els.numericDialog?.addEventListener('click',e=>{if(e.target===els.numericDialog)els.numericDialog.close();});
+
   els.resetBtn.addEventListener('click',reset);
   els.themeToggle?.addEventListener('click',()=>{const next=document.body.classList.contains('dark')?'light':'dark';try{localStorage.setItem('bg-set-tools-theme',next);}catch(_){}applyTheme(next);});
+}
+
+function openNumericEditor(kind){
+  const configs={
+    intensity:{title:'Intensité Key Light',unit:'%',min:0,max:100,step:1,get:()=>state.intensityPct,set:v=>{state.intensityPct=v;els.intensitySlider.value=v;}},
+    distance:{title:'Distance Key Light',unit:'m',min:1,max:20,step:.1,get:()=>state.testDistance,set:v=>{state.testDistance=v;els.testDistanceSlider.value=v;}},
+    fillIntensity:{title:'Intensité Fill Light',unit:'%',min:0,max:100,step:1,get:()=>state.fillIntensityPct,set:v=>{state.fillIntensityPct=v;els.fillIntensitySlider.value=v;}},
+    fillDistance:{title:'Distance Fill Light',unit:'m',min:1,max:20,step:.1,get:()=>state.fillDistance,set:v=>{state.fillDistance=v;els.fillDistanceSlider.value=v;}}
+  };
+  numericEditConfig=configs[kind];
+  if(!numericEditConfig)return;
+  els.numericDialogTitle.textContent=numericEditConfig.title;
+  els.numericDialogUnit.textContent=numericEditConfig.unit;
+  els.numericDialogInput.min=numericEditConfig.min;
+  els.numericDialogInput.max=numericEditConfig.max;
+  els.numericDialogInput.step=numericEditConfig.step;
+  els.numericDialogInput.value=numericEditConfig.get();
+  if(typeof els.numericDialog.showModal==='function')els.numericDialog.showModal();else els.numericDialog.setAttribute('open','');
+  setTimeout(()=>{els.numericDialogInput.focus();els.numericDialogInput.select();},30);
+}
+function applyNumericEditor(){
+  if(!numericEditConfig)return;
+  let v=Number(String(els.numericDialogInput.value).replace(',','.'));
+  if(!Number.isFinite(v))return;
+  v=Math.max(numericEditConfig.min,Math.min(numericEditConfig.max,v));
+  if(numericEditConfig.step>=1)v=Math.round(v);
+  else v=Math.round(v/numericEditConfig.step)*numericEditConfig.step;
+  numericEditConfig.set(v);
+  update();
+  if(els.numericDialog.open&&typeof els.numericDialog.close==='function')els.numericDialog.close();else els.numericDialog.removeAttribute('open');
 }
 
 function applyTheme(theme){

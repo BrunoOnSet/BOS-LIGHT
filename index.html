@@ -10,7 +10,7 @@
   <title>BRUNO ONSET / LIGHT</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="assets/logo-light-header.png" type="image/png" />
-  <link rel="stylesheet" href="styles.css?v=0.27" />
+  <link rel="stylesheet" href="styles.css?v=0.29" />
 </head>
 <body>
   <main class="app-shell">
@@ -67,21 +67,30 @@
         <label class="control-label">PROJECTEUR / MODÈLE</label>
         <button id="keyModelPickerBtn" class="model-picker-btn" type="button"><span id="keyModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
       </div>
-      <div class="control-block compact-block"><label class="control-label">ACCESSOIRE</label><div class="accessory-grid" id="accessoryGrid"></div><div class="accessory-note" id="accessoryNote"></div></div>
-      <div class="control-block slider-block">
-        <div class="control-head"><label for="intensitySlider">INTENSITÉ</label><output id="intensityValue">100 %</output></div>
-        <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
-        <div class="range-labels"><span>0 %</span><span>100 %</span></div>
+      <div class="control-block inline-choice-block">
+        <label class="control-label">ACCESSOIRE</label>
+        <div class="accessory-grid compact-choice-row" id="accessoryGrid"></div>
+        <div class="accessory-note inline-choice-note" id="accessoryNote"></div>
       </div>
-      <div class="control-block" id="cctSection">
-        <div class="control-head compact-head"><label>TEMPÉRATURE</label><output id="cctValue">5600 K</output></div>
-        <div class="cct-grid" id="cctGrid"></div>
-        <div class="accessory-note" id="cctNote"></div>
+      <div class="control-block numeric-control-block">
+        <div class="numeric-control-row">
+          <label class="control-label" for="intensitySlider">INTENSITÉ</label>
+          <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
+          <button class="numeric-value-btn" id="intensityValue" type="button" aria-label="Saisir librement l’intensité">100 %</button>
+        </div>
       </div>
-      <div class="control-block distance-control-block">
-        <div class="section-head compact-distance-head"><div><div class="control-label">DISTANCE SOURCE / SUJET</div><div class="distance-help">Distance réelle entre ta Key Light et le sujet.</div></div><strong class="distance-readout" id="testDistanceValue">2,0 m</strong></div>
-        <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
-        <div class="range-labels"><span>1 m</span><span>20 m</span></div>
+      <div class="control-block inline-choice-block" id="cctSection">
+        <label class="control-label">TEMPÉRATURE</label>
+        <div class="cct-grid compact-choice-row" id="cctGrid"></div>
+        <output id="cctValue" class="hidden-current-value">5600 K</output>
+        <div class="accessory-note inline-choice-note" id="cctNote"></div>
+      </div>
+      <div class="control-block numeric-control-block">
+        <div class="numeric-control-row">
+          <label class="control-label" for="testDistanceSlider">DISTANCE SOURCE / SUJET</label>
+          <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
+          <button class="numeric-value-btn" id="testDistanceValue" type="button" aria-label="Saisir librement la distance">2,0 m</button>
+        </div>
       </div>
       <div class="tech-inline-bottom manufacturer-inline" id="keyTechPopover">
         <div class="source-data compact-source-data manufacturer-only inline-source-data">
@@ -144,21 +153,30 @@
           <label class="control-label">PROJECTEUR / MODÈLE</label>
           <button id="fillModelPickerBtn" class="model-picker-btn" type="button"><span id="fillModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
         </div>
-        <div class="control-block compact-block"><label class="control-label">ACCESSOIRE</label><div class="accessory-grid" id="fillAccessoryGrid"></div><div class="accessory-note" id="fillAccessoryNote"></div></div>
-        <div class="control-block slider-block">
-          <div class="control-head"><label for="fillIntensitySlider">INTENSITÉ</label><output id="fillIntensityValue">50 %</output></div>
-          <input id="fillIntensitySlider" type="range" min="0" max="100" value="50" step="1" />
-          <div class="range-labels"><span>0 %</span><span>100 %</span></div>
+        <div class="control-block inline-choice-block">
+          <label class="control-label">ACCESSOIRE</label>
+          <div class="accessory-grid compact-choice-row" id="fillAccessoryGrid"></div>
+          <div class="accessory-note inline-choice-note" id="fillAccessoryNote"></div>
         </div>
-        <div class="control-block" id="fillCctSection">
-          <div class="control-head compact-head"><label>TEMPÉRATURE</label><output id="fillCctValue">5600 K</output></div>
-          <div class="cct-grid" id="fillCctGrid"></div>
-          <div class="accessory-note" id="fillCctNote"></div>
+        <div class="control-block numeric-control-block">
+          <div class="numeric-control-row">
+            <label class="control-label" for="fillIntensitySlider">INTENSITÉ</label>
+            <input id="fillIntensitySlider" type="range" min="0" max="100" value="50" step="1" />
+            <button class="numeric-value-btn" id="fillIntensityValue" type="button" aria-label="Saisir librement l’intensité de la Fill">50 %</button>
+          </div>
         </div>
-        <div class="control-block distance-control-block">
-          <div class="section-head compact-distance-head"><div><div class="control-label">DISTANCE SOURCE / SUJET</div><div class="distance-help">Distance réelle entre ta Fill Light et le sujet.</div></div><strong class="distance-readout" id="fillDistanceValue">2,0 m</strong></div>
-          <input id="fillDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
-          <div class="range-labels"><span>1 m</span><span>20 m</span></div>
+        <div class="control-block inline-choice-block" id="fillCctSection">
+          <label class="control-label">TEMPÉRATURE</label>
+          <div class="cct-grid compact-choice-row" id="fillCctGrid"></div>
+          <output id="fillCctValue" class="hidden-current-value">5600 K</output>
+          <div class="accessory-note inline-choice-note" id="fillCctNote"></div>
+        </div>
+        <div class="control-block numeric-control-block">
+          <div class="numeric-control-row">
+            <label class="control-label" for="fillDistanceSlider">DISTANCE SOURCE / SUJET</label>
+            <input id="fillDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
+            <button class="numeric-value-btn" id="fillDistanceValue" type="button" aria-label="Saisir librement la distance de la Fill">2,0 m</button>
+          </div>
         </div>
         <div class="tech-inline-bottom manufacturer-inline" id="fillTechPopover">
           <div class="source-data compact-source-data manufacturer-only inline-source-data">
@@ -228,7 +246,27 @@
     </div>
   </dialog>
 
+
+  <dialog id="numericDialog" class="numeric-dialog">
+    <form method="dialog" class="numeric-dialog-card" id="numericDialogForm">
+      <div class="numeric-dialog-head">
+        <div>
+          <div class="dialog-kicker">VALEUR LIBRE</div>
+          <h2 id="numericDialogTitle">Valeur</h2>
+        </div>
+        <button class="dialog-close" value="cancel" type="submit" aria-label="Fermer">×</button>
+      </div>
+      <div class="numeric-entry-wrap">
+        <input id="numericDialogInput" type="number" inputmode="decimal" />
+        <span id="numericDialogUnit"></span>
+      </div>
+      <div class="numeric-dialog-actions">
+        <button class="utility-link" value="cancel" type="submit">ANNULER</button>
+        <button class="numeric-validate-btn" id="numericDialogValidate" type="button">VALIDER</button>
+      </div>
+    </form>
+  </dialog>
   <script src="bos-projecteurs-db.js?v=1.0"></script>
-  <script src="app.js?v=0.27"></script>
+  <script src="app.js?v=0.29"></script>
 </body>
 </html>
