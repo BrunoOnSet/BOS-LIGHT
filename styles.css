@@ -1159,3 +1159,81 @@ body.dark .embedded-section-head h3,
   .manufacturer-inline .inline-source-data{flex-wrap:wrap !important;gap:8px 18px !important}
   .manufacturer-inline .source-title-row > div{flex-wrap:wrap !important;gap:8px !important}
 }
+
+
+/* V0.45 — données constructeur compactes sur 2 lignes */
+.tech-inline-bottom.manufacturer-inline{
+  min-height:0 !important;
+  padding:7px 16px 8px !important;
+}
+.manufacturer-inline .inline-source-data{
+  width:min(100%,980px) !important;
+  margin:0 auto !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  grid-template-rows:auto auto !important;
+  align-items:center !important;
+  column-gap:24px !important;
+  row-gap:2px !important;
+  text-align:left !important;
+}
+.manufacturer-inline .source-title-row{
+  grid-column:1 !important;
+  grid-row:1 / span 2 !important;
+  margin:0 !important;
+  padding:0 !important;
+  min-width:0 !important;
+}
+.manufacturer-inline .source-title-row > div{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:2px !important;
+  align-items:start !important;
+  justify-items:start !important;
+}
+.manufacturer-inline .source-title-row .control-label{
+  margin:0 !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+}
+.manufacturer-inline .source-title-row p{
+  margin:0 !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+  font-size:9.5px !important;
+  line-height:1.2 !important;
+}
+.manufacturer-inline .measurement-row{
+  grid-column:2 !important;
+  grid-row:1 / span 2 !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:20px !important;
+  width:auto !important;
+}
+.manufacturer-inline .measure-chip{
+  display:flex !important;
+  align-items:baseline !important;
+  gap:6px !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+@media(max-width:760px){
+  .manufacturer-inline .inline-source-data{
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto auto !important;
+    row-gap:6px !important;
+  }
+  .manufacturer-inline .source-title-row{
+    grid-column:1 !important;
+    grid-row:1 !important;
+  }
+  .manufacturer-inline .measurement-row{
+    grid-column:1 !important;
+    grid-row:2 !important;
+    justify-content:flex-start !important;
+  }
+}
