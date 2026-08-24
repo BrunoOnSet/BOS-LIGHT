@@ -1076,3 +1076,20 @@ body.dark .bos-header-tagline{color:#17191C !important}
 .bos-header-name{display:flex;align-items:baseline;gap:0;flex-wrap:wrap}
 .bos-header-app{color:#17191C;font-weight:700}
 body.dark .bos-header-app{color:#17191C}
+
+
+/* V0.43 — titres de bulles harmonisés BOS */
+.card-heading h2,
+.embedded-section-head h3{
+  font-family:"Montserrat",Arial,sans-serif !important;
+  font-size:16px !important;
+  line-height:1.1 !important;
+  font-weight:700 !important;
+  letter-spacing:0 !important;
+  color:#2F5B66 !important;
+}
+body.dark .card-heading h2,
+body.dark .embedded-section-head h3,
+:root[data-theme="dark"] .card-heading h2,
+:root[data-theme="dark"] .embedded-section-head h3{color:#2F5B66 !important;}
+.heading-copy h2{margin:0 !important;}
