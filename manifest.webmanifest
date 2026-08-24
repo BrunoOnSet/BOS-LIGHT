@@ -6,6 +6,6 @@
   "background_color": "#F3F1EC",
   "theme_color": "#F3F1EC",
   "icons": [
-    {"src": "assets/logo-light-header.png", "sizes": "1122x1402", "type": "image/png"}
+    {"src": "assets/logo-light-app.png", "sizes": "1280x1280", "type": "image/png"}
   ]
 }

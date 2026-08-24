@@ -406,7 +406,7 @@ function updateFillContrast(){
   else {const gap=Math.log2(q); gapText=`${gap>=0?'+':'−'}${Math.abs(gap).toFixed(1).replace('.',',')} stop${Math.abs(gap)>=1.5?'s':''}`; if(Math.abs(gap)<.05)detail='Niveaux pratiquement identiques'; else if(gap>0)detail=`Key ${formatRatio(q)}× plus forte`; else detail=`Fill ${formatRatio(1/q)}× plus forte`;}
   const sourceRatio=q>=1?`${formatRatio(q)} : 1`:`1 : ${formatRatio(1/q)}`;
   const contrastRatio=1+q, contrastStops=Math.log2(contrastRatio);
-  const character=contrastStops<1.5?'DOUX':contrastStops<2.5?'MARQUÉ':contrastStops<4?'FORT':'TRÈS CONTRASTÉ';
+  const character=gapStops<0.5?'FLAT':contrastStops<1.5?'DOUX':contrastStops<2.5?'MARQUÉ':contrastStops<4?'FORT':'TRÈS CONTRASTÉ';
   els.sourceGapResult.textContent=gapText; els.sourceGapDetail.textContent=detail; els.sourceRatioResult.textContent=sourceRatio; els.estimatedContrastResult.textContent=`≈ ${formatRatio(contrastRatio)} : 1 · ${contrastStops.toFixed(1).replace('.',',')} stops`; els.contrastCharacter.textContent=character;
 }
 

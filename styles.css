@@ -1014,3 +1014,65 @@ body.dark .bos-header-tagline{color:#17191C !important}
   .project-contact{padding-top:28px !important}
   .project-contact-btn{font-size:11px !important}
 }
+
+
+/* V0.41 — centrage données constructeur */
+.tech-inline-bottom.manufacturer-inline{
+  padding:10px 16px 12px !important;
+}
+.manufacturer-inline .inline-source-data{
+  display:grid !important;
+  grid-template-columns:auto auto auto !important;
+  justify-content:center !important;
+  align-items:center !important;
+  column-gap:26px !important;
+  row-gap:6px !important;
+  width:100% !important;
+  text-align:center !important;
+}
+.manufacturer-inline .source-title-row{
+  padding-top:0 !important;
+  margin:0 !important;
+  text-align:center !important;
+}
+.manufacturer-inline .source-title-row > div{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:14px !important;
+  flex-wrap:wrap !important;
+}
+.manufacturer-inline .source-title-row .control-label,
+.manufacturer-inline .source-title-row p{
+  margin:0 !important;
+  text-align:center !important;
+}
+.manufacturer-inline .measurement-row{
+  width:auto !important;
+  margin:0 !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:18px !important;
+}
+.manufacturer-inline .measure-chip{
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:center !important;
+  gap:6px !important;
+}
+@media (max-width:860px){
+  .manufacturer-inline .inline-source-data{
+    grid-template-columns:1fr !important;
+    row-gap:4px !important;
+  }
+  .manufacturer-inline .measurement-row{
+    width:100% !important;
+  }
+}
+
+
+/* V0.42 — icône app LIGHT + header Bruno OnSet - LIGHT */
+.bos-header-name{display:flex;align-items:baseline;gap:0;flex-wrap:wrap}
+.bos-header-app{color:#17191C;font-weight:700}
+body.dark .bos-header-app{color:#17191C}
