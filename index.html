@@ -1,226 +1,131 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" id="themeColor" content="#F3F1EC" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="LIGHT · BOS" />
-  <title>BRUNO ONSET / LIGHT</title>
-  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>BOS — Bruno OnSet</title>
+  <link rel="manifest" href="manifest.webmanifest?v=57" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="assets/logo-light-app.png" type="image/png" />
-  <link rel="stylesheet" href="styles.css?v=0.43" />
+  <link rel="stylesheet" href="style.css?v=57" />
 </head>
 <body>
-  <main class="app-shell">
+  <main class="shell">
     <header class="topbar cardlike">
       <div class="top-inner bos-top-inner">
         <div class="top-title bos-top-title">
           <div class="bos-brand-lockup" aria-label="Bruno OnSet">
             <img class="bos-header-logo" src="assets/logo-bos-header.jpg" alt="Logo Bruno OnSet">
             <div class="bos-brand-text">
-              <span class="bos-header-name">Bruno OnSet<span class="bos-header-app"> - LIGHT</span></span>
+              <span class="bos-header-name">Bruno OnSet</span>
               <span class="bos-header-tagline">Avec vous, sur chaque tournage.</span>
             </div>
           </div>
         </div>
         <div class="top-actions bos-top-actions">
-          <button class="mode-btn" id="themeToggle" type="button" aria-label="Changer de thème">DARK</button>
+          <button class="mode-btn" id="themeBtn" aria-label="Changer de thème" title="Thème">DARK</button>
+          
         </div>
       </div>
     </header>
-    <div class="utility-row">
-      <button class="utility-link" id="resetBtn" type="button">RESET</button>
-      <span class="utility-note">EST-CE QUE MA LUMIÈRE VA SUFFIRE ?</span>
+
+
+
+    <div class="utility-row bos-utility-row">
+      <button class="utility-link" id="customizeBtn" type="button">PERSONNALISER</button>
     </div>
+    <section class="context cardlike" id="cameraCard">
+      <button class="module-head context-head" id="cameraToggle" type="button">
+        <span class="module-title"><i class="module-dot"></i><span><strong>CAMÉRA</strong><small id="cameraSummary">—</small></span></span>
+        <span class="chev">⌄</span>
+      </button>
+      <div class="context-body">
+        <div class="camera-choice">
+          <span class="field-label">Marque</span>
+          <div class="brand-chips" id="cameraBrandMode" aria-label="Choisir la marque"></div>
 
-    <details class="controls-card camera-card first-card collapsible-card" id="cameraDetails">
-      <summary class="card-heading collapsible-heading">
-        <span class="step">01</span>
-        <div class="heading-copy">
-          <h2>Réglages Caméra</h2>
-          <p>Définis l’exposition que tu veux pouvoir tenir.</p>
-        </div>
-        <div class="summary-value" id="cameraSummary">ISO 800 · f/2,8 · 1/50</div>
-        <span class="chevron">⌄</span>
-      </summary>
-      <div class="camera-grid">
-        <label class="select-control"><span>ISO MAX ACCEPTÉ</span><select id="isoSelect" aria-label="ISO maximum accepté"></select></label>
-        <label class="select-control"><span>OUVERTURE</span><select id="apertureSelect" aria-label="Ouverture"></select></label>
-        <label class="select-control"><span>VITESSE</span><select id="shutterSelect" aria-label="Vitesse d'obturation"></select></label>
-      </div>
-    </details>
-
-    <details class="controls-card light-card collapsible-card" id="lightDetails">
-      <summary class="card-heading collapsible-heading">
-        <span class="step">02</span>
-        <div class="heading-copy">
-          <h2>Key Light</h2>
-          
-        </div>
-        <div class="summary-value light-summary" id="lightSummary">amaran · Halo 60x · Softbox 60</div>
-        <span class="chevron">⌄</span>
-      </summary>
-
-      <div class="control-block compact-block">
-        <label class="control-label">PROJECTEUR / MODÈLE</label>
-        <button id="keyModelPickerBtn" class="model-picker-btn" type="button"><span id="keyModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
-      </div>
-      <div class="control-block inline-choice-block">
-        <label class="control-label">ACCESSOIRE</label>
-        <div class="accessory-grid compact-choice-row" id="accessoryGrid"></div>
-        <div class="accessory-note inline-choice-note" id="accessoryNote"></div>
-      </div>
-      <div class="control-block numeric-control-block">
-        <div class="numeric-control-row">
-          <label class="control-label" for="intensitySlider">INTENSITÉ</label>
-          <input id="intensitySlider" type="range" min="0" max="100" value="100" step="1" />
-          <button class="numeric-value-btn" id="intensityValue" type="button" aria-label="Saisir librement l’intensité">100 %</button>
-        </div>
-      </div>
-      <div class="control-block inline-choice-block" id="cctSection">
-        <label class="control-label">TEMPÉRATURE</label>
-        <div class="cct-grid compact-choice-row" id="cctGrid"></div>
-        <output id="cctValue" class="hidden-current-value">5600 K</output>
-        <div class="accessory-note inline-choice-note" id="cctNote"></div>
-      </div>
-      <div class="control-block numeric-control-block">
-        <div class="numeric-control-row">
-          <label class="control-label" for="testDistanceSlider">DISTANCE SOURCE / SUJET</label>
-          <input id="testDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
-          <button class="numeric-value-btn" id="testDistanceValue" type="button" aria-label="Saisir librement la distance">2,0 m</button>
-        </div>
-      </div>
-      <div class="tech-inline-bottom manufacturer-inline" id="keyTechPopover">
-        <div class="source-data compact-source-data manufacturer-only inline-source-data">
-          <div class="source-title-row"><div><span class="control-label">DONNÉES CONSTRUCTEUR</span><p id="keyTechSourceDescriptor">—</p></div></div>
-          <div class="measurement-row" id="keyTechMeasurementRow"></div>
-        </div>
-      </div>
-      <div class="embedded-section key-result-group">
-        <div class="embedded-section-head with-summary">
-          <div>
-            <div class="embedded-kicker">RÉSULTAT</div>
-            <h3>Résultat Key Light</h3>
-            
-          </div>
-          
-        </div>
-        <div class="hero-card result-card-inner" id="resultHeroCard">
-          <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
-          <div class="hero-title">Tu peux placer ta Key Light jusqu’à</div>
-          <div class="hero-distance"><strong id="maxDistance">—</strong><span>m</span></div>
-          <div class="setup-line" aria-hidden="true"><div class="setup-icon lamp">✦</div><div class="setup-track"><div class="setup-fill"></div></div><div class="setup-icon person">●</div></div>
-          <div class="hero-summary" id="heroSummary">—</div>
-          <div class="beam-hint" id="beamHint">—</div>
-          <div class="status-box merged-status-box" id="statusBox"><span class="status-dot"></span><div><strong id="statusTitle">—</strong><p id="statusText">—</p></div></div>
-        </div>
-        <div class="result-body">
-          <div class="solution-intro" id="solutionIntro"></div>
-          <div class="solutions" id="solutions"></div>
-          <div class="result-tech-inline" id="resultTechPopover">
-            <div class="result-tech-kicker">DÉTAILS TECHNIQUES</div>
-            <div class="tech-grid">
-              <div><span>À LA DISTANCE TESTÉE</span><strong id="resultTechLux">— lux</strong></div>
-              <div><span>MARGE</span><strong id="resultTechMargin">—</strong></div>
-              <div><span>ISO POUR CETTE EXPO</span><strong id="resultTechRequiredIso">—</strong></div>
-              <div><span>OUVERTURE À ISO MAX</span><strong id="resultTechPossibleAperture">—</strong></div>
-            </div>
-            <div class="technical-note result-tech-note" id="resultTechDataNote">—</div>
-          </div>
-          <div class="technical-caption plain-tech-info"><strong>Informations techniques</strong><span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span></div>
-        </div>
-      </div>
-
-    </details>
-
-    <details class="controls-card light-card fill-card collapsible-card" id="fillDetails">
-      <summary class="card-heading collapsible-heading">
-        <span class="step">03</span>
-        <div class="heading-copy"><h2>Fill Light</h2></div>
-        <div class="summary-value light-summary" id="fillSummary">Désactivée</div>
-        <span class="chevron">⌄</span>
-      </summary>
-
-      <div class="fill-disabled" id="fillDisabled">
-        <button class="fill-add-btn" id="enableFillBtn" type="button">+ AJOUTER UNE FILL LIGHT</button>
-        <p>La Fill est optionnelle. Active-la pour comparer précisément son niveau à la Key.</p>
-      </div>
-
-      <div class="fill-controls" id="fillControls" hidden>
-        <div class="control-block compact-block">
-          <label class="control-label">PROJECTEUR / MODÈLE</label>
-          <button id="fillModelPickerBtn" class="model-picker-btn" type="button"><span id="fillModelPickerLabel">amaran Halo 60x</span><strong>Changer</strong></button>
-        </div>
-        <div class="control-block inline-choice-block">
-          <label class="control-label">ACCESSOIRE</label>
-          <div class="accessory-grid compact-choice-row" id="fillAccessoryGrid"></div>
-          <div class="accessory-note inline-choice-note" id="fillAccessoryNote"></div>
-        </div>
-        <div class="control-block numeric-control-block">
-          <div class="numeric-control-row">
-            <label class="control-label" for="fillIntensitySlider">INTENSITÉ</label>
-            <input id="fillIntensitySlider" type="range" min="0" max="100" value="50" step="1" />
-            <button class="numeric-value-btn" id="fillIntensityValue" type="button" aria-label="Saisir librement l’intensité de la Fill">50 %</button>
-          </div>
-        </div>
-        <div class="control-block inline-choice-block" id="fillCctSection">
-          <label class="control-label">TEMPÉRATURE</label>
-          <div class="cct-grid compact-choice-row" id="fillCctGrid"></div>
-          <output id="fillCctValue" class="hidden-current-value">5600 K</output>
-          <div class="accessory-note inline-choice-note" id="fillCctNote"></div>
-        </div>
-        <div class="control-block numeric-control-block">
-          <div class="numeric-control-row">
-            <label class="control-label" for="fillDistanceSlider">DISTANCE SOURCE / SUJET</label>
-            <input id="fillDistanceSlider" type="range" min="1" max="20" value="2" step="0.1" />
-            <button class="numeric-value-btn" id="fillDistanceValue" type="button" aria-label="Saisir librement la distance de la Fill">2,0 m</button>
-          </div>
-        </div>
-        <div class="tech-inline-bottom manufacturer-inline" id="fillTechPopover">
-          <div class="source-data compact-source-data manufacturer-only inline-source-data">
-            <div class="source-title-row"><div><span class="control-label">DONNÉES CONSTRUCTEUR</span><p id="fillTechSourceDescriptor">—</p></div></div>
-            <div class="measurement-row" id="fillTechMeasurementRow"></div>
-          </div>
-        </div>
-        <div class="embedded-section fill-result-group" id="contrastSection" aria-live="polite" hidden>
-          <div class="embedded-section-head">
-            <div>
-              <div class="embedded-kicker">RÉSULTAT</div>
-              <h3>Résultat Key / Fill</h3>
-              
-            </div>
-          </div>
-          <div class="result-body">
-            <div class="contrast-card" id="contrastCard">
-              <div class="contrast-head"><div><span class="control-label">KEY / FILL</span><strong>Contraste d’éclairage</strong></div><span class="contrast-character" id="contrastCharacter">—</span></div>
-              <div class="contrast-grid">
-                <div><span>KEY LIGHT</span><strong id="keyLuxResult">— lux</strong></div>
-                <div><span>FILL LIGHT</span><strong id="fillLuxResult">— lux</strong></div>
-                <div><span>ÉCART ENTRE LES SOURCES</span><strong id="sourceGapResult">—</strong><small id="sourceGapDetail">—</small></div>
-                <div><span>RATIO KEY / FILL</span><strong id="sourceRatioResult">—</strong></div>
-              </div>
-              <div class="estimated-contrast"><span>RATIO LUMIÈRE / OMBRE ESTIMÉ</span><strong id="estimatedContrastResult">—</strong><p>Estimation théorique : côté éclairé = Key + Fill, côté ombre = Fill. Le contraste réel dépend du placement des sources, des réflexions, du décor et du sujet.</p></div>
-            </div>
+          <span class="field-label camera-model-label">Caméra</span>
+          <div class="camera-select-wrap">
+            <select class="camera-select" id="cameraSelect" aria-label="Choisir la caméra"></select>
           </div>
         </div>
 
-        <button class="fill-remove-btn" id="disableFillBtn" type="button">RETIRER LA FILL LIGHT</button>
+        <div class="camera-gamma-block">
+          <span class="field-label">Gamma</span>
+          <div class="gamma-chips" id="gammaMode" aria-label="Choisir la courbe gamma"></div>
+          <div class="gamma-info" id="gammaInfo">—</div>
+        </div>
       </div>
-    </details>
+    </section>
+
+    <section id="modules" class="modules" aria-live="polite"></section>
+
 
     <section class="project-contact" aria-label="Contact professionnel">
       <button class="project-contact-btn" id="projectContactBtn" type="button">
-        Échangeons autour de votre projet <span aria-hidden="true">→</span>
+        Besoin d’un regard sur votre projet ? <span aria-hidden="true">→</span>
       </button>
     </section>
 
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.43</footer>
+    <footer class="footer">BOS — Bruno OnSet · V57</footer>
   </main>
+
+
+  <dialog id="projectDialog" class="sheet project-sheet">
+    <form method="dialog" class="sheet-inner project-sheet-inner">
+      <div class="project-sheet-head">
+        <div>
+          <span class="project-kicker">BRUNO ONSET</span>
+          <h2>Vous préparez un projet ?</h2>
+        </div>
+        <button class="project-close" value="close" aria-label="Fermer">×</button>
+      </div>
+
+      <div class="project-profile">
+        <strong>Bruno Guillard</strong>
+        <span>Directeur de la photographie · Consultant image</span>
+      </div>
+
+      <div class="project-services" aria-label="Prestations">
+        <span>Direction de la photographie</span>
+        <span>Conseil / préparation image</span>
+      </div>
+
+      <p class="project-note">
+        Échangeons autour de votre projet, de vos intentions d’image et de votre dispositif de tournage.
+      </p>
+      <div class="project-actions">
+        <a class="project-email-btn" href="mailto:brunoguillardcontact@gmail.com?subject=Projet%20de%20tournage%20%E2%80%94%20Bruno%20OnSet&body=Bonjour%20Bruno%2C%0A%0AJe%20vous%20contacte%20depuis%20Bruno%20OnSet.%0A%0A">Écrire à Bruno <span aria-hidden="true">→</span></a>
+        <div class="project-secondary-links">
+          <a class="project-secondary-link" href="https://wa.me/33679979111?text=Bonjour%20Bruno%2C%0A%0AJe%20vous%20contacte%20depuis%20Bruno%20OnSet.%0A%0A" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <span aria-hidden="true">·</span>
+          <a class="project-secondary-link" href="https://brunoguillard.com" target="_blank" rel="noopener noreferrer">BrunoGuillard.com</a>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="customizeDialog" class="sheet">
+    <form method="dialog" class="sheet-inner">
+      <div class="sheet-head"><div><strong>Personnaliser</strong></div><button value="cancel" class="iconbtn" aria-label="Fermer">×</button></div>
+      <div id="customizeList" class="custom-list"></div>
+      <div class="sheet-actions"><button type="button" id="resetLayout" class="secondary">Réinitialiser</button><button value="ok" class="primary">Terminé</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="ratioDialog" class="sheet ratio-sheet">
+    <form method="dialog" class="sheet-inner ratio-sheet-inner">
+      <div class="sheet-head"><div><strong>Ratio</strong></div><button value="cancel" class="ratio-close" aria-label="Fermer">×</button></div>
+      <div id="ratioList" class="ratio-choice-grid"></div>
+    </form>
+  </dialog>
+
 
 
   <dialog id="projectorDialog" class="add-dialog projector-dialog">
@@ -228,12 +133,12 @@
       <div class="dialog-head">
         <div>
           <div class="dialog-kicker">Changer</div>
-          <h2 id="projectorDialogTitle">Changer de projecteur</h2>
+          <h2>Changer de projecteur</h2>
         </div>
         <button class="dialog-close" id="closeProjectorDialogBtn" type="button" aria-label="Fermer">×</button>
       </div>
       <div class="chooser-topline">
-        <span class="chooser-context" id="projectorChooserContext">Key Light</span>
+        <span class="chooser-context">Key Light</span>
         <div class="catalog-badge">Catalogue BOS Light</div>
       </div>
       <div class="choice-section">
@@ -252,27 +157,6 @@
     </div>
   </dialog>
 
-
-  <dialog id="numericDialog" class="numeric-dialog">
-    <form method="dialog" class="numeric-dialog-card" id="numericDialogForm">
-      <div class="numeric-dialog-head">
-        <div>
-          <div class="dialog-kicker">VALEUR LIBRE</div>
-          <h2 id="numericDialogTitle">Valeur</h2>
-        </div>
-        <button class="dialog-close" value="cancel" type="submit" aria-label="Fermer">×</button>
-      </div>
-      <div class="numeric-entry-wrap">
-        <input id="numericDialogInput" type="number" inputmode="decimal" />
-        <span id="numericDialogUnit"></span>
-      </div>
-      <div class="numeric-dialog-actions">
-        <button class="utility-link" value="cancel" type="submit">ANNULER</button>
-        <button class="numeric-validate-btn" id="numericDialogValidate" type="button">VALIDER</button>
-      </div>
-    </form>
-  </dialog>
-  <script src="bos-projecteurs-db.js?v=1.0"></script>
-  <script src="app.js?v=0.29"></script>
+  <script src="app.js?v=57" defer></script>
 </body>
 </html>
