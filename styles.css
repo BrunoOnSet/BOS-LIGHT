@@ -915,3 +915,102 @@ body.dark .project-contact-btn{color:#7FA7B0}
   .manufacturer-inline .source-title-row > div{gap:8px !important;}
   .manufacturer-inline .measurement-row{gap:12px !important; width:auto !important;}
 }
+
+
+/* V0.40 — header/footer strictement alignés sur BOS_BRUNO_ONSET_V56 */
+.app-shell{
+  width:min(760px,100%) !important;
+  margin:0 auto !important;
+  padding:14px 12px calc(32px + env(safe-area-inset-bottom)) !important;
+}
+.topbar{
+  background:var(--header-bg) !important;
+  border:1px solid var(--header-border) !important;
+  border-radius:22px !important;
+  padding:14px 16px 15px !important;
+  margin-bottom:14px !important;
+  position:static !important;
+}
+.bos-top-inner{width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.bos-brand-lockup{display:flex;align-items:center;gap:12px;min-width:0}
+.bos-header-logo{
+  display:block !important;
+  width:56px !important;
+  height:56px !important;
+  object-fit:contain !important;
+  flex:0 0 56px !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+}
+.bos-brand-text{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.bos-header-name{
+  font-family:"Montserrat",Arial,sans-serif !important;
+  font-weight:700 !important;
+  font-size:19px !important;
+  line-height:1 !important;
+  color:#2F5B66 !important;
+  letter-spacing:0 !important;
+  white-space:nowrap !important;
+}
+.bos-header-tagline{
+  font-family:"Montserrat",Arial,sans-serif !important;
+  font-weight:400 !important;
+  font-size:11px !important;
+  line-height:1.2 !important;
+  color:#17191C !important;
+  letter-spacing:0 !important;
+  white-space:nowrap !important;
+}
+body.dark .bos-header-tagline{color:#17191C !important}
+.mode-btn{
+  border:1px solid var(--line) !important;
+  background:var(--panel) !important;
+  color:var(--text) !important;
+  border-radius:999px !important;
+  padding:7px 10px !important;
+  min-height:auto !important;
+  font-size:9px !important;
+  letter-spacing:.12em !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+}
+.project-contact{
+  display:flex !important;
+  justify-content:center !important;
+  padding:34px 0 6px !important;
+}
+.project-contact-btn{
+  border:0 !important;
+  background:transparent !important;
+  color:#2F5B66 !important;
+  padding:8px 2px !important;
+  font-family:"Montserrat",Arial,sans-serif !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  letter-spacing:.01em !important;
+  cursor:pointer !important;
+}
+.project-contact-btn span{display:inline-block;margin-left:5px;transition:transform .16s ease}
+.project-contact-btn:hover span{transform:translateX(3px)}
+.footer{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+  color:var(--muted) !important;
+  font-size:10px !important;
+  padding:20px 0 4px !important;
+  margin:0 !important;
+}
+/* neutralise l'ancien footer générique de LIGHT */
+.app-shell > footer:not(.footer){display:none !important}
+@media(max-width:520px){
+  .app-shell{padding-left:9px !important;padding-right:9px !important}
+  .bos-brand-lockup{gap:9px}
+  .bos-header-logo{width:46px !important;height:46px !important;flex-basis:46px !important}
+  .bos-header-name{font-size:15px !important}
+  .bos-brand-text{gap:2px}
+  .bos-header-tagline{font-size:9px !important}
+  .project-contact{padding-top:28px !important}
+  .project-contact-btn{font-size:11px !important}
+}

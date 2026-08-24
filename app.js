@@ -427,6 +427,7 @@ function formatIso(v){if(!Number.isFinite(v))return'—';if(v>=1000)return Math.
 function escapeRegex(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
 
 
+
 const projectContactBtn=document.getElementById('projectContactBtn');
 if(projectContactBtn){
   projectContactBtn.addEventListener('click',()=>{

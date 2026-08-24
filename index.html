@@ -9,6 +9,9 @@
   <meta name="apple-mobile-web-app-title" content="LIGHT · BOS" />
   <title>BRUNO ONSET / LIGHT</title>
   <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/logo-light-header.png" type="image/png" />
   <link rel="stylesheet" href="styles.css?v=0.29" />
 </head>
@@ -18,7 +21,7 @@
       <div class="top-inner bos-top-inner">
         <div class="top-title bos-top-title">
           <div class="bos-brand-lockup" aria-label="Bruno OnSet">
-            <img class="bos-header-logo" src="assets/logo-light-header.png" alt="Logo Light Bruno On Set">
+            <img class="bos-header-logo" src="assets/logo-bos-header.jpg" alt="Logo Bruno OnSet">
             <div class="bos-brand-text">
               <span class="bos-header-name">Bruno OnSet</span>
               <span class="bos-header-tagline">Avec vous, sur chaque tournage.</span>
@@ -210,10 +213,13 @@
       </div>
     </details>
 
-    <footer>
-      <span>BOS LIGHT · aide de préparation et de tournage</span>
-      <span>Le résultat reste indicatif : vérifie au posemètre sur le plateau si l’exposition est critique.</span>
-    </footer>
+    <section class="project-contact" aria-label="Contact professionnel">
+      <button class="project-contact-btn" id="projectContactBtn" type="button">
+        Échangeons autour de votre projet <span aria-hidden="true">→</span>
+      </button>
+    </section>
+
+    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.40</footer>
   </main>
 
 
@@ -245,14 +251,6 @@
       <div class="chooser-footnote" id="pickerCatalogCount"></div>
     </div>
   </dialog>
-
-    <section class="project-contact" aria-label="Contact professionnel">
-      <button class="project-contact-btn" id="projectContactBtn" type="button">
-        Échangeons autour de votre projet <span aria-hidden="true">→</span>
-      </button>
-    </section>
-
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.37</footer>
 
 
   <dialog id="numericDialog" class="numeric-dialog">
