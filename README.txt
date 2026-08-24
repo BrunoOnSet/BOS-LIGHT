@@ -32,3 +32,6 @@ V0.23 — Détails techniques
 - Ces bulles n'affichent que la configuration photométrique de référence et les points constructeur utilisés.
 - Résultat Key Light : bouton « Détails techniques » séparé avec lux au sujet, marge, ISO équivalent, ouverture possible et statut interpolation/extrapolation.
 - Suppression dans le résultat des mesures constructeur, de la note « Puissance 100 % » et du statut BOS-PROJECTEURS-DB.
+
+
+V0.36 — Passe DA complète : apparence harmonisée sur BOS_BRUNO_ONSET_V53 sans modification fonctionnelle.

@@ -206,7 +206,9 @@ function applyNumericEditor(){
 }
 
 function applyTheme(theme){
-  const isDark=theme==='dark'; document.body.classList.toggle('dark',isDark);
+  const isDark=theme==='dark';
+  document.body.classList.toggle('dark',isDark);
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
