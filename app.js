@@ -399,15 +399,35 @@ function updateFillContrast(){
   const fillLux=estimatedLuxAtDistance(state.fillDistance,state.fillFixture,state.fillIntensityPct,state.fillAccessory,state.fillCct);
   els.keyLuxResult.textContent=`${formatLux(keyLux)} lux`;
   els.fillLuxResult.textContent=`${formatLux(fillLux)} lux`;
-  if(fillLux<=0){els.sourceGapResult.textContent='∞'; els.sourceGapDetail.textContent='Fill éteinte'; els.sourceRatioResult.textContent='∞ : 1'; els.estimatedContrastResult.textContent='∞ · contraste non limité par la Fill'; els.contrastCharacter.textContent='TRÈS CONTRASTÉ'; return;}
+  if(fillLux<=0){
+    els.sourceGapResult.textContent='∞';
+    els.sourceGapDetail.textContent='Fill éteinte';
+    els.sourceRatioResult.textContent='∞ : 1';
+    els.estimatedContrastResult.textContent='∞ · contraste non limité par la Fill';
+    els.contrastCharacter.textContent='TRÈS CONTRASTÉ';
+    return;
+  }
   const q=keyLux/fillLux;
-  let gapText, detail;
-  if(keyLux<=0){gapText='−∞'; detail='Key éteinte';}
-  else {const gap=Math.log2(q); gapText=`${gap>=0?'+':'−'}${Math.abs(gap).toFixed(1).replace('.',',')} stop${Math.abs(gap)>=1.5?'s':''}`; if(Math.abs(gap)<.05)detail='Niveaux pratiquement identiques'; else if(gap>0)detail=`Key ${formatRatio(q)}× plus forte`; else detail=`Fill ${formatRatio(1/q)}× plus forte`;}
+  let gapText, detail, gapStops=0;
+  if(keyLux<=0){
+    gapText='−∞';
+    detail='Key éteinte';
+  } else {
+    const gap=Math.log2(q);
+    gapStops=Math.abs(gap);
+    gapText=`${gap>=0?'+':'−'}${Math.abs(gap).toFixed(1).replace('.',',')} stop${Math.abs(gap)>=1.5?'s':''}`;
+    if(Math.abs(gap)<.05) detail='Niveaux pratiquement identiques';
+    else if(gap>0) detail=`Key ${formatRatio(q)}× plus forte`;
+    else detail=`Fill ${formatRatio(1/q)}× plus forte`;
+  }
   const sourceRatio=q>=1?`${formatRatio(q)} : 1`:`1 : ${formatRatio(1/q)}`;
   const contrastRatio=1+q, contrastStops=Math.log2(contrastRatio);
   const character=gapStops<0.5?'FLAT':contrastStops<1.5?'DOUX':contrastStops<2.5?'MARQUÉ':contrastStops<4?'FORT':'TRÈS CONTRASTÉ';
-  els.sourceGapResult.textContent=gapText; els.sourceGapDetail.textContent=detail; els.sourceRatioResult.textContent=sourceRatio; els.estimatedContrastResult.textContent=`≈ ${formatRatio(contrastRatio)} : 1 · ${contrastStops.toFixed(1).replace('.',',')} stops`; els.contrastCharacter.textContent=character;
+  els.sourceGapResult.textContent=gapText;
+  els.sourceGapDetail.textContent=detail;
+  els.sourceRatioResult.textContent=sourceRatio;
+  els.estimatedContrastResult.textContent=`≈ ${formatRatio(contrastRatio)} : 1 · ${contrastStops.toFixed(1).replace('.',',')} stops`;
+  els.contrastCharacter.textContent=character;
 }
 
 function snapApertureForOpening(maxF,currentF){if(!Number.isFinite(maxF)||maxF<=0||maxF>=currentF)return null;const valid=APERTURES.filter(f=>f<=maxF&&f<currentF);return valid.length?valid[valid.length-1]:null;}
