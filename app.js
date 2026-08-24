@@ -206,9 +206,7 @@ function applyNumericEditor(){
 }
 
 function applyTheme(theme){
-  const isDark=theme==='dark';
-  document.body.classList.toggle('dark',isDark);
-  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  const isDark=theme==='dark'; document.body.classList.toggle('dark',isDark);
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
@@ -427,3 +425,11 @@ function formatDistance(v){if(!Number.isFinite(v))return'—';if(v>=20)return v.
 function formatAperture(v){if(!Number.isFinite(v))return'—';return v.toFixed(1).replace(/\.0$/,'').replace('.',',');}
 function formatIso(v){if(!Number.isFinite(v))return'—';if(v>=1000)return Math.round(v/10)*10;return Math.max(1,Math.round(v));}
 function escapeRegex(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+
+
+const projectContactBtn=document.getElementById('projectContactBtn');
+if(projectContactBtn){
+  projectContactBtn.addEventListener('click',()=>{
+    window.open('https://www.brunoguillard.com/','_blank','noopener');
+  });
+}
