@@ -858,3 +858,60 @@ body.dark .plain-tech-info span{color:var(--text)}
 }
 :root[data-theme="dark"] .project-contact-btn,
 body.dark .project-contact-btn{color:#7FA7B0}
+
+
+/* V0.38 — simplification textes + constructeur centré + logo header plus lisible */
+.bos-header-logo{
+  width:52px !important;
+  height:auto !important;
+  max-height:70px !important;
+  flex:0 0 auto !important;
+  object-fit:contain !important;
+}
+@media (max-width:520px){
+  .bos-header-logo{width:44px !important; max-height:58px !important;}
+}
+.heading-copy p,.embedded-section-head p{display:none !important;}
+.heading-copy h2,.embedded-section-head h3{margin-bottom:0 !important;}
+.manufacturer-inline{
+  padding-top:8px !important;
+  padding-bottom:10px !important;
+}
+.manufacturer-inline .inline-source-data{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:22px !important;
+  flex-wrap:wrap !important;
+  text-align:left !important;
+  width:100% !important;
+}
+.manufacturer-inline .source-title-row{
+  flex:0 0 auto !important;
+  padding-top:0 !important;
+  margin:0 !important;
+}
+.manufacturer-inline .source-title-row > div{
+  display:flex !important;
+  align-items:center !important;
+  gap:14px !important;
+  flex-wrap:wrap !important;
+}
+.manufacturer-inline .source-title-row .control-label,
+.manufacturer-inline .source-title-row p{margin:0 !important;}
+.manufacturer-inline .measurement-row{
+  flex:0 0 auto !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:18px !important;
+}
+.manufacturer-inline .measure-chip{
+  display:flex !important;
+  align-items:baseline !important;
+  gap:6px !important;
+}
+@media (max-width:760px){
+  .manufacturer-inline .inline-source-data{justify-content:flex-start !important; gap:10px !important;}
+  .manufacturer-inline .source-title-row > div{gap:8px !important;}
+  .manufacturer-inline .measurement-row{gap:12px !important; width:auto !important;}
+}
