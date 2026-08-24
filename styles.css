@@ -1093,3 +1093,69 @@ body.dark .embedded-section-head h3,
 :root[data-theme="dark"] .card-heading h2,
 :root[data-theme="dark"] .embedded-section-head h3{color:#2F5B66 !important;}
 .heading-copy h2{margin:0 !important;}
+
+
+/* V0.44 — header spacing, utility simplifiée, données constructeur centrées */
+.utility-row{justify-content:flex-start !important}
+.utility-row .utility-note{display:none !important}
+.bos-header-app{margin-left:4px !important;color:#17191C !important;font-weight:700 !important}
+.tech-inline-bottom.manufacturer-inline{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:76px !important;
+  padding:8px 16px !important;
+}
+.manufacturer-inline .inline-source-data{
+  width:100% !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:26px !important;
+  flex-wrap:nowrap !important;
+  text-align:center !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  border-top:0 !important;
+}
+.manufacturer-inline .source-title-row,
+.manufacturer-inline .measurement-row{
+  margin:0 !important;
+  padding:0 !important;
+}
+.manufacturer-inline .source-title-row{
+  flex:0 1 auto !important;
+  text-align:center !important;
+}
+.manufacturer-inline .source-title-row > div{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:16px !important;
+  flex-wrap:nowrap !important;
+}
+.manufacturer-inline .source-title-row .control-label,
+.manufacturer-inline .source-title-row p{
+  margin:0 !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+}
+.manufacturer-inline .measurement-row{
+  flex:0 0 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:22px !important;
+}
+.manufacturer-inline .measure-chip{
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:center !important;
+  gap:6px !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+@media (max-width:760px){
+  .manufacturer-inline .inline-source-data{flex-wrap:wrap !important;gap:8px 18px !important}
+  .manufacturer-inline .source-title-row > div{flex-wrap:wrap !important;gap:8px !important}
+}
