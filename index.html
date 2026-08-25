@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/logo-light-app.png" type="image/png" />
-  <link rel="stylesheet" href="styles.css?v=0.50" />
+  <link rel="stylesheet" href="styles.css?v=0.51" />
 </head>
 <body>
   <main class="app-shell">
@@ -213,13 +213,59 @@
       </div>
     </details>
 
+    
+    <details class="controls-card gel-card collapsible-card" id="gelDetails">
+      <summary class="card-heading collapsible-heading">
+        <span class="step">04</span>
+        <div class="heading-copy"><h2>GÉLATINES</h2><p>Comprendre les couleurs et leurs spectres</p></div>
+        <div class="summary-value light-summary" id="gelSummary">LEE 204 · FULL CTO</div>
+        <span class="chevron">⌄</span>
+      </summary>
+
+      <div class="gel-panel">
+        <div class="control-block compact-block">
+          <label class="control-label">SÉLECTION</label>
+          <div class="gel-filter-row" id="gelFilterButtons"></div>
+        </div>
+
+        <div class="embedded-section gel-preview-section">
+          <div class="embedded-section-head">
+            <div>
+              <div class="embedded-kicker">GÉLATINE</div>
+              <h3 id="gelName">Full CTO</h3>
+              <p id="gelFamily">Correction chaude · conversion tungstène</p>
+            </div>
+          </div>
+
+          <div class="gel-meta-grid">
+            <div><span>RÉFÉRENCE</span><strong id="gelRef">LEE 204</strong></div>
+            <div><span>TRANSMISSION</span><strong id="gelTransmission">≈ 58 %</strong></div>
+            <div><span>PERTE LUMIÈRE</span><strong id="gelLoss">≈ 0,8 stop</strong></div>
+          </div>
+
+          <div class="gel-spectrum-card">
+            <div class="gel-spectrum-head">
+              <span class="control-label">SPECTRE DE TRANSMISSION</span>
+              <p>Spectre indicatif pour visualiser la dominante couleur et la différence entre filtres.</p>
+            </div>
+            <div class="gel-spectrum-chart" id="gelSpectrumChart"></div>
+          </div>
+
+          <div class="gel-info-stack">
+            <div class="gel-note-card"><span>USAGE</span><strong id="gelUse">Réchauffer une source daylight vers un rendu tungstène / chaleureux.</strong></div>
+            <div class="gel-note-card"><span>EFFET</span><strong id="gelEffect">Le filtre absorbe surtout une partie des bleus et laisse davantage passer le jaune, l’orange et le rouge.</strong></div>
+          </div>
+        </div>
+      </div>
+    </details>
+
     <section class="project-contact" aria-label="Contact professionnel">
       <button class="project-contact-btn" id="projectContactBtn" type="button">
         Besoin d’un regard sur votre projet ? <span aria-hidden="true">→</span>
       </button>
     </section>
 
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.50</footer>
+    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.51</footer>
   </main>
 
 

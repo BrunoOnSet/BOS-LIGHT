@@ -205,6 +205,34 @@ function applyNumericEditor(){
   if(els.numericDialog.open&&typeof els.numericDialog.close==='function')els.numericDialog.close();else els.numericDialog.removeAttribute('open');
 }
 
+
+function buildGelSpectrumSVG(values){
+  const w=760,h=250,p=28,innerW=w-p*2,innerH=h-p*2;
+  const pts=values.map((v,i)=>{const x=p+(i/(values.length-1))*innerW; const y=p+((100-v)/100)*innerH; return `${x},${y}`;}).join(' ');
+  const grid=[20,40,60,80].map(v=>{const y=p+((100-v)/100)*innerH; return `<line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}" stroke="rgba(255,255,255,.45)" stroke-width="1"/>`;}).join('');
+  const xMarks=['400','460','520','580','640','700','760'].map((t,i)=>{const x=p+(i/6)*innerW; return `<text x="${x}" y="${h-8}" text-anchor="middle" class="gel-spectrum-axis">${t}</text>`;}).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Spectre de transmission indicatif"><defs><linearGradient id="gelBg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7a46ff"/><stop offset="16%" stop-color="#3956ff"/><stop offset="33%" stop-color="#00b2ff"/><stop offset="50%" stop-color="#52d06a"/><stop offset="66%" stop-color="#f2e85d"/><stop offset="82%" stop-color="#ff9353"/><stop offset="100%" stop-color="#f36b85"/></linearGradient></defs><rect x="${p}" y="${p}" width="${innerW}" height="${innerH}" rx="16" fill="url(#gelBg)" opacity=".88"/><rect x="${p}" y="${p}" width="${innerW}" height="${innerH}" rx="16" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.65)" stroke-width="1"/>${grid}<polyline fill="none" stroke="#17191C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/><circle cx="${p}" cy="${p+((100-values[0])/100)*innerH}" r="4" fill="#17191C"/><circle cx="${w-p}" cy="${p+((100-values[values.length-1])/100)*innerH}" r="4" fill="#17191C"/><text x="${p}" y="18" class="gel-spectrum-axis">Transmission %</text><text x="${w/2}" y="${h-8}" text-anchor="middle" class="gel-spectrum-axis">Wavelength nm</text>${xMarks}</svg>`;
+}
+function renderGelFilters(){
+  if(!els.gelFilterButtons) return;
+  els.gelFilterButtons.innerHTML='';
+  gelFilters.forEach(g=>{const b=document.createElement('button'); b.type='button'; b.className='gel-chip'+(state.selectedGelId===g.id?' active':''); b.textContent=g.ref; b.addEventListener('click',()=>{state.selectedGelId=g.id; updateGelPanel(); saveState();}); els.gelFilterButtons.appendChild(b);});
+}
+function updateGelPanel(){
+  if(!els.gelName) return;
+  const g=gelFilters.find(x=>x.id===state.selectedGelId)||gelFilters[0];
+  if(els.gelSummary) els.gelSummary.textContent=g.summary;
+  els.gelName.textContent=g.name;
+  els.gelFamily.textContent=g.family;
+  els.gelRef.textContent=g.ref;
+  els.gelTransmission.textContent=g.transmission;
+  els.gelLoss.textContent=g.loss;
+  els.gelUse.textContent=g.use;
+  els.gelEffect.textContent=g.effect;
+  els.gelSpectrumChart.innerHTML=buildGelSpectrumSVG(g.curve);
+  renderGelFilters();
+}
+
 function applyTheme(theme){
   const isDark=theme==='dark'; document.body.classList.toggle('dark',isDark);
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
