@@ -26,20 +26,20 @@ const SHUTTER_DENOMS=[24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,50
 const APERTURES=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
 
 const gelFilters=[
-  {id:'lee204',ref:'LEE 204',summary:'LEE 204 · FULL CTO',name:'Full CTO',family:'Correction chaude · conversion tungstène',transmission:'≈ 58 %',loss:'≈ 0,8 stop',use:'Réchauffer une source daylight vers un rendu tungstène / chaleureux.',effect:'Le filtre absorbe surtout une partie des bleus et laisse davantage passer le jaune, l’orange et le rouge.',curve:[18,18,20,24,30,38,50,63,74,82,86,90]},
-  {id:'lee205',ref:'LEE 205',summary:'LEE 205 · 1/2 CTO',name:'1/2 CTO',family:'Correction chaude · réchauffement modéré',transmission:'≈ 73 %',loss:'≈ 0,5 stop',use:'Réchauffer légèrement une source daylight ou casser un rendu trop froid.',effect:'Le bleu est moins coupé qu’avec un Full CTO, tout en gardant une dominante chaude nette.',curve:[34,34,35,38,44,52,60,69,76,82,85,88]},
-  {id:'lee206',ref:'LEE 206',summary:'LEE 206 · 1/4 CTO',name:'1/4 CTO',family:'Correction chaude · réchauffement léger',transmission:'≈ 81 %',loss:'≈ 0,3 stop',use:'Apporter juste un peu de chaleur sans transformer franchement la température de couleur.',effect:'Correction chaude légère, avec une atténuation modérée des bleus.',curve:[50,51,52,55,59,64,70,76,81,85,88,90]},
-  {id:'lee201',ref:'LEE 201',summary:'LEE 201 · FULL CTB',name:'Full CTB',family:'Correction froide · conversion daylight',transmission:'≈ 36 %',loss:'≈ 1,5 stop',use:'Refroidir une source tungstène vers un rendu daylight / nuit.',effect:'Le filtre laisse davantage passer les bleus et atténue fortement les rouges et jaunes.',curve:[88,86,82,76,68,58,46,36,28,22,18,16]},
-  {id:'lee202',ref:'LEE 202',summary:'LEE 202 · 1/2 CTB',name:'1/2 CTB',family:'Correction froide · refroidissement modéré',transmission:'≈ 59 %',loss:'≈ 0,8 stop',use:'Refroidir subtilement une source tungstène ou créer une légère sensation de nuit.',effect:'Le filtre favorise le bleu sans couper autant la partie chaude qu’un Full CTB.',curve:[82,80,76,70,62,55,48,42,36,31,28,26]},
-  {id:'lee203',ref:'LEE 203',summary:'LEE 203 · 1/4 CTB',name:'1/4 CTB',family:'Correction froide · refroidissement léger',transmission:'≈ 75 %',loss:'≈ 0,4 stop',use:'Créer un froid discret ou rapprocher légèrement une source chaude du daylight.',effect:'Dominante froide légère avec une conservation plus importante des rouges qu’un 1/2 ou Full CTB.',curve:[78,77,74,70,66,61,56,51,47,43,40,38]},
-  {id:'lee117',ref:'LEE 117',summary:'LEE 117 · STEEL BLUE',name:'Steel Blue',family:'Effet froid · bleu acier',transmission:'≈ 31 %',loss:'≈ 1,7 stop',use:'Ambiances froides, nuit américaine, contre froid ou touche métallique.',effect:'Dominante bleue marquée, avec une présence moyenne dans les verts et très peu de rouge.',curve:[78,80,74,66,56,48,40,30,22,16,12,10]},
-  {id:'lee603',ref:'LEE 603',summary:'LEE 603 · MOONLIGHT WHITE',name:'Moonlight White',family:'Effet froid · lune / nuit douce',transmission:'≈ 69 %',loss:'≈ 0,5 stop',use:'Créer un froid discret, plus subtil qu’un CTB ou un Steel Blue.',effect:'La transmission reste large mais légèrement biaisée vers les bleus, pour une sensation lunaire.',curve:[80,80,78,75,72,68,64,58,52,48,44,42]},
-  {id:'lee728',ref:'LEE 728',summary:'LEE 728 · STEEL GREEN',name:'Steel Green',family:'Effet vert acier',transmission:'≈ 40 %',loss:'≈ 1,3 stop',use:'Ambiances stylisées vertes, industrielles, fluorescents dégradés.',effect:'Le filtre favorise les verts et cyans, en réduisant fortement la partie rouge.',curve:[48,52,60,70,76,72,64,52,40,28,18,12]},
-  {id:'lee249',ref:'LEE 249',summary:'LEE 249 · 1/4 MINUS GREEN',name:'Quarter Minus Green',family:'Correction magenta · anti-vert',transmission:'≈ 79 %',loss:'≈ 0,3 stop',use:'Retirer une légère dominante verte, équilibrer des sources fluorescentes ou LED.',effect:'Le filtre creuse la zone verte, ce qui recentre le rendu vers une balance plus magenta.',curve:[72,74,76,74,62,50,52,66,74,78,80,82]},
-  {id:'lee246',ref:'LEE 246',summary:'LEE 246 · 1/4 PLUS GREEN',name:'Quarter Plus Green',family:'Correction verte · ajout de green',transmission:'≈ 84 %',loss:'≈ 0,2 stop',use:'Ajouter du vert pour matcher une source fluorescente ou travailler un rendu plus sale.',effect:'Le filtre accentue la bande verte sans bouleverser complètement le reste du spectre.',curve:[70,72,74,78,88,92,88,78,70,66,64,62]},
-  {id:'lee017',ref:'LEE 017',summary:'LEE 017 · SURPRISE PEACH',name:'Surprise Peach',family:'Effet chaud · pêche / peau',transmission:'≈ 61 %',loss:'≈ 0,7 stop',use:'Réchauffer une peau, adoucir un rendu et apporter une touche pêche / sunset.',effect:'Le filtre laisse bien passer les rouges et oranges avec un niveau moyen dans les jaunes.',curve:[24,22,24,30,38,48,58,68,76,82,84,86]},
-  {id:'lee506',ref:'LEE 506',summary:'LEE 506 · MARLENE',name:'Marlene',family:'Effet warm / magenta',transmission:'≈ 46 %',loss:'≈ 1,1 stop',use:'Créer une ambiance colorée chaude et stylisée, entre rose, pêche et rouge.',effect:'Le filtre réduit fortement certains bleus et verts tout en laissant remonter une partie chaude / magenta.',curve:[36,38,24,8,6,28,20,24,50,40,32,72]},
-  {id:'lee213',ref:'LEE 213',summary:'LEE 213 · WHITE FLAME GREEN',name:'White Flame Green',family:'Effet vert clair',transmission:'≈ 64 %',loss:'≈ 0,6 stop',use:'Créer une ambiance verte claire, typée tubes / effets décor stylisés.',effect:'Le filtre pousse les verts clairs tout en gardant une certaine présence dans les bleus.',curve:[54,58,64,72,84,88,80,64,48,34,26,22]}
+  {id:'lee204',code:'204',name:'Full CTO',ref:'LEE 204',description:'Full C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 3200 K.',tC:55.4,tT:62.8,temp:'6500 K → 3200 K',mired:'+159',sourceUrl:'https://leefilters.com/colour/204-full-c-t-orange/',slug:'full-c-t-orange'},
+  {id:'lee205',code:'205',name:'1/2 CTO',ref:'LEE 205',description:'Half C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 3800 K.',tC:70.8,tT:74.5,temp:'6500 K → 3800 K',mired:'+109',sourceUrl:'https://leefilters.com/colour/205-half-c-t-orange/',slug:'half-c-t-orange'},
+  {id:'lee206',code:'206',name:'1/4 CTO',ref:'LEE 206',description:'Quarter C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 4600 K.',tC:79.1,tT:82.6,temp:'6500 K → 4600 K',mired:'+64',sourceUrl:'https://leefilters.com/colour/206-quarter-c-t-orange/',slug:'quarter-c-t-orange'},
+  {id:'lee201',code:'201',name:'Full CTB',ref:'LEE 201',description:'Full C.T. Blue',use:'Convertit une source tungstène 3200 K vers le daylight photographique 5700 K.',tC:34.0,tT:35.0,temp:'3200 K → 5700 K',mired:'−137',sourceUrl:'https://leefilters.com/colour/201-full-c-t-blue/',slug:'full-c-t-blue'},
+  {id:'lee202',code:'202',name:'1/2 CTB',ref:'LEE 202',description:'Half C.T. Blue',use:'Convertit une source tungstène 3200 K vers 4300 K.',tC:54.9,tT:53.2,temp:'3200 K → 4300 K',mired:'−78',sourceUrl:'https://leefilters.com/colour/202-half-c-t-blue/',slug:'half-c-t-blue'},
+  {id:'lee203',code:'203',name:'1/4 CTB',ref:'LEE 203',description:'Quarter C.T. Blue',use:'Convertit une source tungstène 3200 K vers 3600 K.',tC:69.3,tT:70.5,temp:'3200 K → 3600 K',mired:'−35',sourceUrl:'https://leefilters.com/colour/203-quarter-c-t-blue/',slug:'quarter-c-t-blue'},
+  {id:'lee017',code:'017',name:'Surprise Peach',ref:'LEE 017',description:'Surprise Peach',use:'Bon pour les carnations et pour créer une ambiance lumineuse plus sombre / expressive.',tC:19.6,tT:21.9,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/017-surprise-peach/',slug:'surprise-peach',localSwatch:'assets/gels/lee017-swatch.png',localSpectrum:'assets/gels/lee017-spectrum.png'},
+  {id:'lee117',code:'117',name:'Steel Blue',ref:'LEE 117',description:'Steel Blue',use:'Pour des ambiances froides. Ajoute une légère teinte verte et évoque un climat glacé.',tC:54.7,tT:53.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/117-steel-blue/',slug:'steel-blue'},
+  {id:'lee603',code:'603',name:'Moonlight White',ref:'LEE 603',description:'Moonlight White',use:'Filtre d’effet froid / moonlight de la série LEE 600.',tC:28.3,tT:27.3,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/603-moonlight-white/',slug:'moonlight-white'},
+  {id:'lee728',code:'728',name:'Steel Green',ref:'LEE 728',description:'Steel Green',use:'Orages approchants, ciel couvert, lumière froide métallique, moonlight inquiétante.',tC:45.9,tT:41.4,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/728-steel-green/',slug:'steel-green'},
+  {id:'lee249',code:'249',name:'Quarter Minus Green',ref:'LEE 249',description:'Quarter Minus Green',use:'Réduit une dominante verte indésirable créée par des sources à décharge.',tC:82.4,tT:80.5,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/249-quarter-minus-green/',slug:'quarter-minus-green'},
+  {id:'lee246',code:'246',name:'Quarter Plus Green',ref:'LEE 246',description:'Quarter Plus Green',use:'Ajoute une légère dominante verte pour rapprocher daylight ou tungstène de sources à décharge.',tC:84.6,tT:85.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/246-quarter-plus-green/',slug:'quarter-plus-green'},
+  {id:'lee213',code:'213',name:'White Flame Green',ref:'LEE 213',description:'White Flame Green',use:'Corrige les arcs carbone white flame en absorbant l’ultraviolet.',tC:80.0,tT:80.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/213-white-flame-green/',slug:'white-flame-green'},
+  {id:'lee506',code:'506',name:'Marlene',ref:'LEE 506',description:'Marlene',use:'Filtre flatteur pour les carnations, sans dominante rose caricaturale.',tC:67.3,tT:70.4,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/506-marlene/',slug:'marlene'}
 ];
 
 
@@ -59,7 +59,7 @@ const els = {
   contrastCard:$('#contrastCard'), contrastCharacter:$('#contrastCharacter'), keyLuxResult:$('#keyLuxResult'), fillLuxResult:$('#fillLuxResult'), sourceGapResult:$('#sourceGapResult'), sourceGapDetail:$('#sourceGapDetail'), sourceRatioResult:$('#sourceRatioResult'), estimatedContrastResult:$('#estimatedContrastResult'),
   projectorDialog:$('#projectorDialog'), projectorDialogTitle:$('#projectorDialogTitle'), projectorChooserContext:$('#projectorChooserContext'), closeProjectorDialogBtn:$('#closeProjectorDialogBtn'), pickerBrandChoices:$('#pickerBrandChoices'), pickerFamilyChoices:$('#pickerFamilyChoices'), pickerModelChoices:$('#pickerModelChoices'), pickerCatalogCount:$('#pickerCatalogCount'),
   numericDialog:$('#numericDialog'), numericDialogForm:$('#numericDialogForm'), numericDialogTitle:$('#numericDialogTitle'), numericDialogInput:$('#numericDialogInput'), numericDialogUnit:$('#numericDialogUnit'), numericDialogValidate:$('#numericDialogValidate'),
-  gelFilterButtons:$('#gelFilterButtons'), gelSummary:$('#gelSummary'), gelName:$('#gelName'), gelFamily:$('#gelFamily'), gelRef:$('#gelRef'), gelTransmission:$('#gelTransmission'), gelLoss:$('#gelLoss'), gelUse:$('#gelUse'), gelEffect:$('#gelEffect'), gelSpectrumChart:$('#gelSpectrumChart')
+  gelFilterButtons:$('#gelFilterButtons'), gelSummary:$('#gelSummary'), gelName:$('#gelName'), gelDescription:$('#gelDescription'), gelRef:$('#gelRef'), gelTransmissionC:$('#gelTransmissionC'), gelTransmissionT:$('#gelTransmissionT'), gelTemperature:$('#gelTemperature'), gelMired:$('#gelMired'), gelUse:$('#gelUse'), gelSwatchImage:$('#gelSwatchImage'), gelImageFallback:$('#gelImageFallback'), gelSpectrumImage:$('#gelSpectrumImage'), gelSpectrumSource:$('#gelSpectrumSource'), gelSourceLink:$('#gelSourceLink'), gelDataStatus:$('#gelDataStatus')
 };
 
 init().catch(err=>{console.error(err); document.body.dataset.dbError='1';});
@@ -228,30 +228,55 @@ function applyNumericEditor(){
 }
 
 
-function buildGelSpectrumSVG(values){
-  const w=760,h=250,p=28,innerW=w-p*2,innerH=h-p*2;
-  const pts=values.map((v,i)=>{const x=p+(i/(values.length-1))*innerW; const y=p+((100-v)/100)*innerH; return `${x},${y}`;}).join(' ');
-  const grid=[20,40,60,80].map(v=>{const y=p+((100-v)/100)*innerH; return `<line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}" stroke="rgba(255,255,255,.45)" stroke-width="1"/>`;}).join('');
-  const xMarks=['400','460','520','580','640','700','760'].map((t,i)=>{const x=p+(i/6)*innerW; return `<text x="${x}" y="${h-8}" text-anchor="middle" class="gel-spectrum-axis">${t}</text>`;}).join('');
-  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Spectre de transmission indicatif"><defs><linearGradient id="gelBg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7a46ff"/><stop offset="16%" stop-color="#3956ff"/><stop offset="33%" stop-color="#00b2ff"/><stop offset="50%" stop-color="#52d06a"/><stop offset="66%" stop-color="#f2e85d"/><stop offset="82%" stop-color="#ff9353"/><stop offset="100%" stop-color="#f36b85"/></linearGradient></defs><rect x="${p}" y="${p}" width="${innerW}" height="${innerH}" rx="16" fill="url(#gelBg)" opacity=".88"/><rect x="${p}" y="${p}" width="${innerW}" height="${innerH}" rx="16" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.65)" stroke-width="1"/>${grid}<polyline fill="none" stroke="#17191C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/><circle cx="${p}" cy="${p+((100-values[0])/100)*innerH}" r="4" fill="#17191C"/><circle cx="${w-p}" cy="${p+((100-values[values.length-1])/100)*innerH}" r="4" fill="#17191C"/><text x="${p}" y="18" class="gel-spectrum-axis">Transmission %</text><text x="${w/2}" y="${h-8}" text-anchor="middle" class="gel-spectrum-axis">Wavelength nm</text>${xMarks}</svg>`;
+function formatGelPct(v){return `${Number(v).toFixed(1).replace('.',',').replace(',0','')} %`;}
+function gelRemoteSwatchUrl(code){
+  return `https://www.direct-digital.com/sites/default/files/Website-Stock-Image-Bank/GELMTC${code}%20-%2001.jpg`;
 }
 function renderGelFilters(){
   if(!els.gelFilterButtons) return;
   els.gelFilterButtons.innerHTML='';
-  gelFilters.forEach(g=>{const b=document.createElement('button'); b.type='button'; b.className='gel-chip'+(state.selectedGelId===g.id?' active':''); b.textContent=g.ref; b.addEventListener('click',()=>{state.selectedGelId=g.id; updateGelPanel(); persistState();}); els.gelFilterButtons.appendChild(b);});
+  gelFilters.forEach(g=>{
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='gel-chip'+(state.selectedGelId===g.id?' active':'');
+    b.textContent=g.name;
+    b.addEventListener('click',()=>{state.selectedGelId=g.id; updateGelPanel(); persistState();});
+    els.gelFilterButtons.appendChild(b);
+  });
 }
 function updateGelPanel(){
   if(!els.gelName) return;
   const g=gelFilters.find(x=>x.id===state.selectedGelId)||gelFilters[0];
-  if(els.gelSummary) els.gelSummary.textContent=g.summary;
+  els.gelSummary.textContent=g.name;
   els.gelName.textContent=g.name;
-  els.gelFamily.textContent=g.family;
+  els.gelDescription.textContent=g.description;
   els.gelRef.textContent=g.ref;
-  els.gelTransmission.textContent=g.transmission;
-  els.gelLoss.textContent=g.loss;
+  els.gelTransmissionC.textContent=formatGelPct(g.tC);
+  els.gelTransmissionT.textContent=formatGelPct(g.tT);
+  els.gelTemperature.textContent=g.temp;
+  els.gelMired.textContent=g.mired;
   els.gelUse.textContent=g.use;
-  els.gelEffect.textContent=g.effect;
-  els.gelSpectrumChart.innerHTML=buildGelSpectrumSVG(g.curve);
+  els.gelSourceLink.href=g.sourceUrl;
+  els.gelDataStatus.textContent=(g.temp==='Non communiqué')?'Transmission vérifiée sur la fiche LEE. Température de conversion non communiquée par LEE pour ce filtre.':'Transmission, conversion et Mired Shift vérifiés sur la fiche LEE.';
+
+  els.gelImageFallback.hidden=true;
+  els.gelSwatchImage.hidden=false;
+  els.gelSwatchImage.onerror=()=>{els.gelSwatchImage.hidden=true; els.gelImageFallback.hidden=false;};
+  els.gelSwatchImage.src=g.localSwatch||gelRemoteSwatchUrl(g.code);
+  els.gelSwatchImage.alt=`Aperçu constructeur ${g.ref} ${g.name}`;
+
+  if(g.localSpectrum){
+    els.gelSpectrumImage.src=g.localSpectrum;
+    els.gelSpectrumImage.alt=`Courbe de transmission LEE ${g.ref} ${g.name}`;
+    els.gelSpectrumImage.hidden=false;
+    els.gelSpectrumSource.hidden=true;
+  } else {
+    els.gelSpectrumImage.hidden=true;
+    els.gelSpectrumImage.removeAttribute('src');
+    els.gelSpectrumSource.hidden=false;
+    els.gelSpectrumSource.querySelector('strong').textContent=`Courbe ${g.ref} · LEE Filters`;
+    els.gelSpectrumSource.querySelector('span').textContent='LIGHT ne redessine pas la courbe sans donnée spectrale constructeur exploitable. Ouvre la fiche LEE ci-dessous pour voir le graphe officiel.';
+  }
   renderGelFilters();
 }
 

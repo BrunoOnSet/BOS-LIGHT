@@ -1333,3 +1333,33 @@ body.dark .gel-spectrum-axis{fill:rgba(244,244,242,.82)}
   .gel-spectrum-chart{min-height:160px !important}
   .gel-spectrum-chart svg{min-height:160px !important}
 }
+
+
+/* V0.53 — gélatines : données constructeur uniquement */
+.gel-filter-row{gap:7px !important}
+.gel-chip{font-size:10px !important;text-transform:none !important;letter-spacing:0 !important;padding:9px 12px !important}
+.gel-visual-card{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(150px,.7fr);gap:12px;align-items:stretch}
+.gel-swatch-shell{min-height:116px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel2);display:grid;place-items:center}
+.gel-swatch-image{width:100%;height:100%;min-height:116px;max-height:180px;object-fit:cover;display:block}
+.gel-image-fallback{padding:22px;color:var(--muted);font-size:11px;text-align:center}
+.gel-identity{border:1px solid var(--line);border-radius:18px;background:var(--panel2);padding:16px;display:flex;flex-direction:column;justify-content:center}
+.gel-identity>span{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.13em}
+.gel-identity strong{font-size:20px;color:var(--text);margin-top:5px}
+.gel-identity small{font-size:9px;color:var(--muted);margin-top:8px;line-height:1.35}
+.gel-meta-grid-4{grid-template-columns:repeat(4,minmax(0,1fr)) !important}
+.gel-meta-grid-4>div{min-height:82px}
+.gel-spectrum-official{margin-top:12px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.gel-spectrum-image{display:block;width:100%;height:auto;max-height:410px;object-fit:contain;background:#000}
+.gel-spectrum-source{padding:22px 18px;text-align:center;display:flex;flex-direction:column;gap:5px}
+.gel-spectrum-source strong{font-size:13px;color:var(--text)}
+.gel-spectrum-source span{font-size:10px;color:var(--muted);line-height:1.45;max-width:560px;margin:0 auto}
+.gel-source-link{display:flex;justify-content:center;margin-top:10px;padding:10px 8px;border:1px solid var(--line);border-radius:999px;color:var(--blue);text-decoration:none;font-size:9px;font-weight:900;letter-spacing:.08em}
+.gel-source-link:hover{border-color:var(--blue)}
+.gel-note-card small{display:block;margin-top:7px;color:var(--muted);font-size:9px;line-height:1.4}
+@media(max-width:720px){
+  .gel-visual-card{grid-template-columns:1fr}
+  .gel-meta-grid-4{grid-template-columns:1fr 1fr !important}
+  .gel-meta-grid-4>div:nth-child(2){border-right:0}
+  .gel-swatch-image{max-height:150px}
+}
+@media(max-width:430px){.gel-meta-grid-4{grid-template-columns:1fr !important}}

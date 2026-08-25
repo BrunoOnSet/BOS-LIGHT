@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/logo-light-app.png" type="image/png" />
-  <link rel="stylesheet" href="styles.css?v=0.52" />
+  <link rel="stylesheet" href="styles.css?v=0.53" />
 </head>
 <body>
   <main class="app-shell">
@@ -217,8 +217,8 @@
     <details class="controls-card gel-card collapsible-card" id="gelDetails">
       <summary class="card-heading collapsible-heading">
         <span class="step">04</span>
-        <div class="heading-copy"><h2>GÉLATINES</h2><p>Comprendre les couleurs et leurs spectres</p></div>
-        <div class="summary-value light-summary" id="gelSummary">LEE 204 · FULL CTO</div>
+        <div class="heading-copy"><h2>GÉLATINES</h2><p>Comparer les corrections et effets couleur</p></div>
+        <div class="summary-value light-summary" id="gelSummary">Full CTO</div>
         <span class="chevron">⌄</span>
       </summary>
 
@@ -231,29 +231,48 @@
         <div class="embedded-section gel-preview-section">
           <div class="embedded-section-head">
             <div>
-              <div class="embedded-kicker">GÉLATINE</div>
+              <div class="embedded-kicker">LEE FILTERS</div>
               <h3 id="gelName">Full CTO</h3>
-              <p id="gelFamily">Correction chaude · conversion tungstène</p>
+              <p id="gelDescription">—</p>
             </div>
           </div>
 
-          <div class="gel-meta-grid">
-            <div><span>RÉFÉRENCE</span><strong id="gelRef">LEE 204</strong></div>
-            <div><span>TRANSMISSION</span><strong id="gelTransmission">≈ 58 %</strong></div>
-            <div><span>PERTE LUMIÈRE</span><strong id="gelLoss">≈ 0,8 stop</strong></div>
+          <div class="gel-visual-card">
+            <div class="gel-swatch-shell">
+              <img id="gelSwatchImage" class="gel-swatch-image" alt="Aperçu constructeur de la gélatine" loading="lazy" />
+              <div class="gel-image-fallback" id="gelImageFallback" hidden>Image constructeur non chargée</div>
+            </div>
+            <div class="gel-identity">
+              <span>RÉFÉRENCE</span><strong id="gelRef">LEE 204</strong>
+              <small id="gelImageCredit">Image produit LEE</small>
+            </div>
+          </div>
+
+          <div class="gel-meta-grid gel-meta-grid-4">
+            <div><span>TRANSMISSION · SOURCE C</span><strong id="gelTransmissionC">55,4 %</strong></div>
+            <div><span>TRANSMISSION · TUNGSTÈNE</span><strong id="gelTransmissionT">62,8 %</strong></div>
+            <div><span>TEMPÉRATURE / CONVERSION</span><strong id="gelTemperature">6500 K → 3200 K</strong></div>
+            <div><span>MIRED SHIFT</span><strong id="gelMired">+159</strong></div>
           </div>
 
           <div class="gel-spectrum-card">
             <div class="gel-spectrum-head">
-              <span class="control-label">SPECTRE DE TRANSMISSION</span>
-              <p>Spectre indicatif pour visualiser la dominante couleur et la différence entre filtres.</p>
+              <span class="control-label">COURBE DE TRANSMISSION CONSTRUCTEUR</span>
+              <p id="gelSpectrumNote">Données issues de LEE Filters. Aucune courbe n’est inventée dans LIGHT.</p>
             </div>
-            <div class="gel-spectrum-chart" id="gelSpectrumChart"></div>
+            <div class="gel-spectrum-official" id="gelSpectrumOfficial">
+              <img id="gelSpectrumImage" class="gel-spectrum-image" alt="Courbe de transmission constructeur" hidden />
+              <div class="gel-spectrum-source" id="gelSpectrumSource">
+                <strong>Courbe LEE Filters</strong>
+                <span>Ouvrir la fiche officielle pour consulter le spectre constructeur.</span>
+              </div>
+            </div>
+            <a class="gel-source-link" id="gelSourceLink" href="https://leefilters.com/colour/204-full-c-t-orange/" target="_blank" rel="noopener noreferrer">VOIR LA COURBE CHEZ LEE FILTERS →</a>
           </div>
 
           <div class="gel-info-stack">
-            <div class="gel-note-card"><span>USAGE</span><strong id="gelUse">Réchauffer une source daylight vers un rendu tungstène / chaleureux.</strong></div>
-            <div class="gel-note-card"><span>EFFET</span><strong id="gelEffect">Le filtre absorbe surtout une partie des bleus et laisse davantage passer le jaune, l’orange et le rouge.</strong></div>
+            <div class="gel-note-card"><span>USAGE / DESCRIPTION LEE</span><strong id="gelUse">—</strong></div>
+            <div class="gel-note-card"><span>SOURCE DES DONNÉES</span><strong>LEE Filters · données constructeur</strong><small id="gelDataStatus">Transmission et conversion vérifiées sur la fiche LEE.</small></div>
           </div>
         </div>
       </div>
@@ -265,7 +284,7 @@
       </button>
     </section>
 
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.52</footer>
+    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.53</footer>
   </main>
 
 
