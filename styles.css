@@ -1363,3 +1363,7 @@ body.dark .gel-spectrum-axis{fill:rgba(244,244,242,.82)}
   .gel-swatch-image{max-height:150px}
 }
 @media(max-width:430px){.gel-meta-grid-4{grid-template-columns:1fr !important}}
+
+/* V0.54 — données gélatines constructeur */
+.gel-spectrum-image{width:100%!important;height:auto!important;display:block;object-fit:contain;background:#000;border-radius:14px}
+.gel-meta-grid>div span{line-height:1.25}

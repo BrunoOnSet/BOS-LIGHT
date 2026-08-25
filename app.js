@@ -26,20 +26,20 @@ const SHUTTER_DENOMS=[24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,50
 const APERTURES=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
 
 const gelFilters=[
-  {id:'lee204',code:'204',name:'Full CTO',ref:'LEE 204',description:'Full C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 3200 K.',tC:55.4,tT:62.8,temp:'6500 K → 3200 K',mired:'+159',sourceUrl:'https://leefilters.com/colour/204-full-c-t-orange/',slug:'full-c-t-orange'},
-  {id:'lee205',code:'205',name:'1/2 CTO',ref:'LEE 205',description:'Half C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 3800 K.',tC:70.8,tT:74.5,temp:'6500 K → 3800 K',mired:'+109',sourceUrl:'https://leefilters.com/colour/205-half-c-t-orange/',slug:'half-c-t-orange'},
-  {id:'lee206',code:'206',name:'1/4 CTO',ref:'LEE 206',description:'Quarter C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 4600 K.',tC:79.1,tT:82.6,temp:'6500 K → 4600 K',mired:'+64',sourceUrl:'https://leefilters.com/colour/206-quarter-c-t-orange/',slug:'quarter-c-t-orange'},
-  {id:'lee201',code:'201',name:'Full CTB',ref:'LEE 201',description:'Full C.T. Blue',use:'Convertit une source tungstène 3200 K vers le daylight photographique 5700 K.',tC:34.0,tT:35.0,temp:'3200 K → 5700 K',mired:'−137',sourceUrl:'https://leefilters.com/colour/201-full-c-t-blue/',slug:'full-c-t-blue'},
-  {id:'lee202',code:'202',name:'1/2 CTB',ref:'LEE 202',description:'Half C.T. Blue',use:'Convertit une source tungstène 3200 K vers 4300 K.',tC:54.9,tT:53.2,temp:'3200 K → 4300 K',mired:'−78',sourceUrl:'https://leefilters.com/colour/202-half-c-t-blue/',slug:'half-c-t-blue'},
-  {id:'lee203',code:'203',name:'1/4 CTB',ref:'LEE 203',description:'Quarter C.T. Blue',use:'Convertit une source tungstène 3200 K vers 3600 K.',tC:69.3,tT:70.5,temp:'3200 K → 3600 K',mired:'−35',sourceUrl:'https://leefilters.com/colour/203-quarter-c-t-blue/',slug:'quarter-c-t-blue'},
-  {id:'lee017',code:'017',name:'Surprise Peach',ref:'LEE 017',description:'Surprise Peach',use:'Bon pour les carnations et pour créer une ambiance lumineuse plus sombre / expressive.',tC:19.6,tT:21.9,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/017-surprise-peach/',slug:'surprise-peach',localSwatch:'assets/gels/lee017-swatch.png',localSpectrum:'assets/gels/lee017-spectrum.png'},
-  {id:'lee117',code:'117',name:'Steel Blue',ref:'LEE 117',description:'Steel Blue',use:'Pour des ambiances froides. Ajoute une légère teinte verte et évoque un climat glacé.',tC:54.7,tT:53.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/117-steel-blue/',slug:'steel-blue'},
-  {id:'lee603',code:'603',name:'Moonlight White',ref:'LEE 603',description:'Moonlight White',use:'Filtre d’effet froid / moonlight de la série LEE 600.',tC:28.3,tT:27.3,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/603-moonlight-white/',slug:'moonlight-white'},
-  {id:'lee728',code:'728',name:'Steel Green',ref:'LEE 728',description:'Steel Green',use:'Orages approchants, ciel couvert, lumière froide métallique, moonlight inquiétante.',tC:45.9,tT:41.4,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/728-steel-green/',slug:'steel-green'},
-  {id:'lee249',code:'249',name:'Quarter Minus Green',ref:'LEE 249',description:'Quarter Minus Green',use:'Réduit une dominante verte indésirable créée par des sources à décharge.',tC:82.4,tT:80.5,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/249-quarter-minus-green/',slug:'quarter-minus-green'},
-  {id:'lee246',code:'246',name:'Quarter Plus Green',ref:'LEE 246',description:'Quarter Plus Green',use:'Ajoute une légère dominante verte pour rapprocher daylight ou tungstène de sources à décharge.',tC:84.6,tT:85.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/246-quarter-plus-green/',slug:'quarter-plus-green'},
-  {id:'lee213',code:'213',name:'White Flame Green',ref:'LEE 213',description:'White Flame Green',use:'Corrige les arcs carbone white flame en absorbant l’ultraviolet.',tC:80.0,tT:80.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/213-white-flame-green/',slug:'white-flame-green'},
-  {id:'lee506',code:'506',name:'Marlene',ref:'LEE 506',description:'Marlene',use:'Filtre flatteur pour les carnations, sans dominante rose caricaturale.',tC:67.3,tT:70.4,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/506-marlene/',slug:'marlene'}
+  {id:'lee204',code:'204',name:'Full CTO',ref:'LEE 204',description:'Full C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 3200 K.',tC:55.4,tT:62.8,temp:'6500 K → 3200 K',mired:'+159',sourceUrl:'https://leefilters.com/colour/204-full-c-t-orange/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/Light-transmitted-204-full-ct-orange-LEE-Filters_JPG.png','https://leefiltersdirect.com/cdn/shop/files/204Chart.jpg','https://leefiltersdirect.com/cdn/shop/products/204Graph.jpg']},
+  {id:'lee205',code:'205',name:'1/2 CTO',ref:'LEE 205',description:'Half C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 3800 K.',tC:70.8,tT:74.5,temp:'6500 K → 3800 K',mired:'+109',sourceUrl:'https://leefilters.com/colour/205-half-c-t-orange/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/Light-transmitted-205-half-ct-orange-LEE-Filters_JPG.png','https://leefiltersdirect.com/cdn/shop/files/205Chart.jpg','https://leefiltersdirect.com/cdn/shop/products/205Graph.jpg']},
+  {id:'lee206',code:'206',name:'1/4 CTO',ref:'LEE 206',description:'Quarter C.T. Orange',use:'Convertit la lumière du jour 6500 K vers 4600 K.',tC:79.1,tT:82.6,temp:'6500 K → 4600 K',mired:'+64',sourceUrl:'https://leefilters.com/colour/206-quarter-c-t-orange/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/Light-transmitted-206-quarter-ct-orange-LEE-Filters_JPG.png','https://leefiltersdirect.com/cdn/shop/files/206Chart.jpg','https://leefiltersdirect.com/cdn/shop/products/206Graph.jpg']},
+  {id:'lee201',code:'201',name:'Full CTB',ref:'LEE 201',description:'Full C.T. Blue',use:'Convertit une source tungstène 3200 K vers le daylight photographique 5700 K.',tC:34.0,tT:35.0,temp:'3200 K → 5700 K',mired:'−137',sourceUrl:'https://leefilters.com/colour/201-full-c-t-blue/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/Light-transmitted-201-full-ct-blue-LEE-Filters_JPG.png','https://leefiltersdirect.com/cdn/shop/files/LEE-Filters-201-Full-CTB-Chart_grande.png']},
+  {id:'lee202',code:'202',name:'1/2 CTB',ref:'LEE 202',description:'Half C.T. Blue',use:'Convertit une source tungstène 3200 K vers 4300 K.',tC:54.9,tT:53.2,temp:'3200 K → 4300 K',mired:'−78',sourceUrl:'https://leefilters.com/colour/202-half-c-t-blue/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/Light-transmitted-202-half-c-t-blue-LEE-Filters_JPG.png','https://leefiltersdirect.com/cdn/shop/files/202Chart.jpg','https://leefiltersdirect.com/cdn/shop/products/202Graph.jpg']},
+  {id:'lee203',code:'203',name:'1/4 CTB',ref:'LEE 203',description:'Quarter C.T. Blue',use:'Convertit une source tungstène 3200 K vers 3600 K.',tC:69.3,tT:70.5,temp:'3200 K → 3600 K',mired:'−35',sourceUrl:'https://leefilters.com/colour/203-quarter-c-t-blue/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/Light-transmitted-203-quarter-c-t-blue-LEE-Filters_JPG.png','https://leefiltersdirect.com/cdn/shop/files/203Chart.jpg']},
+  {id:'lee017',code:'017',name:'Surprise Peach',ref:'LEE 017',description:'Surprise Peach',use:'Bon pour les carnations et pour créer une ambiance lumineuse plus sombre / expressive.',tC:19.6,tT:21.9,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/017-surprise-peach/',localSwatch:'assets/gels/lee017-swatch.png',localSpectrum:'assets/gels/lee017-spectrum.png',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/017Chart.jpg']},
+  {id:'lee117',code:'117',name:'Steel Blue',ref:'LEE 117',description:'Steel Blue',use:'Pour des ambiances froides. Ajoute une légère teinte verte et évoque un climat glacé.',tC:54.7,tT:53.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/117-steel-blue/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/products/117Graph_5881f22d-ac51-4bf3-b884-e2c92b10b533.jpg','https://leefiltersdirect.com/cdn/shop/files/117Chart.jpg']},
+  {id:'lee603',code:'603',name:'Moonlight White',ref:'LEE 603',description:'Moonlight White',use:'Filtre d’effet froid / moonlight de la série LEE 600.',tC:28.3,tT:27.3,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/603-moonlight-white/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/603Chart.jpg']},
+  {id:'lee728',code:'728',name:'Steel Green',ref:'LEE 728',description:'Steel Green',use:'Orages approchants, ciel couvert, lumière froide métallique, moonlight inquiétante.',tC:45.9,tT:41.4,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/728-steel-green/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/728Chart.jpg']},
+  {id:'lee249',code:'249',name:'Quarter Minus Green',ref:'LEE 249',description:'Quarter Minus Green',use:'Réduit une dominante verte indésirable créée par des sources à décharge.',tC:82.4,tT:80.5,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/249-quarter-minus-green/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/LEE-249-Quarter-Minus-Green-Colour-Black-and-Chart.png','https://leefiltersdirect.com/cdn/shop/files/249Chart.jpg']},
+  {id:'lee246',code:'246',name:'Quarter Plus Green',ref:'LEE 246',description:'Quarter Plus Green',use:'Ajoute une légère dominante verte pour rapprocher daylight ou tungstène de sources à décharge.',tC:84.6,tT:85.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/246-quarter-plus-green/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/246Chart.jpg']},
+  {id:'lee213',code:'213',name:'White Flame Green',ref:'LEE 213',description:'White Flame Green',use:'Corrige les arcs carbone white flame en absorbant l’ultraviolet.',tC:80.0,tT:80.0,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/213-white-flame-green/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/213Chart.jpg']},
+  {id:'lee506',code:'506',name:'Marlene',ref:'LEE 506',description:'Marlene',use:'Filtre flatteur pour les carnations, sans dominante rose caricaturale.',tC:67.3,tT:70.4,temp:'Non communiqué',mired:'—',sourceUrl:'https://leefilters.com/colour/506-marlene/',spectrumUrls:['https://leefiltersdirect.com/cdn/shop/files/506Chart.jpg','https://leefiltersdirect.com/cdn/shop/products/506Graph.jpg']}
 ];
 
 
@@ -244,6 +244,18 @@ function renderGelFilters(){
     els.gelFilterButtons.appendChild(b);
   });
 }
+function loadFirstImage(img, urls, onFail){
+  const list=(urls||[]).filter(Boolean);
+  let i=0;
+  const next=()=>{
+    if(i>=list.length){ img.onerror=null; img.removeAttribute('src'); img.hidden=true; onFail?.(); return; }
+    const url=list[i++];
+    img.onerror=next;
+    img.onload=()=>{img.hidden=false;};
+    img.src=url;
+  };
+  next();
+}
 function updateGelPanel(){
   if(!els.gelName) return;
   const g=gelFilters.find(x=>x.id===state.selectedGelId)||gelFilters[0];
@@ -257,7 +269,7 @@ function updateGelPanel(){
   els.gelMired.textContent=g.mired;
   els.gelUse.textContent=g.use;
   els.gelSourceLink.href=g.sourceUrl;
-  els.gelDataStatus.textContent=(g.temp==='Non communiqué')?'Transmission vérifiée sur la fiche LEE. Température de conversion non communiquée par LEE pour ce filtre.':'Transmission, conversion et Mired Shift vérifiés sur la fiche LEE.';
+  els.gelDataStatus.textContent=(g.temp==='Non communiqué')?'Transmission Y vérifiée sur la fiche LEE pour une source Daylight (Source C) et une source Tungstène. Température de conversion non communiquée par LEE pour ce filtre.':'Transmission Y, conversion et Mired Shift vérifiés sur la fiche LEE.';
 
   els.gelImageFallback.hidden=true;
   els.gelSwatchImage.hidden=false;
@@ -265,18 +277,14 @@ function updateGelPanel(){
   els.gelSwatchImage.src=g.localSwatch||gelRemoteSwatchUrl(g.code);
   els.gelSwatchImage.alt=`Aperçu constructeur ${g.ref} ${g.name}`;
 
-  if(g.localSpectrum){
-    els.gelSpectrumImage.src=g.localSpectrum;
-    els.gelSpectrumImage.alt=`Courbe de transmission LEE ${g.ref} ${g.name}`;
-    els.gelSpectrumImage.hidden=false;
-    els.gelSpectrumSource.hidden=true;
-  } else {
-    els.gelSpectrumImage.hidden=true;
-    els.gelSpectrumImage.removeAttribute('src');
+  els.gelSpectrumImage.alt=`Courbe de transmission LEE ${g.ref} ${g.name}`;
+  els.gelSpectrumSource.hidden=true;
+  const spectrumCandidates=[g.localSpectrum,...(g.spectrumUrls||[])].filter(Boolean);
+  loadFirstImage(els.gelSpectrumImage,spectrumCandidates,()=>{
     els.gelSpectrumSource.hidden=false;
     els.gelSpectrumSource.querySelector('strong').textContent=`Courbe ${g.ref} · LEE Filters`;
-    els.gelSpectrumSource.querySelector('span').textContent='LIGHT ne redessine pas la courbe sans donnée spectrale constructeur exploitable. Ouvre la fiche LEE ci-dessous pour voir le graphe officiel.';
-  }
+    els.gelSpectrumSource.querySelector('span').textContent='La courbe constructeur n’a pas pu être chargée. Utilise le lien vers la fiche LEE ci-dessous.';
+  });
   renderGelFilters();
 }
 
