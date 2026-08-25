@@ -362,7 +362,7 @@ function applyTheme(theme){
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
-function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2,selectedGelId:'lee204',gelTarget:'none',gelTransmissionSource:'daylight'});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;update();}
+function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2,selectedGelId:'lee204',gelTarget:'none',gelTransmissionSource:'daylight'});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;document.querySelectorAll('details.collapsible-card').forEach(d=>d.open=false);update();}
 
 function update(){
   ensureAccessoryAndCct(); ensureFillAccessoryAndCct();
@@ -612,3 +612,32 @@ if(projectContactBtn){
     window.open('https://www.brunoguillard.com/','_blank','noopener');
   });
 }
+
+const ideaContactBtn=document.getElementById('ideaContactBtn');
+if(ideaContactBtn){
+  ideaContactBtn.addEventListener('click',()=>{
+    window.location.href='mailto:brunoguillardcontact@gmail.com?subject=Une%20id%C3%A9e%20pour%20am%C3%A9liorer%20LIGHT%20%E2%80%94%20Bruno%20OnSet&body=Bonjour%20Bruno%2C%0A%0AJ%E2%80%99ai%20une%20id%C3%A9e%20pour%20am%C3%A9liorer%20LIGHT%20%3A%0A%0A';
+  });
+}
+
+let bosDeferredInstallPrompt=null;
+const installAppBtn=document.getElementById('installAppBtn');
+window.addEventListener('beforeinstallprompt',(event)=>{
+  event.preventDefault();
+  bosDeferredInstallPrompt=event;
+  if(installAppBtn) installAppBtn.hidden=false;
+});
+if(installAppBtn){
+  installAppBtn.addEventListener('click',async()=>{
+    if(bosDeferredInstallPrompt){
+      bosDeferredInstallPrompt.prompt();
+      try{await bosDeferredInstallPrompt.userChoice;}catch(_){}
+      bosDeferredInstallPrompt=null;
+      return;
+    }
+    const ua=navigator.userAgent||'';
+    if(/iPhone|iPad|iPod/i.test(ua)) alert('Sur iPhone/iPad : Partager → Sur l’écran d’accueil.');
+    else alert('Dans le menu du navigateur, choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ».');
+  });
+}
+window.addEventListener('appinstalled',()=>{if(installAppBtn) installAppBtn.hidden=true;});

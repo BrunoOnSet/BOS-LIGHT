@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/logo-light-app.png" type="image/png" />
-  <link rel="stylesheet" href="styles.css?v=0.59" />
+  <link rel="stylesheet" href="styles.css?v=0.60" />
 </head>
 <body>
   <main class="app-shell">
@@ -29,11 +29,19 @@
           </div>
         </div>
         <div class="top-actions bos-top-actions">
+          <button class="install-app-btn" id="installAppBtn" type="button">INSTALLER L’APPLICATION</button>
           <button class="mode-btn" id="themeToggle" type="button" aria-label="Changer de thème">DARK</button>
         </div>
       </div>
     </header>
-    <div class="utility-row">
+
+    <section class="project-contact project-contact-top" aria-label="Contact professionnel">
+      <button class="project-contact-btn" id="projectContactBtn" type="button">
+        Une question ? Un projet ? On en parle. <span aria-hidden="true">→</span>
+      </button>
+    </section>
+
+    <div class="utility-row bos-utility-row">
       <button class="utility-link" id="resetBtn" type="button">RESET</button>
       
     </div>
@@ -313,13 +321,13 @@
       </div>
     </details>
 
-    <section class="project-contact" aria-label="Contact professionnel">
-      <button class="project-contact-btn" id="projectContactBtn" type="button">
-        Besoin d’un regard sur votre projet ? <span aria-hidden="true">→</span>
+    <section class="project-contact project-contact-bottom" aria-label="Suggestion application">
+      <button class="project-contact-btn" id="ideaContactBtn" type="button">
+        Une idée pour améliorer l’application ? <span aria-hidden="true">→</span>
       </button>
     </section>
 
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.59</footer>
+    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.60</footer>
   </main>
 
 
@@ -373,6 +381,6 @@
     </form>
   </dialog>
   <script src="bos-projecteurs-db.js?v=1.0"></script>
-  <script src="app.js?v=0.29"></script>
+  <script src="app.js?v=0.60"></script>
 </body>
 </html>
