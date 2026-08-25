@@ -1318,3 +1318,18 @@ body.dark .card-heading h2,
 .gel-spectrum-axis{font:600 9px "Montserrat",Arial,sans-serif;fill:rgba(23,25,28,.72)}
 body.dark .gel-spectrum-axis{fill:rgba(244,244,242,.82)}
 @media (max-width:720px){.gel-meta-grid,.gel-info-stack{grid-template-columns:1fr}.gel-meta-grid>div{border-right:0;border-bottom:1px solid var(--line)}.gel-meta-grid>div:last-child{border-bottom:0}}
+
+
+/* V0.52 — correction affichage Gélatines */
+.gel-chip{background:var(--panel2) !important;color:var(--muted) !important}
+.gel-chip.active{background:var(--blue-soft) !important;border-color:var(--blue) !important;color:var(--blue) !important}
+.gel-meta-grid,.gel-spectrum-card,.gel-note-card{background:var(--panel2) !important}
+.gel-spectrum-chart{display:block !important;width:100% !important;margin-top:12px !important;min-height:180px !important}
+.gel-spectrum-chart svg{display:block !important;width:100% !important;min-height:180px !important}
+@media(max-width:520px){
+  .gel-filter-row{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:7px !important}
+  .gel-chip{padding:9px 6px !important;font-size:9px !important;text-align:center !important}
+  .gel-spectrum-card{padding:12px !important}
+  .gel-spectrum-chart{min-height:160px !important}
+  .gel-spectrum-chart svg{min-height:160px !important}
+}

@@ -7,7 +7,8 @@ const state = {
   intensityPct: 100, iso: 800, shutterDenom: 50, aperture: 2.8,
   testDistance: 2.0,
   fillEnabled: false, fillFixture: 'halo60x', fillAccessory: 'softbox', fillCct: 5600,
-  fillIntensityPct: 50, fillDistance: 2.0
+  fillIntensityPct: 50, fillDistance: 2.0,
+  selectedGelId: 'lee204'
 };
 
 let fixtures = {};
@@ -24,6 +25,24 @@ const ISO_VALUES=[100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,25
 const SHUTTER_DENOMS=[24,25,30,40,48,50,60,80,100,120,125,160,200,250,320,400,500,640,800,1000];
 const APERTURES=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
 
+const gelFilters=[
+  {id:'lee204',ref:'LEE 204',summary:'LEE 204 · FULL CTO',name:'Full CTO',family:'Correction chaude · conversion tungstène',transmission:'≈ 58 %',loss:'≈ 0,8 stop',use:'Réchauffer une source daylight vers un rendu tungstène / chaleureux.',effect:'Le filtre absorbe surtout une partie des bleus et laisse davantage passer le jaune, l’orange et le rouge.',curve:[18,18,20,24,30,38,50,63,74,82,86,90]},
+  {id:'lee205',ref:'LEE 205',summary:'LEE 205 · 1/2 CTO',name:'1/2 CTO',family:'Correction chaude · réchauffement modéré',transmission:'≈ 73 %',loss:'≈ 0,5 stop',use:'Réchauffer légèrement une source daylight ou casser un rendu trop froid.',effect:'Le bleu est moins coupé qu’avec un Full CTO, tout en gardant une dominante chaude nette.',curve:[34,34,35,38,44,52,60,69,76,82,85,88]},
+  {id:'lee206',ref:'LEE 206',summary:'LEE 206 · 1/4 CTO',name:'1/4 CTO',family:'Correction chaude · réchauffement léger',transmission:'≈ 81 %',loss:'≈ 0,3 stop',use:'Apporter juste un peu de chaleur sans transformer franchement la température de couleur.',effect:'Correction chaude légère, avec une atténuation modérée des bleus.',curve:[50,51,52,55,59,64,70,76,81,85,88,90]},
+  {id:'lee201',ref:'LEE 201',summary:'LEE 201 · FULL CTB',name:'Full CTB',family:'Correction froide · conversion daylight',transmission:'≈ 36 %',loss:'≈ 1,5 stop',use:'Refroidir une source tungstène vers un rendu daylight / nuit.',effect:'Le filtre laisse davantage passer les bleus et atténue fortement les rouges et jaunes.',curve:[88,86,82,76,68,58,46,36,28,22,18,16]},
+  {id:'lee202',ref:'LEE 202',summary:'LEE 202 · 1/2 CTB',name:'1/2 CTB',family:'Correction froide · refroidissement modéré',transmission:'≈ 59 %',loss:'≈ 0,8 stop',use:'Refroidir subtilement une source tungstène ou créer une légère sensation de nuit.',effect:'Le filtre favorise le bleu sans couper autant la partie chaude qu’un Full CTB.',curve:[82,80,76,70,62,55,48,42,36,31,28,26]},
+  {id:'lee203',ref:'LEE 203',summary:'LEE 203 · 1/4 CTB',name:'1/4 CTB',family:'Correction froide · refroidissement léger',transmission:'≈ 75 %',loss:'≈ 0,4 stop',use:'Créer un froid discret ou rapprocher légèrement une source chaude du daylight.',effect:'Dominante froide légère avec une conservation plus importante des rouges qu’un 1/2 ou Full CTB.',curve:[78,77,74,70,66,61,56,51,47,43,40,38]},
+  {id:'lee117',ref:'LEE 117',summary:'LEE 117 · STEEL BLUE',name:'Steel Blue',family:'Effet froid · bleu acier',transmission:'≈ 31 %',loss:'≈ 1,7 stop',use:'Ambiances froides, nuit américaine, contre froid ou touche métallique.',effect:'Dominante bleue marquée, avec une présence moyenne dans les verts et très peu de rouge.',curve:[78,80,74,66,56,48,40,30,22,16,12,10]},
+  {id:'lee603',ref:'LEE 603',summary:'LEE 603 · MOONLIGHT WHITE',name:'Moonlight White',family:'Effet froid · lune / nuit douce',transmission:'≈ 69 %',loss:'≈ 0,5 stop',use:'Créer un froid discret, plus subtil qu’un CTB ou un Steel Blue.',effect:'La transmission reste large mais légèrement biaisée vers les bleus, pour une sensation lunaire.',curve:[80,80,78,75,72,68,64,58,52,48,44,42]},
+  {id:'lee728',ref:'LEE 728',summary:'LEE 728 · STEEL GREEN',name:'Steel Green',family:'Effet vert acier',transmission:'≈ 40 %',loss:'≈ 1,3 stop',use:'Ambiances stylisées vertes, industrielles, fluorescents dégradés.',effect:'Le filtre favorise les verts et cyans, en réduisant fortement la partie rouge.',curve:[48,52,60,70,76,72,64,52,40,28,18,12]},
+  {id:'lee249',ref:'LEE 249',summary:'LEE 249 · 1/4 MINUS GREEN',name:'Quarter Minus Green',family:'Correction magenta · anti-vert',transmission:'≈ 79 %',loss:'≈ 0,3 stop',use:'Retirer une légère dominante verte, équilibrer des sources fluorescentes ou LED.',effect:'Le filtre creuse la zone verte, ce qui recentre le rendu vers une balance plus magenta.',curve:[72,74,76,74,62,50,52,66,74,78,80,82]},
+  {id:'lee246',ref:'LEE 246',summary:'LEE 246 · 1/4 PLUS GREEN',name:'Quarter Plus Green',family:'Correction verte · ajout de green',transmission:'≈ 84 %',loss:'≈ 0,2 stop',use:'Ajouter du vert pour matcher une source fluorescente ou travailler un rendu plus sale.',effect:'Le filtre accentue la bande verte sans bouleverser complètement le reste du spectre.',curve:[70,72,74,78,88,92,88,78,70,66,64,62]},
+  {id:'lee017',ref:'LEE 017',summary:'LEE 017 · SURPRISE PEACH',name:'Surprise Peach',family:'Effet chaud · pêche / peau',transmission:'≈ 61 %',loss:'≈ 0,7 stop',use:'Réchauffer une peau, adoucir un rendu et apporter une touche pêche / sunset.',effect:'Le filtre laisse bien passer les rouges et oranges avec un niveau moyen dans les jaunes.',curve:[24,22,24,30,38,48,58,68,76,82,84,86]},
+  {id:'lee506',ref:'LEE 506',summary:'LEE 506 · MARLENE',name:'Marlene',family:'Effet warm / magenta',transmission:'≈ 46 %',loss:'≈ 1,1 stop',use:'Créer une ambiance colorée chaude et stylisée, entre rose, pêche et rouge.',effect:'Le filtre réduit fortement certains bleus et verts tout en laissant remonter une partie chaude / magenta.',curve:[36,38,24,8,6,28,20,24,50,40,32,72]},
+  {id:'lee213',ref:'LEE 213',summary:'LEE 213 · WHITE FLAME GREEN',name:'White Flame Green',family:'Effet vert clair',transmission:'≈ 64 %',loss:'≈ 0,6 stop',use:'Créer une ambiance verte claire, typée tubes / effets décor stylisés.',effect:'Le filtre pousse les verts clairs tout en gardant une certaine présence dans les bleus.',curve:[54,58,64,72,84,88,80,64,48,34,26,22]}
+];
+
+
 const $ = sel => document.querySelector(sel);
 const els = {
   accessoryGrid:$('#accessoryGrid'), accessoryNote:$('#accessoryNote'), cctGrid:$('#cctGrid'), cctSection:$('#cctSection'), cctValue:$('#cctValue'), cctNote:$('#cctNote'),
@@ -39,7 +58,8 @@ const els = {
   fillTechPopover:$('#fillTechPopover'), fillTechSourceDescriptor:$('#fillTechSourceDescriptor'), fillTechMeasurementRow:$('#fillTechMeasurementRow'),
   contrastCard:$('#contrastCard'), contrastCharacter:$('#contrastCharacter'), keyLuxResult:$('#keyLuxResult'), fillLuxResult:$('#fillLuxResult'), sourceGapResult:$('#sourceGapResult'), sourceGapDetail:$('#sourceGapDetail'), sourceRatioResult:$('#sourceRatioResult'), estimatedContrastResult:$('#estimatedContrastResult'),
   projectorDialog:$('#projectorDialog'), projectorDialogTitle:$('#projectorDialogTitle'), projectorChooserContext:$('#projectorChooserContext'), closeProjectorDialogBtn:$('#closeProjectorDialogBtn'), pickerBrandChoices:$('#pickerBrandChoices'), pickerFamilyChoices:$('#pickerFamilyChoices'), pickerModelChoices:$('#pickerModelChoices'), pickerCatalogCount:$('#pickerCatalogCount'),
-  numericDialog:$('#numericDialog'), numericDialogForm:$('#numericDialogForm'), numericDialogTitle:$('#numericDialogTitle'), numericDialogInput:$('#numericDialogInput'), numericDialogUnit:$('#numericDialogUnit'), numericDialogValidate:$('#numericDialogValidate')
+  numericDialog:$('#numericDialog'), numericDialogForm:$('#numericDialogForm'), numericDialogTitle:$('#numericDialogTitle'), numericDialogInput:$('#numericDialogInput'), numericDialogUnit:$('#numericDialogUnit'), numericDialogValidate:$('#numericDialogValidate'),
+  gelFilterButtons:$('#gelFilterButtons'), gelSummary:$('#gelSummary'), gelName:$('#gelName'), gelFamily:$('#gelFamily'), gelRef:$('#gelRef'), gelTransmission:$('#gelTransmission'), gelLoss:$('#gelLoss'), gelUse:$('#gelUse'), gelEffect:$('#gelEffect'), gelSpectrumChart:$('#gelSpectrumChart')
 };
 
 init().catch(err=>{console.error(err); document.body.dataset.dbError='1';});
@@ -58,6 +78,7 @@ async function init(){
   els.fillDistanceSlider.value=state.fillDistance;
   bindUI();
   update();
+  updateGelPanel();
 }
 
 function naturalModelSort(a,b){
@@ -110,7 +131,7 @@ function loadSavedState(){
   try{
     const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
     if(!saved||typeof saved!=='object')return;
-    const allowed=['fixture','accessory','cct','intensityPct','iso','shutterDenom','aperture','testDistance','fillEnabled','fillFixture','fillAccessory','fillCct','fillIntensityPct','fillDistance'];
+    const allowed=['fixture','accessory','cct','intensityPct','iso','shutterDenom','aperture','testDistance','fillEnabled','fillFixture','fillAccessory','fillCct','fillIntensityPct','fillDistance','selectedGelId'];
     allowed.forEach(k=>{if(saved[k]!==undefined)state[k]=saved[k];});
     if(!fixtures[state.fixture]) state.fixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];
     if(!fixtures[state.fillFixture]) state.fillFixture=state.fixture;
@@ -124,6 +145,7 @@ function loadSavedState(){
     state.fillIntensityPct=Math.max(0,Math.min(100,Number(state.fillIntensityPct)??50));
     state.fillDistance=Math.max(1,Math.min(20,Number(state.fillDistance)||2));
     state.fillCct=Number(state.fillCct)||5600;
+    if(!gelFilters.some(g=>g.id===state.selectedGelId)) state.selectedGelId='lee204';
   }catch(_){ }
 }
 function persistState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){}}
@@ -216,7 +238,7 @@ function buildGelSpectrumSVG(values){
 function renderGelFilters(){
   if(!els.gelFilterButtons) return;
   els.gelFilterButtons.innerHTML='';
-  gelFilters.forEach(g=>{const b=document.createElement('button'); b.type='button'; b.className='gel-chip'+(state.selectedGelId===g.id?' active':''); b.textContent=g.ref; b.addEventListener('click',()=>{state.selectedGelId=g.id; updateGelPanel(); saveState();}); els.gelFilterButtons.appendChild(b);});
+  gelFilters.forEach(g=>{const b=document.createElement('button'); b.type='button'; b.className='gel-chip'+(state.selectedGelId===g.id?' active':''); b.textContent=g.ref; b.addEventListener('click',()=>{state.selectedGelId=g.id; updateGelPanel(); persistState();}); els.gelFilterButtons.appendChild(b);});
 }
 function updateGelPanel(){
   if(!els.gelName) return;
@@ -238,7 +260,7 @@ function applyTheme(theme){
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
-function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;update();}
+function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2,selectedGelId:'lee204'});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;update();}
 
 function update(){
   ensureAccessoryAndCct(); ensureFillAccessoryAndCct();
