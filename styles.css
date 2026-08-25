@@ -1263,3 +1263,37 @@ body.dark .embedded-section-head h3,
 }
 body.dark .card-heading h2,
 :root[data-theme="dark"] .card-heading h2{color:var(--text) !important;}
+
+
+/* V0.48 — titres de bulles alignés exactement sur la référence V58 */
+.card-heading .heading-copy{
+  display:flex !important;
+  flex-direction:column !important;
+  line-height:1 !important;
+}
+.card-heading h2{
+  margin:0 !important;
+  font-family:"Montserrat", Arial, sans-serif !important;
+  font-size:16px !important;
+  font-weight:800 !important;
+  letter-spacing:0 !important;
+  color:var(--blue) !important;
+  line-height:1 !important;
+}
+.card-heading .heading-copy p{
+  display:block !important;
+  margin:2px 0 0 !important;
+  font-family:"Montserrat", Arial, sans-serif !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  letter-spacing:0 !important;
+  color:var(--muted) !important;
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  max-width:100% !important;
+}
+body.dark .card-heading h2,
+:root[data-theme="dark"] .card-heading h2,
+.module-title strong,.context-head .module-title strong{color:var(--blue)!important;}
