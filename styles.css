@@ -1367,3 +1367,35 @@ body.dark .gel-spectrum-axis{fill:rgba(244,244,242,.82)}
 /* V0.54 — données gélatines constructeur */
 .gel-spectrum-image{width:100%!important;height:auto!important;display:block;object-fit:contain;background:#000;border-radius:14px}
 .gel-meta-grid>div span{line-height:1.25}
+
+
+/* V0.55 — impact photométrique des gélatines */
+.gel-apply-block{display:grid;gap:10px;margin:2px 0 4px}
+.gel-apply-control,.gel-source-control{margin:0 !important}
+.gel-apply-row,.gel-source-row{display:flex;gap:8px;flex-wrap:wrap}
+.gel-apply-row button,.gel-source-row button{
+  border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:999px;
+  min-height:36px;padding:8px 13px;font-family:"Montserrat",Arial,sans-serif;font-size:10px;font-weight:800;cursor:pointer
+}
+.gel-apply-row button.active,.gel-source-row button.active{background:var(--blue-soft);border-color:color-mix(in srgb,var(--blue) 45%,var(--line));color:var(--blue)}
+.gel-apply-row button:disabled{opacity:.4;cursor:not-allowed}
+.gel-source-help{margin:7px 0 0;color:var(--muted);font-size:9px;line-height:1.4}
+.gel-impact-card{border:1px solid var(--line);border-radius:18px;background:var(--panel2);overflow:hidden}
+.gel-impact-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line)}
+.gel-impact-head span{color:var(--blue);font-size:9px;font-weight:900;letter-spacing:.14em}
+.gel-impact-head strong{font-size:12px;text-align:right}
+.gel-impact-main,.gel-impact-secondary{display:grid;grid-template-columns:1fr 1fr}
+.gel-impact-main>div,.gel-impact-secondary>div{padding:14px 15px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.gel-impact-main>div:last-child,.gel-impact-secondary>div:last-child{border-right:0}
+.gel-impact-secondary>div{border-bottom:0}
+.gel-impact-card div>span{display:block;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.1em;margin-bottom:5px}
+.gel-impact-card div>strong{display:block;color:var(--text);font-size:15px;line-height:1.2}
+.gel-impact-main>div:first-child strong{font-size:20px;color:var(--blue)}
+.gel-impact-card>p{margin:0;padding:10px 15px 12px;border-top:1px solid var(--line);color:var(--muted);font-size:9px;line-height:1.45}
+@media(max-width:520px){
+  .gel-impact-main,.gel-impact-secondary{grid-template-columns:1fr}
+  .gel-impact-main>div,.gel-impact-secondary>div{border-right:0;border-bottom:1px solid var(--line)}
+  .gel-impact-secondary>div:last-child{border-bottom:0}
+  .gel-impact-head{align-items:flex-start;flex-direction:column;gap:4px}
+  .gel-impact-head strong{text-align:left}
+}

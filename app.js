@@ -8,7 +8,7 @@ const state = {
   testDistance: 2.0,
   fillEnabled: false, fillFixture: 'halo60x', fillAccessory: 'softbox', fillCct: 5600,
   fillIntensityPct: 50, fillDistance: 2.0,
-  selectedGelId: 'lee204'
+  selectedGelId: 'lee204', gelTarget:'none', gelTransmissionSource:'daylight'
 };
 
 let fixtures = {};
@@ -59,7 +59,7 @@ const els = {
   contrastCard:$('#contrastCard'), contrastCharacter:$('#contrastCharacter'), keyLuxResult:$('#keyLuxResult'), fillLuxResult:$('#fillLuxResult'), sourceGapResult:$('#sourceGapResult'), sourceGapDetail:$('#sourceGapDetail'), sourceRatioResult:$('#sourceRatioResult'), estimatedContrastResult:$('#estimatedContrastResult'),
   projectorDialog:$('#projectorDialog'), projectorDialogTitle:$('#projectorDialogTitle'), projectorChooserContext:$('#projectorChooserContext'), closeProjectorDialogBtn:$('#closeProjectorDialogBtn'), pickerBrandChoices:$('#pickerBrandChoices'), pickerFamilyChoices:$('#pickerFamilyChoices'), pickerModelChoices:$('#pickerModelChoices'), pickerCatalogCount:$('#pickerCatalogCount'),
   numericDialog:$('#numericDialog'), numericDialogForm:$('#numericDialogForm'), numericDialogTitle:$('#numericDialogTitle'), numericDialogInput:$('#numericDialogInput'), numericDialogUnit:$('#numericDialogUnit'), numericDialogValidate:$('#numericDialogValidate'),
-  gelFilterButtons:$('#gelFilterButtons'), gelSummary:$('#gelSummary'), gelName:$('#gelName'), gelDescription:$('#gelDescription'), gelRef:$('#gelRef'), gelTransmissionC:$('#gelTransmissionC'), gelTransmissionT:$('#gelTransmissionT'), gelTemperature:$('#gelTemperature'), gelMired:$('#gelMired'), gelUse:$('#gelUse'), gelSwatchImage:$('#gelSwatchImage'), gelImageFallback:$('#gelImageFallback'), gelSpectrumImage:$('#gelSpectrumImage'), gelSpectrumSource:$('#gelSpectrumSource'), gelSourceLink:$('#gelSourceLink'), gelDataStatus:$('#gelDataStatus')
+  gelFilterButtons:$('#gelFilterButtons'), gelSummary:$('#gelSummary'), gelName:$('#gelName'), gelDescription:$('#gelDescription'), gelRef:$('#gelRef'), gelTransmissionC:$('#gelTransmissionC'), gelTransmissionT:$('#gelTransmissionT'), gelTemperature:$('#gelTemperature'), gelMired:$('#gelMired'), gelUse:$('#gelUse'), gelSwatchImage:$('#gelSwatchImage'), gelImageFallback:$('#gelImageFallback'), gelSpectrumImage:$('#gelSpectrumImage'), gelSpectrumSource:$('#gelSpectrumSource'), gelSourceLink:$('#gelSourceLink'), gelDataStatus:$('#gelDataStatus'), gelTargetButtons:$('#gelTargetButtons'), gelSourceButtons:$('#gelSourceButtons'), gelSourceHelp:$('#gelSourceHelp'), gelImpactTarget:$('#gelImpactTarget'), gelImpactLux:$('#gelImpactLux'), gelImpactLoss:$('#gelImpactLoss'), gelImpactDistance:$('#gelImpactDistance'), gelImpactTransmission:$('#gelImpactTransmission'), gelImpactNote:$('#gelImpactNote')
 };
 
 init().catch(err=>{console.error(err); document.body.dataset.dbError='1';});
@@ -131,7 +131,7 @@ function loadSavedState(){
   try{
     const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
     if(!saved||typeof saved!=='object')return;
-    const allowed=['fixture','accessory','cct','intensityPct','iso','shutterDenom','aperture','testDistance','fillEnabled','fillFixture','fillAccessory','fillCct','fillIntensityPct','fillDistance','selectedGelId'];
+    const allowed=['fixture','accessory','cct','intensityPct','iso','shutterDenom','aperture','testDistance','fillEnabled','fillFixture','fillAccessory','fillCct','fillIntensityPct','fillDistance','selectedGelId','gelTarget','gelTransmissionSource'];
     allowed.forEach(k=>{if(saved[k]!==undefined)state[k]=saved[k];});
     if(!fixtures[state.fixture]) state.fixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];
     if(!fixtures[state.fillFixture]) state.fillFixture=state.fixture;
@@ -146,6 +146,9 @@ function loadSavedState(){
     state.fillDistance=Math.max(1,Math.min(20,Number(state.fillDistance)||2));
     state.fillCct=Number(state.fillCct)||5600;
     if(!gelFilters.some(g=>g.id===state.selectedGelId)) state.selectedGelId='lee204';
+    if(!['none','key','fill'].includes(state.gelTarget)) state.gelTarget='none';
+    if(!['daylight','tungsten'].includes(state.gelTransmissionSource)) state.gelTransmissionSource='daylight';
+    if(state.gelTarget==='fill'&&!state.fillEnabled) state.gelTarget='none';
   }catch(_){ }
 }
 function persistState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){}}
@@ -187,6 +190,22 @@ function bindUI(){
   els.fillCctGrid.addEventListener('click',e=>{const b=e.target.closest('button[data-fill-cct]');if(!b)return;state.fillCct=Number(b.dataset.fillCct);update();});
   els.fillIntensitySlider.addEventListener('input',()=>{state.fillIntensityPct=Number(els.fillIntensitySlider.value);update();});
   els.fillDistanceSlider.addEventListener('input',()=>{state.fillDistance=Number(els.fillDistanceSlider.value);update();});
+
+  els.gelTargetButtons?.addEventListener('click',e=>{
+    const b=e.target.closest('button[data-gel-target]'); if(!b||b.disabled)return;
+    state.gelTarget=b.dataset.gelTarget;
+    if(state.gelTarget!=='none'){
+      const targetCct=state.gelTarget==='fill'?state.fillCct:state.cct;
+      if(targetCct<=3600) state.gelTransmissionSource='tungsten';
+      else if(targetCct>=5000) state.gelTransmissionSource='daylight';
+    }
+    update();
+  });
+  els.gelSourceButtons?.addEventListener('click',e=>{
+    const b=e.target.closest('button[data-gel-source]'); if(!b)return;
+    state.gelTransmissionSource=b.dataset.gelSource;
+    update();
+  });
 
 
   els.numericDialogValidate?.addEventListener('click',applyNumericEditor);
@@ -240,7 +259,7 @@ function renderGelFilters(){
     b.type='button';
     b.className='gel-chip'+(state.selectedGelId===g.id?' active':'');
     b.textContent=g.name;
-    b.addEventListener('click',()=>{state.selectedGelId=g.id; updateGelPanel(); persistState();});
+    b.addEventListener('click',()=>{state.selectedGelId=g.id; updateGelPanel(); update();});
     els.gelFilterButtons.appendChild(b);
   });
 }
@@ -256,6 +275,50 @@ function loadFirstImage(img, urls, onFail){
   };
   next();
 }
+function currentGel(){return gelFilters.find(x=>x.id===state.selectedGelId)||gelFilters[0];}
+function gelTransmissionValue(){const g=currentGel();return state.gelTransmissionSource==='tungsten'?Number(g.tT):Number(g.tC);}
+function gelTransmissionFactor(){const v=gelTransmissionValue();return Number.isFinite(v)&&v>=0?v/100:1;}
+function gelFactorForTarget(target){return state.gelTarget===target?gelTransmissionFactor():1;}
+function targetRawLux(target){
+  if(target==='fill') return estimatedLuxAtDistance(state.fillDistance,state.fillFixture,state.fillIntensityPct,state.fillAccessory,state.fillCct);
+  return estimatedLuxAtDistance(state.testDistance,state.fixture,state.intensityPct,state.accessory,state.cct);
+}
+function targetMaxDistance(target,reqLux,factor=1){
+  const safe=Math.max(.0001,factor||1);
+  if(target==='fill') return solveDistanceForLuxForConfig(reqLux/safe,state.fillFixture,state.fillAccessory,state.fillCct,state.fillIntensityPct);
+  return solveDistanceForLuxForConfig(reqLux/safe,state.fixture,state.accessory,state.cct,state.intensityPct);
+}
+function renderGelImpact(){
+  if(!els.gelImpactLux)return;
+  const g=currentGel();
+  const fillBtn=els.gelTargetButtons?.querySelector('[data-gel-target="fill"]');
+  if(fillBtn) fillBtn.disabled=!state.fillEnabled;
+  els.gelTargetButtons?.querySelectorAll('button[data-gel-target]').forEach(b=>b.classList.toggle('active',b.dataset.gelTarget===state.gelTarget));
+  els.gelSourceButtons?.querySelectorAll('button[data-gel-source]').forEach(b=>b.classList.toggle('active',b.dataset.gelSource===state.gelTransmissionSource));
+  const sourceLabel=state.gelTransmissionSource==='tungsten'?'Source Tungstène':'Source Daylight';
+  const leeSourceLabel=state.gelTransmissionSource==='tungsten'?'Tungstène':'Daylight (Source C)';
+  els.gelSourceHelp.textContent=`Transmission Y LEE utilisée : ${leeSourceLabel}. Pour une LED ou une CCT intermédiaire, LIGHT n’interpole pas entre les deux mesures constructeur.`;
+  if(state.gelTarget==='none'){
+    els.gelImpactTarget.textContent='Aucune source sélectionnée';
+    els.gelImpactLux.textContent='—'; els.gelImpactLoss.textContent='—'; els.gelImpactDistance.textContent='—'; els.gelImpactTransmission.textContent='—';
+    els.gelImpactNote.textContent='Choisis Key Light ou Fill Light pour appliquer la gélatine aux calculs de LIGHT.';
+    return;
+  }
+  if(state.gelTarget==='fill'&&!state.fillEnabled){state.gelTarget='none';renderGelImpact();return;}
+  const reqLux=requiredLux(state.iso,state.shutterDenom,state.aperture);
+  const raw=targetRawLux(state.gelTarget), factor=gelTransmissionFactor(), filtered=raw*factor;
+  const loss=factor>0?-Math.log2(factor):Infinity;
+  const beforeD=targetMaxDistance(state.gelTarget,reqLux,1), afterD=targetMaxDistance(state.gelTarget,reqLux,factor);
+  const label=state.gelTarget==='fill'?'FILL LIGHT':'KEY LIGHT';
+  const cct=state.gelTarget==='fill'?state.fillCct:state.cct;
+  els.gelImpactTarget.textContent=`${label} · ${cct} K · ${g.name}`;
+  els.gelImpactLux.textContent=`${formatLux(raw)} → ${formatLux(filtered)} lux`;
+  els.gelImpactLoss.textContent=Number.isFinite(loss)?`−${loss.toFixed(2).replace('.',',')} stop${loss>=1.5?'s':''}`:'—';
+  els.gelImpactDistance.textContent=`${formatDistance(beforeD)} → ${formatDistance(afterD)} m`;
+  els.gelImpactTransmission.textContent=`${formatGelPct(gelTransmissionValue())} · ${sourceLabel}`;
+  els.gelImpactNote.textContent=state.gelTarget==='fill'?'La Fill filtrée est maintenant prise en compte dans le ratio Key / Fill ci-dessus.':'La gélatine est maintenant prise en compte dans le résultat et la distance maximale de la Key Light.';
+}
+
 function updateGelPanel(){
   if(!els.gelName) return;
   const g=gelFilters.find(x=>x.id===state.selectedGelId)||gelFilters[0];
@@ -286,6 +349,7 @@ function updateGelPanel(){
     els.gelSpectrumSource.querySelector('span').textContent='La courbe constructeur n’a pas pu être chargée. Utilise le lien vers la fiche LEE ci-dessous.';
   });
   renderGelFilters();
+  renderGelImpact();
 }
 
 function applyTheme(theme){
@@ -293,7 +357,7 @@ function applyTheme(theme){
   if(els.themeToggle){els.themeToggle.textContent=isDark?'LIGHT':'DARK'; els.themeToggle.setAttribute('aria-label',isDark?'Passer en mode clair':'Passer en mode sombre');}
   els.themeColor?.setAttribute('content',isDark?'#0B0C0E':'#F3F1EC');
 }
-function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2,selectedGelId:'lee204'});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;update();}
+function reset(){const defaultFixture=fixtures.halo60x?'halo60x':Object.keys(fixtures)[0];const defaultAccessory=fixtures[defaultFixture]?.defaultAccessory||Object.keys(fixtures[defaultFixture]?.accessories||{})[0];Object.assign(state,{fixture:defaultFixture,accessory:defaultAccessory,cct:5600,intensityPct:100,iso:800,shutterDenom:50,aperture:2.8,testDistance:2,fillEnabled:false,fillFixture:defaultFixture,fillAccessory:defaultAccessory,fillCct:5600,fillIntensityPct:50,fillDistance:2,selectedGelId:'lee204',gelTarget:'none',gelTransmissionSource:'daylight'});try{localStorage.removeItem(STORAGE_KEY);}catch(_){}els.intensitySlider.value=100;els.isoSelect.value=800;els.apertureSelect.value=2.8;els.shutterSelect.value=50;els.testDistanceSlider.value=2;els.fillIntensitySlider.value=50;els.fillDistanceSlider.value=2;update();}
 
 function update(){
   ensureAccessoryAndCct(); ensureFillAccessoryAndCct();
@@ -301,7 +365,8 @@ function update(){
   renderFillState();
 
   const reqLux=requiredLux(state.iso,state.shutterDenom,state.aperture);
-  const maxD=state.intensityPct<=0?0:solveDistanceForLuxForConfig(reqLux,state.fixture,state.accessory,state.cct,state.intensityPct);
+  const keyGelFactor=gelFactorForTarget('key');
+  const maxD=state.intensityPct<=0?0:solveDistanceForLuxForConfig(reqLux/Math.max(.0001,keyGelFactor),state.fixture,state.accessory,state.cct,state.intensityPct);
 
   els.intensityValue.textContent=`${state.intensityPct} %`;
   els.testDistanceValue.textContent=`${formatDistance(state.testDistance)} m`;
@@ -314,13 +379,14 @@ function update(){
   const modelLabel=fixture().label.replace(new RegExp('^'+escapeRegex(brandLabel)+'\\s+','i'),'');
   els.lightSummary.textContent=`${brandLabel} · ${modelLabel} · ${accessoryUiLabel()}`;
   els.keyModelPickerLabel.textContent=fixture().label;
-  els.heroSummary.textContent=`${fixture().label} · ${accessoryUiLabel()} · ${state.intensityPct} % · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
+  els.heroSummary.textContent=`${fixture().label} · ${accessoryUiLabel()} · ${state.intensityPct} %${state.gelTarget==='key'?` · ${currentGel().name}`:''} · ISO max ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
   els.beamHint.textContent=modifierHint();
 
   updateDistanceStatus(reqLux,maxD);
   updateManufacturerTech({sourceDescriptor:els.keyTechSourceDescriptor,measurementRow:els.keyTechMeasurementRow}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct});
-  updateResultTech({lux:els.resultTechLux,margin:els.resultTechMargin,requiredIso:els.resultTechRequiredIso,possibleAperture:els.resultTechPossibleAperture,dataNote:els.resultTechDataNote}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct,intensityPct:state.intensityPct,distance:state.testDistance}, reqLux);
+  updateResultTech({lux:els.resultTechLux,margin:els.resultTechMargin,requiredIso:els.resultTechRequiredIso,possibleAperture:els.resultTechPossibleAperture,dataNote:els.resultTechDataNote}, {fixtureKey:state.fixture,accessoryKey:state.accessory,cct:state.cct,intensityPct:state.intensityPct,distance:state.testDistance,gelFactor:keyGelFactor}, reqLux);
   updateFillContrast();
+  renderGelImpact();
   if(state.fillEnabled){
     updateManufacturerTech({sourceDescriptor:els.fillTechSourceDescriptor,measurementRow:els.fillTechMeasurementRow}, {fixtureKey:state.fillFixture,accessoryKey:state.fillAccessory,cct:state.fillCct});
   }
@@ -339,7 +405,7 @@ function renderFillState(){
   els.fillDistanceValue.textContent=`${formatDistance(state.fillDistance)} m`;
   const brandLabel=BRAND_LABELS[brandForFixture(state.fillFixture)]||brandForFixture(state.fillFixture);
   const modelLabel=fillFixture().label.replace(new RegExp('^'+escapeRegex(brandLabel)+'\\s+','i'),'');
-  els.fillSummary.textContent=`${brandLabel} · ${modelLabel} · ${accessoryUiLabel(state.fillAccessory,fillAccessory())}`;
+  els.fillSummary.textContent=`${brandLabel} · ${modelLabel} · ${accessoryUiLabel(state.fillAccessory,fillAccessory())}${state.gelTarget==='fill'?` · ${currentGel().name}`:''}`;
   els.fillModelPickerLabel.textContent=fillFixture().label;
 }
 function openProjectorPicker(target){
@@ -391,7 +457,7 @@ function estimatedLuxAtDistance(distance,fixtureKey=state.fixture,intensityPct=s
 function solveDistanceForLuxForConfig(targetLux,fixtureKey,accessoryKey,cct,intensityPct){if(intensityPct<=0)return 0; if(estimatedLuxAtDistance(.1,fixtureKey,intensityPct,accessoryKey,cct)<targetLux)return 0; let lo=.1,hi=1; while(estimatedLuxAtDistance(hi,fixtureKey,intensityPct,accessoryKey,cct)>targetLux&&hi<200)hi*=2; if(hi>=200&&estimatedLuxAtDistance(hi,fixtureKey,intensityPct,accessoryKey,cct)>targetLux)return 200; for(let i=0;i<80;i++){const mid=(lo+hi)/2;if(estimatedLuxAtDistance(mid,fixtureKey,intensityPct,accessoryKey,cct)>=targetLux)lo=mid;else hi=mid;} return (lo+hi)/2;}
 
 function updateDistanceStatus(reqLux,maxD){
-  const d=state.testDistance,lux=estimatedLuxAtDistance(d),margin=lux>0?Math.log2(lux/reqLux):-Infinity,reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity,possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
+  const d=state.testDistance,lux=estimatedLuxAtDistance(d)*gelFactorForTarget('key'),margin=lux>0?Math.log2(lux/reqLux):-Infinity,reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity,possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
   els.statusBox.classList.remove('comfortable','just','insufficient');
   els.resultHeroCard?.classList.remove('status-comfortable','status-just','status-insufficient');
   let title,text,cls;
@@ -409,7 +475,7 @@ function updateDistanceStatus(reqLux,maxD){
     const neededPct=lux>0?state.intensityPct*reqLux/lux:Infinity;if(state.intensityPct<100&&neededPct<=100)solutions.push(['MONTE LA PUISSANCE',`vers ${Math.ceil(neededPct)} %`]);
     const openF=snapApertureForOpening(possibleF,state.aperture);if(openF)solutions.push(['OUVRE TON DIAPH',`passe à f/${formatAperture(openF)} ou plus ouvert`]);
     if(Number.isFinite(reqIso)&&reqIso>state.iso){const isoStep=snapIsoUp(reqIso);solutions.push(['MONTE TON ISO',isoStep?`passe à environ ISO ${isoStep}`:`il faudrait environ ISO ${formatIso(reqIso)}`]);}
-    const stronger=findStrongerFixture(reqLux,d);if(stronger)solutions.push(['PRENDS PLUS PUISSANT',`passe au ${fixtures[stronger].label}`]);
+    const stronger=findStrongerFixture(reqLux/Math.max(.0001,gelFactorForTarget('key')),d);if(stronger)solutions.push(['PRENDS PLUS PUISSANT',`passe au ${fixtures[stronger].label}`]);
   }
   els.solutions.innerHTML=solutions.slice(0,4).map(([l,v])=>`<div class="solution"><span>${l}</span><strong>${v}</strong></div>`).join('');
 }
@@ -426,7 +492,8 @@ function updateManufacturerTech(ui,cfg){
 function updateResultTech(ui,cfg,reqLux){
   const accessoryObj=fixtures[cfg.fixtureKey].accessories[cfg.accessoryKey];
   const points=getPoints(cfg.fixtureKey,cfg.accessoryKey,cfg.cct);
-  const lux=estimatedLuxAtDistance(cfg.distance,cfg.fixtureKey,cfg.intensityPct,cfg.accessoryKey,cfg.cct);
+  const gelFactor=cfg.gelFactor||1;
+  const lux=estimatedLuxAtDistance(cfg.distance,cfg.fixtureKey,cfg.intensityPct,cfg.accessoryKey,cfg.cct)*gelFactor;
   const margin=lux>0?Math.log2(lux/reqLux):-Infinity;
   const reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity;
   const possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
@@ -434,7 +501,7 @@ function updateResultTech(ui,cfg,reqLux){
   ui.margin.textContent=Number.isFinite(margin)?`${margin>=0?'+':''}${margin.toFixed(1).replace('.',',')} stop${Math.abs(margin)>=1.5?'s':''}`:'—';
   ui.requiredIso.textContent=Number.isFinite(reqIso)?`ISO ${formatIso(reqIso)}`:'—';
   ui.possibleAperture.textContent=possibleF>0?`f/${formatAperture(possibleF)}`:'—';
-  const maxD=solveDistanceForLuxForConfig(reqLux,cfg.fixtureKey,cfg.accessoryKey,cfg.cct,cfg.intensityPct);
+  const maxD=solveDistanceForLuxForConfig(reqLux/Math.max(.0001,gelFactor),cfg.fixtureKey,cfg.accessoryKey,cfg.cct,cfg.intensityPct);
   const rangeAtTest=classifyDistance(cfg.distance,points,accessoryObj.quality);
   const rangeAtMax=classifyDistance(maxD,points,accessoryObj.quality);
   const warning=rangeAtTest.warning||rangeAtMax.warning;
@@ -443,13 +510,15 @@ function updateResultTech(ui,cfg,reqLux){
   else if(warning) ui.dataNote.textContent=`Une partie du calcul sort de la plage mesurée (${rangeAtTest.label.toLowerCase()} / distance max : ${rangeAtMax.label.toLowerCase()}).`;
   else ui.dataNote.textContent='La distance testée et la distance maximale restent dans la plage photométrique disponible.';
   ui.dataNote.classList.toggle('warning',warning||accessoryObj.quality==='single'||accessoryObj.quality==='estimated');
+  if(gelFactor<.999){ui.dataNote.textContent+=` Gélatine ${currentGel().name} appliquée · Transmission Y ${state.gelTransmissionSource==='tungsten'?'source Tungstène':'source Daylight'} : ${formatGelPct(gelTransmissionValue())}.`;}
 }
 
 function updateLightTechLegacy(ui,cfg,reqLux){
   const fixtureObj=fixtures[cfg.fixtureKey];
   const accessoryObj=fixtureObj.accessories[cfg.accessoryKey];
   const points=getPoints(cfg.fixtureKey,cfg.accessoryKey,cfg.cct);
-  const lux=estimatedLuxAtDistance(cfg.distance,cfg.fixtureKey,cfg.intensityPct,cfg.accessoryKey,cfg.cct);
+  const gelFactor=cfg.gelFactor||1;
+  const lux=estimatedLuxAtDistance(cfg.distance,cfg.fixtureKey,cfg.intensityPct,cfg.accessoryKey,cfg.cct)*gelFactor;
   const margin=lux>0?Math.log2(lux/reqLux):-Infinity;
   const reqIso=lux>0?INCIDENT_C*state.aperture*state.aperture/(lux*(1/state.shutterDenom)):Infinity;
   const possibleF=lux>0?Math.sqrt(lux*state.iso*(1/state.shutterDenom)/INCIDENT_C):0;
@@ -461,7 +530,7 @@ function updateLightTechLegacy(ui,cfg,reqLux){
   ui.sourceDescriptor.textContent=`${fixtureObj.label} · ${accessoryObj.label} · ${cctLabel} · à 100 %`;
   ui.measurementRow.innerHTML=points.map(([md,mlux])=>`<div class="measure-chip"><span>${md} m</span><strong>${formatLux(mlux)} lux</strong></div>`).join('');
   const rangeAtTest=classifyDistance(cfg.distance,points,accessoryObj.quality);
-  const maxD=solveDistanceForLuxForConfig(reqLux,cfg.fixtureKey,cfg.accessoryKey,cfg.cct,cfg.intensityPct);
+  const maxD=solveDistanceForLuxForConfig(reqLux/Math.max(.0001,gelFactor),cfg.fixtureKey,cfg.accessoryKey,cfg.cct,cfg.intensityPct);
   const rangeAtMax=classifyDistance(maxD,points,accessoryObj.quality);
   const warning=rangeAtTest.warning||rangeAtMax.warning;
   if(accessoryObj.quality==='estimated') ui.dataNote.textContent=`ESTIMATION MODIFICATEUR — ${accessoryObj.estimateBasis || 'Aucune mesure constructeur directe pour cette configuration.'} ${accessoryObj.estimateWarning || ''}`;
@@ -479,8 +548,8 @@ function classifyDistance(distance,points,quality){if(!Number.isFinite(distance)
 
 function updateFillContrast(){
   if(!state.fillEnabled) return;
-  const keyLux=estimatedLuxAtDistance(state.testDistance);
-  const fillLux=estimatedLuxAtDistance(state.fillDistance,state.fillFixture,state.fillIntensityPct,state.fillAccessory,state.fillCct);
+  const keyLux=estimatedLuxAtDistance(state.testDistance)*gelFactorForTarget('key');
+  const fillLux=estimatedLuxAtDistance(state.fillDistance,state.fillFixture,state.fillIntensityPct,state.fillAccessory,state.fillCct)*gelFactorForTarget('fill');
   els.keyLuxResult.textContent=`${formatLux(keyLux)} lux`;
   els.fillLuxResult.textContent=`${formatLux(fillLux)} lux`;
   if(fillLux<=0){

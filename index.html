@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="assets/logo-light-app.png" type="image/png" />
-  <link rel="stylesheet" href="styles.css?v=0.54" />
+  <link rel="stylesheet" href="styles.css?v=0.55" />
 </head>
 <body>
   <main class="app-shell">
@@ -217,7 +217,7 @@
     <details class="controls-card gel-card collapsible-card" id="gelDetails">
       <summary class="card-heading collapsible-heading">
         <span class="step">04</span>
-        <div class="heading-copy"><h2>GÉLATINES</h2><p>Comparer les corrections et effets couleur</p></div>
+        <div class="heading-copy"><h2>GÉLATINES</h2><p>Choisir une gélatine et mesurer son impact</p></div>
         <div class="summary-value light-summary" id="gelSummary">Full CTO</div>
         <span class="chevron">⌄</span>
       </summary>
@@ -226,6 +226,41 @@
         <div class="control-block compact-block">
           <label class="control-label">SÉLECTION</label>
           <div class="gel-filter-row" id="gelFilterButtons"></div>
+        </div>
+
+        <div class="gel-apply-block">
+          <div class="control-block compact-block gel-apply-control">
+            <label class="control-label">APPLIQUER À</label>
+            <div class="gel-apply-row" id="gelTargetButtons">
+              <button type="button" data-gel-target="none">AUCUNE</button>
+              <button type="button" data-gel-target="key">KEY LIGHT</button>
+              <button type="button" data-gel-target="fill">FILL LIGHT</button>
+            </div>
+          </div>
+          <div class="control-block compact-block gel-source-control">
+            <label class="control-label">SOURCE DE RÉFÉRENCE POUR LA TRANSMISSION Y</label>
+            <div class="gel-source-row" id="gelSourceButtons">
+              <button type="button" data-gel-source="daylight">SOURCE DAYLIGHT</button>
+              <button type="button" data-gel-source="tungsten">SOURCE TUNGSTÈNE</button>
+            </div>
+            <p class="gel-source-help" id="gelSourceHelp">LIGHT utilise uniquement l’une des deux transmissions Y publiées par LEE. Aucune interpolation spectrale n’est inventée.</p>
+          </div>
+
+          <div class="gel-impact-card" id="gelImpactCard">
+            <div class="gel-impact-head">
+              <span>IMPACT SUR LA LUMIÈRE</span>
+              <strong id="gelImpactTarget">Aucune source sélectionnée</strong>
+            </div>
+            <div class="gel-impact-main">
+              <div><span>LUX AU SUJET</span><strong id="gelImpactLux">—</strong></div>
+              <div><span>PERTE</span><strong id="gelImpactLoss">—</strong></div>
+            </div>
+            <div class="gel-impact-secondary">
+              <div><span>DISTANCE MAX</span><strong id="gelImpactDistance">—</strong></div>
+              <div><span>TRANSMISSION UTILISÉE</span><strong id="gelImpactTransmission">—</strong></div>
+            </div>
+            <p id="gelImpactNote">Choisis Key Light ou Fill Light pour appliquer la gélatine aux calculs de LIGHT.</p>
+          </div>
         </div>
 
         <div class="embedded-section gel-preview-section">
@@ -284,7 +319,7 @@
       </button>
     </section>
 
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.54</footer>
+    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.55</footer>
   </main>
 
 
