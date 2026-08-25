@@ -27,7 +27,7 @@ const APERTURES=[1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11
 const $ = sel => document.querySelector(sel);
 const els = {
   accessoryGrid:$('#accessoryGrid'), accessoryNote:$('#accessoryNote'), cctGrid:$('#cctGrid'), cctSection:$('#cctSection'), cctValue:$('#cctValue'), cctNote:$('#cctNote'),
-  intensitySlider:$('#intensitySlider'), intensityValue:$('#intensityValue'), isoSelect:$('#isoSelect'), shutterSelect:$('#shutterSelect'), apertureSelect:$('#apertureSelect'), cameraSummary:$('#cameraSummary'), lightSummary:$('#lightSummary'),
+  intensitySlider:$('#intensitySlider'), intensityValue:$('#intensityValue'), isoSelect:$('#isoSelect'), shutterSelect:$('#shutterSelect'), apertureSelect:$('#apertureSelect'), cameraSummary:$('#cameraSummary'), cameraHeadingMeta:$('#cameraHeadingMeta'), lightSummary:$('#lightSummary'),
   keyModelPickerBtn:$('#keyModelPickerBtn'), keyModelPickerLabel:$('#keyModelPickerLabel'),
   maxDistance:$('#maxDistance'), resultDistanceSummary:$('#resultDistanceSummary'), heroSummary:$('#heroSummary'), beamHint:$('#beamHint'), resultHeroCard:$('#resultHeroCard'), testDistanceSlider:$('#testDistanceSlider'), testDistanceValue:$('#testDistanceValue'), statusBox:$('#statusBox'), statusTitle:$('#statusTitle'), statusText:$('#statusText'), solutionIntro:$('#solutionIntro'), solutions:$('#solutions'), contrastSection:$('#contrastSection'),
   keyTechPopover:$('#keyTechPopover'), keyTechSourceDescriptor:$('#keyTechSourceDescriptor'), keyTechMeasurementRow:$('#keyTechMeasurementRow'),
@@ -225,6 +225,7 @@ function update(){
   els.maxDistance.textContent=maxD>0?formatDistance(maxD):'0,0';
   if(els.resultDistanceSummary) els.resultDistanceSummary.textContent=`Distance possible : ${maxD>0?formatDistance(maxD):'0,0'} m`;
   els.cameraSummary.textContent=`ISO ${state.iso} · f/${formatAperture(state.aperture)} · 1/${state.shutterDenom}`;
+  if(els.cameraHeadingMeta) els.cameraHeadingMeta.textContent=els.cameraSummary.textContent;
 
   const brandLabel=BRAND_LABELS[brandForFixture()]||brandForFixture();
   const modelLabel=fixture().label.replace(new RegExp('^'+escapeRegex(brandLabel)+'\\s+','i'),'');
