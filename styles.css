@@ -1420,7 +1420,7 @@ body.dark .gel-spectrum-axis{fill:rgba(244,244,242,.82)}
 .install-app-btn:hover{border-color:var(--accent)!important}
 .project-contact-top{
   display:flex!important;
-  justify-content:center!important;
+  justify-content:flex-start!important;
   padding:4px 0 5px!important;
 }
 .project-contact-bottom{
