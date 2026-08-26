@@ -1468,3 +1468,16 @@ body.dark .project-contact-btn{color:#7FA7B0!important}
   .project-contact-bottom{padding-top:28px!important}
   .project-contact-btn{font-size:11px!important}
 }
+
+/* V0.62 — espacement supérieur calé exactement sur ONSET V64 */
+.topbar{
+  margin-bottom:2px !important;
+}
+.project-contact-top{
+  padding:2px 0 2px !important;
+  margin:0 2px 0 !important;
+}
+.utility-row.bos-utility-row{
+  margin-top:0 !important;
+  margin-bottom:12px !important;
+}
