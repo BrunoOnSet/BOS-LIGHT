@@ -1,10 +1,11 @@
-const CACHE="bos-light-suite-v1-3-2";
+const CACHE="bos-light-suite-v1-3-3";
 const ASSETS=[
   "./",
   "./README.txt",
   "./app.js",
   "./suite-patch.js",
   "./suite-compensate.js",
+  "./suite-compensate-compact.js",
   "./continuous.css",
   "./assets/logo-bos-header.jpg",
   "./data/cameras.json",
