@@ -4,6 +4,34 @@
   const lightFrame=document.getElementById('lightFrame');
   const expoFrame=document.getElementById('expoFrame');
 
+  function installTitleStyle(doc,type){
+    if(!doc||doc.getElementById('bos-suite-title-harmony'))return;
+    const style=doc.createElement('style');
+    style.id='bos-suite-title-harmony';
+    const base=`
+      font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+      font-size:16px!important;
+      line-height:1.15!important;
+      font-weight:700!important;
+      letter-spacing:0!important;
+      color:#2F5B66!important;
+    `;
+    if(type==='light'){
+      style.textContent=`
+html.bos-suite-embed .collapsible-card>.card-heading .heading-copy h2{${base}}
+html.bos-suite-embed body.dark .collapsible-card>.card-heading .heading-copy h2{color:#7FA7B0!important}
+`;
+    }else{
+      style.textContent=`
+html.bos-suite-embed #readToolPanel>.quick-inline-head .panel-kicker,
+html.bos-suite-embed #simpleExpoPanel>.compact-section-head .panel-kicker{${base}}
+html.bos-suite-embed body.dark #readToolPanel>.quick-inline-head .panel-kicker,
+html.bos-suite-embed body.dark #simpleExpoPanel>.compact-section-head .panel-kicker{color:#7FA7B0!important}
+`;
+    }
+    (doc.head||doc.documentElement).appendChild(style);
+  }
+
   function fitLightToLastCard(){
     if(!lightFrame)return;
     try{
@@ -32,7 +60,9 @@
   function setupLightFrame(){
     try{
       const doc=lightFrame?.contentDocument;
-      if(!doc||doc.documentElement.dataset.bosSpacingFix==='1')return;
+      if(!doc)return;
+      installTitleStyle(doc,'light');
+      if(doc.documentElement.dataset.bosSpacingFix==='1')return;
       doc.documentElement.dataset.bosSpacingFix='1';
 
       doc.addEventListener('toggle',scheduleLightFit,true);
@@ -54,6 +84,7 @@
     try{
       const doc=expoFrame.contentDocument;
       if(!doc)return;
+      installTitleStyle(doc,'expo');
 
       /* Pas de bulle « Références caméra » dans LIGHT : 05 est suivi directement de 06. */
       doc.getElementById('cameraRefPanel')?.remove();
