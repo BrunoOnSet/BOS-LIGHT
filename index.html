@@ -8,14 +8,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="BOS LIGHT" />
   <title>BOS — LIGHT</title>
-  <link rel="manifest" href="manifest.webmanifest?v=1.1" />
+  <link rel="manifest" href="manifest.webmanifest?v=1.2" />
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1.1" />
-  <link rel="stylesheet" href="continuous.css?v=1.1" />
+  <link rel="stylesheet" href="style.css?v=1.2" />
+  <link rel="stylesheet" href="continuous.css?v=1.2" />
 </head>
 <body>
   <main class="shell">
@@ -42,6 +42,30 @@
       <button class="project-contact-btn" id="projectContactBtn" type="button">Parler de votre tournage <span aria-hidden="true">→</span></button>
     </section>
 
+    <div class="suite-utility-row" aria-label="Outils rapides">
+      <button class="suite-utility-btn" id="suiteTipsBtn" type="button">TIPS</button>
+      <button class="suite-utility-btn" id="suiteResetBtn" type="button">RESET</button>
+    </div>
+
+    <details class="shared-camera-card" id="sharedCameraDetails">
+      <summary class="shared-camera-heading">
+        <span class="shared-step">01</span>
+        <div class="shared-heading-copy">
+          <h2>RÉGLAGES CAMÉRA</h2>
+          <p id="sharedCameraMeta">Chargement des réglages…</p>
+        </div>
+        <span class="shared-chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div class="shared-camera-grid">
+        <label class="shared-field shared-field-wide"><span>MARQUE</span><select id="sharedCameraBrand" aria-label="Marque caméra"><option>Chargement…</option></select></label>
+        <label class="shared-field shared-field-wide"><span>CAMÉRA</span><select id="sharedCameraModel" aria-label="Caméra"><option>Chargement…</option></select></label>
+        <label class="shared-field"><span>GAMMA</span><select id="sharedCameraGamma" aria-label="Gamma"><option>Chargement…</option></select></label>
+        <label class="shared-field"><span>ISO MAX ACCEPTÉ</span><select id="sharedLightIso" aria-label="ISO maximum accepté"><option>Chargement…</option></select></label>
+        <label class="shared-field"><span>OUVERTURE</span><select id="sharedLightAperture" aria-label="Ouverture"><option>Chargement…</option></select></label>
+        <label class="shared-field"><span>VITESSE</span><select id="sharedLightShutter" aria-label="Vitesse"><option>Chargement…</option></select></label>
+      </div>
+    </details>
+
     <section class="continuous-tools" aria-label="LIGHT et EXPO">
       <iframe class="tool-frame" id="lightFrame" title="LIGHT" src="modules/light/?embed=1" scrolling="no"></iframe>
       <iframe class="tool-frame" id="expoFrame" title="EXPO" src="modules/expo/?embed=1" scrolling="no"></iframe>
@@ -50,7 +74,7 @@
     <div class="feedback-contact">
       <a class="feedback-contact-link" href="mailto:brunoguillardcontact@gmail.com?subject=Suggestion%20%E2%80%94%20BOS%20LIGHT&body=Bonjour%20Bruno%2C%0A%0AJ%E2%80%99ai%20une%20id%C3%A9e%20pour%20am%C3%A9liorer%20BOS%20LIGHT%20%3A%0A%0A">Une idée pour améliorer l’application ? <span aria-hidden="true">→</span></a>
     </div>
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V1.1</footer>
+    <footer class="footer">BOS — Bruno OnSet · LIGHT · V1.2</footer>
   </main>
 
   <dialog id="installDialog" class="sheet install-sheet">
@@ -74,8 +98,8 @@
     </form>
   </dialog>
 
-  <script src="shared/state.js?v=1.1"></script>
-  <script src="shared/navigation.js?v=1.1"></script>
-  <script src="app.js?v=1.1"></script>
+  <script src="shared/state.js?v=1.2"></script>
+  <script src="shared/navigation.js?v=1.2"></script>
+  <script src="app.js?v=1.2"></script>
 </body>
 </html>
