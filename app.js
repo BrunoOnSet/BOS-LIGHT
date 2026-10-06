@@ -1,12 +1,13 @@
 (function(){
   'use strict';
+
   const THEME_KEY='bos-light-suite-theme-v1';
   const INSTALLED_KEY='bos-light-suite-installed-v1';
   let deferredInstallPrompt=null;
   let cameraSyncTimer=null;
   const $=id=>document.getElementById(id);
 
-  function standalone(){return window.matchMedia?.('(display-mode: standalone)').matches===true || window.navigator.standalone===true;}
+  function standalone(){return window.matchMedia?.('(display-mode: standalone)').matches===true||window.navigator.standalone===true;}
   function ios(){return /iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
   function frameEls(){return [$('lightFrame'),$('expoFrame')].filter(Boolean);}
   function lightDoc(){try{return $('lightFrame')?.contentDocument||null;}catch(_){return null;}}
@@ -17,23 +18,21 @@
       try{
         const doc=frame.contentDocument;
         if(!doc)return;
-        if(doc.documentElement)doc.documentElement.dataset.theme=value;
-        if(doc.body)doc.body.classList.toggle('dark',value==='dark');
+        doc.documentElement.dataset.theme=value;
+        doc.body?.classList.toggle('dark',value==='dark');
       }catch(_){}
     });
   }
 
   function visibleElement(el,doc){
     if(!el||el.hidden)return false;
-    const win=doc.defaultView;
-    const cs=win?.getComputedStyle?.(el);
-    return !cs || (cs.display!=='none'&&cs.visibility!=='hidden');
+    const cs=doc.defaultView?.getComputedStyle?.(el);
+    return !cs||(cs.display!=='none'&&cs.visibility!=='hidden');
   }
 
   function naturalFrameHeight(doc){
     const candidates=[...doc.querySelectorAll('.app-shell,.app,#mainApp,.tips-page')];
-    let top=Infinity;
-    let bottom=-Infinity;
+    let top=Infinity,bottom=-Infinity;
     candidates.forEach(el=>{
       if(!visibleElement(el,doc))return;
       const rect=el.getBoundingClientRect();
@@ -44,11 +43,8 @@
       top=Math.min(top,rect.top-mt);
       bottom=Math.max(bottom,rect.bottom+mb);
     });
-    if(Number.isFinite(top)&&Number.isFinite(bottom)&&bottom>top){
-      return Math.ceil(bottom-top);
-    }
-    const bodyRect=doc.body?.getBoundingClientRect();
-    return Math.max(1,Math.ceil(bodyRect?.height||0));
+    if(Number.isFinite(top)&&Number.isFinite(bottom)&&bottom>top)return Math.ceil(bottom-top);
+    return Math.max(1,Math.ceil(doc.body?.getBoundingClientRect()?.height||0));
   }
 
   function fitFrame(frame){
@@ -70,12 +66,24 @@
     if(!badge){
       badge=doc.createElement('span');
       badge.className='bos-suite-number';
-      badge.textContent=number;
       head.prepend(badge);
-    }else if(badge.textContent!==number){
-      badge.textContent=number;
     }
-    if(!head.classList.contains('bos-suite-numbered-head'))head.classList.add('bos-suite-numbered-head');
+    if(badge.textContent!==number)badge.textContent=number;
+    head.classList.add('bos-suite-numbered-head');
+  }
+
+  function updateCollapsedCopy(panel,collapsed){
+    if(panel?.id!=='readToolPanel')return;
+    const title=panel.querySelector('.panel-kicker');
+    const subtitle=panel.querySelector('.panel-subtitle');
+    if(title){
+      if(!title.dataset.bosOpenText)title.dataset.bosOpenText=title.textContent.trim();
+      title.textContent=collapsed?'DYNAMIQUE DE L’IMAGE':title.dataset.bosOpenText;
+    }
+    if(subtitle){
+      if(!subtitle.dataset.bosOpenText)subtitle.dataset.bosOpenText=subtitle.textContent.trim();
+      subtitle.textContent=collapsed?'Lire le waveform et les repères de latitude.':subtitle.dataset.bosOpenText;
+    }
   }
 
   function makePanelCollapsible(doc,panelSelector,headSelector){
@@ -99,8 +107,10 @@
     const toggle=()=>{
       const collapsed=panel.classList.toggle('bos-suite-collapsed');
       head.setAttribute('aria-expanded',collapsed?'false':'true');
+      updateCollapsedCopy(panel,collapsed);
       requestAnimationFrame(()=>fitFrame($('expoFrame')));
-      setTimeout(()=>fitFrame($('expoFrame')),80);
+      setTimeout(()=>fitFrame($('expoFrame')),60);
+      setTimeout(()=>fitFrame($('expoFrame')),180);
     };
 
     head.addEventListener('click',event=>{
@@ -121,12 +131,52 @@
     if(refPanel&&compPanel&&refPanel.nextElementSibling!==compPanel){
       compPanel.parentNode.insertBefore(refPanel,compPanel);
     }
+
     addPanelNumber(doc,'#readToolPanel','.quick-inline-head','05');
     addPanelNumber(doc,'#cameraRefPanel','.compact-section-head','06');
     addPanelNumber(doc,'#simpleExpoPanel','.compact-section-head','07');
+
     makePanelCollapsible(doc,'#readToolPanel','.quick-inline-head');
     makePanelCollapsible(doc,'#cameraRefPanel','.compact-section-head');
+    makePanelCollapsible(doc,'#simpleExpoPanel','.compact-section-head');
   }
+
+  function embedCss(){return `
+html.bos-suite-embed,html.bos-suite-embed body{min-height:0!important;height:auto!important;background:transparent!important;overflow:hidden!important}
+html.bos-suite-embed .topbar,html.bos-suite-embed [data-bos-return],html.bos-suite-embed .project-contact-bottom,html.bos-suite-embed main>footer{display:none!important}
+html.bos-suite-embed .app-shell,html.bos-suite-embed .app,html.bos-suite-embed #mainApp{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important}
+html.bos-suite-embed .first-card{margin-top:0!important}
+html.bos-suite-embed .utility-row{display:none!important}
+html.bos-suite-embed #cameraDetails,html.bos-suite-embed #cameraSettingsPanel{display:none!important}
+
+/* raccord exact entre la bulle 04 de LIGHT et la bulle 05 d’EXPO */
+html.bos-suite-embed #exposeSupported.expo-quick-stack{margin:0!important;padding:0!important;gap:12px!important}
+html.bos-suite-embed #readToolPanel{margin-top:0!important}
+
+/* Références caméra est masqué dans EXPO autonome, mais devient bien la bulle 06 dans LIGHT */
+html.bos-suite-embed #cameraRefPanel{display:block!important}
+
+html.bos-suite-embed .bos-suite-numbered-head{display:grid!important;grid-template-columns:32px minmax(0,1fr) auto!important;align-items:flex-start!important;gap:10px!important}
+html.bos-suite-embed .bos-suite-numbered-head.bos-suite-collapse-head{grid-template-columns:32px minmax(0,1fr) auto auto!important}
+html.bos-suite-embed .bos-suite-number{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px;border:1px solid #2F5B66;border-radius:9px;background:rgba(47,91,102,.14);color:#2F5B66;font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:11px;font-weight:700;line-height:1}
+html.bos-suite-embed body.dark .bos-suite-number{color:#7FA7B0;border-color:#2F5B66;background:rgba(47,91,102,.22)}
+html.bos-suite-embed .bos-suite-collapse-head{cursor:pointer;user-select:none}
+html.bos-suite-embed .bos-suite-collapse-chevron{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;color:var(--muted);font-size:17px;line-height:1;transform:rotate(180deg);transition:transform .16s ease}
+html.bos-suite-embed .bos-suite-collapsed .bos-suite-collapse-chevron{transform:rotate(0deg)}
+html.bos-suite-embed #readToolPanel.bos-suite-collapsed>:not(.quick-inline-head),
+html.bos-suite-embed #cameraRefPanel.bos-suite-collapsed>:not(.compact-section-head),
+html.bos-suite-embed #simpleExpoPanel.bos-suite-collapsed>:not(.compact-section-head){display:none!important}
+html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,
+html.bos-suite-embed #cameraRefPanel.bos-suite-collapsed .compact-section-head,
+html.bos-suite-embed #simpleExpoPanel.bos-suite-collapsed .compact-section-head{margin-bottom:0!important}
+html.bos-suite-embed #readToolPanel.bos-suite-collapsed .explorer-native-note{display:none!important}
+html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head{align-items:center!important}
+
+@media(max-width:430px){
+  html.bos-suite-embed .bos-suite-numbered-head{grid-template-columns:32px minmax(0,1fr) auto!important;gap:9px!important}
+  html.bos-suite-embed .bos-suite-numbered-head.bos-suite-collapse-head{grid-template-columns:32px minmax(0,1fr) auto auto!important}
+}
+`;}
 
   function bindFrame(frame){
     if(!frame)return;
@@ -137,29 +187,14 @@
         doc.documentElement.classList.add('bos-suite-embed');
         doc.documentElement.dataset.theme=document.documentElement.dataset.theme||'light';
         doc.body?.classList.toggle('dark',(document.documentElement.dataset.theme||'light')==='dark');
+
         if(!doc.getElementById('bos-suite-embed-style')){
           const style=doc.createElement('style');
           style.id='bos-suite-embed-style';
-          style.textContent=`
-html.bos-suite-embed,html.bos-suite-embed body{min-height:0!important;height:auto!important;background:transparent!important;overflow:hidden!important}
-html.bos-suite-embed .topbar,html.bos-suite-embed [data-bos-return],html.bos-suite-embed .project-contact-bottom,html.bos-suite-embed main>footer{display:none!important}
-html.bos-suite-embed .app-shell,html.bos-suite-embed .app,html.bos-suite-embed #mainApp{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important}
-html.bos-suite-embed .first-card{margin-top:0!important}
-html.bos-suite-embed .utility-row{display:none!important}
-html.bos-suite-embed #cameraDetails,html.bos-suite-embed #cameraSettingsPanel{display:none!important}
-html.bos-suite-embed .bos-suite-numbered-head{display:grid!important;grid-template-columns:32px minmax(0,1fr) auto!important;align-items:flex-start!important;gap:10px!important}
-html.bos-suite-embed .bos-suite-numbered-head.bos-suite-collapse-head{grid-template-columns:32px minmax(0,1fr) auto auto!important}
-html.bos-suite-embed .bos-suite-number{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px;border:1px solid #2F5B66;border-radius:9px;background:rgba(47,91,102,.14);color:#2F5B66;font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:11px;font-weight:700;line-height:1}
-html.bos-suite-embed body.dark .bos-suite-number{color:#7FA7B0;border-color:#2F5B66;background:rgba(47,91,102,.22)}
-html.bos-suite-embed .bos-suite-collapse-head{cursor:pointer;user-select:none}
-html.bos-suite-embed .bos-suite-collapse-chevron{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;color:var(--muted);font-size:17px;line-height:1;transform:rotate(180deg);transition:transform .16s ease}
-html.bos-suite-embed .bos-suite-collapsed .bos-suite-collapse-chevron{transform:rotate(0deg)}
-html.bos-suite-embed #readToolPanel.bos-suite-collapsed>:not(.quick-inline-head),html.bos-suite-embed #cameraRefPanel.bos-suite-collapsed>:not(.compact-section-head){display:none!important}
-html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,html.bos-suite-embed #cameraRefPanel.bos-suite-collapsed .compact-section-head{margin-bottom:0!important}
-@media(max-width:430px){html.bos-suite-embed .bos-suite-numbered-head{grid-template-columns:32px minmax(0,1fr) auto!important;gap:9px!important}html.bos-suite-embed .bos-suite-numbered-head.bos-suite-collapse-head{grid-template-columns:32px minmax(0,1fr) auto auto!important}}
-`;
+          style.textContent=embedCss();
           (doc.head||doc.documentElement).appendChild(style);
         }
+
         if(frame.id==='expoFrame')decorateExpo(doc);
         fitFrame(frame);
         bindChildCameraListeners();
@@ -183,10 +218,16 @@ html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,html.
         doc.addEventListener('click',()=>setTimeout(resize,0),true);
         doc.addEventListener('toggle',()=>{
           requestAnimationFrame(resize);
-          setTimeout(resize,80);
-          setTimeout(resize,220);
+          setTimeout(resize,60);
+          setTimeout(resize,180);
         },true);
-        window.setTimeout(()=>{if(frame.id==='expoFrame')decorateExpo(doc);resize();bindChildCameraListeners();syncSharedCamera();},150);
+
+        window.setTimeout(()=>{
+          if(frame.id==='expoFrame')decorateExpo(doc);
+          resize();
+          bindChildCameraListeners();
+          syncSharedCamera();
+        },150);
         window.setTimeout(resize,600);
       }catch(_){}
     });
@@ -208,9 +249,14 @@ html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,html.
   }
 
   function updateInstall(){
-    const row=$('installAppRow');if(!row)return;
+    const row=$('installAppRow');
+    if(!row)return;
     const remembered=localStorage.getItem(INSTALLED_KEY)==='1';
-    if(standalone()){localStorage.setItem(INSTALLED_KEY,'1');row.hidden=true;return;}
+    if(standalone()){
+      localStorage.setItem(INSTALLED_KEY,'1');
+      row.hidden=true;
+      return;
+    }
     row.hidden=remembered;
   }
 
@@ -324,10 +370,16 @@ html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,html.
     }
     if(ed){
       const cameraMode=ed.getElementById('cameraMode');
-      if(cameraMode&&!cameraMode.dataset.bosSuiteBound){cameraMode.dataset.bosSuiteBound='1';cameraMode.addEventListener('change',()=>scheduleCameraSync(80));}
+      if(cameraMode&&!cameraMode.dataset.bosSuiteBound){
+        cameraMode.dataset.bosSuiteBound='1';
+        cameraMode.addEventListener('change',()=>scheduleCameraSync(80));
+      }
       ['cameraBrandMode','gammaMode'].forEach(id=>{
         const el=ed.getElementById(id);
-        if(el&&!el.dataset.bosSuiteBound){el.dataset.bosSuiteBound='1';el.addEventListener('click',()=>scheduleCameraSync(120),true);}
+        if(el&&!el.dataset.bosSuiteBound){
+          el.dataset.bosSuiteBound='1';
+          el.addEventListener('click',()=>scheduleCameraSync(120),true);
+        }
       });
     }
   }
@@ -358,7 +410,11 @@ html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,html.
   function resetSuite(){
     lightDoc()?.getElementById('resetBtn')?.click();
     expoDoc()?.getElementById('simpleResetBtn')?.click();
-    setTimeout(()=>{syncSharedCamera();fitFrame($('lightFrame'));fitFrame($('expoFrame'));},120);
+    setTimeout(()=>{
+      syncSharedCamera();
+      fitFrame($('lightFrame'));
+      fitFrame($('expoFrame'));
+    },120);
   }
 
   function bind(){
@@ -367,16 +423,33 @@ html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,html.
     $('suiteTipsBtn')?.addEventListener('click',openTips);
     $('suiteResetBtn')?.addEventListener('click',resetSuite);
     $('themeBtn')?.addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+
     const pd=$('projectDialog');
     $('projectContactBtn')?.addEventListener('click',()=>pd?.showModal());
     pd?.addEventListener('click',e=>{if(e.target===pd)pd.close();});
-    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;localStorage.removeItem(INSTALLED_KEY);updateInstall();});
-    window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null;localStorage.setItem(INSTALLED_KEY,'1');updateInstall();});
+
+    window.addEventListener('beforeinstallprompt',e=>{
+      e.preventDefault();
+      deferredInstallPrompt=e;
+      localStorage.removeItem(INSTALLED_KEY);
+      updateInstall();
+    });
+    window.addEventListener('appinstalled',()=>{
+      deferredInstallPrompt=null;
+      localStorage.setItem(INSTALLED_KEY,'1');
+      updateInstall();
+    });
     $('installAppBtn')?.addEventListener('click',async()=>{
       if(deferredInstallPrompt){
-        const p=deferredInstallPrompt;deferredInstallPrompt=null;
-        try{await p.prompt();const c=await p.userChoice;if(c?.outcome==='accepted')localStorage.setItem(INSTALLED_KEY,'1');}catch(_){}
-        updateInstall();return;
+        const p=deferredInstallPrompt;
+        deferredInstallPrompt=null;
+        try{
+          await p.prompt();
+          const c=await p.userChoice;
+          if(c?.outcome==='accepted')localStorage.setItem(INSTALLED_KEY,'1');
+        }catch(_){}
+        updateInstall();
+        return;
       }
       installHelp();
     });
@@ -387,7 +460,8 @@ html.bos-suite-embed #readToolPanel.bos-suite-collapsed .quick-inline-head,html.
   bind();
   updateInstall();
   window.BOSNavigation?.restoreCockpitPosition?.();
+
   if('serviceWorker' in navigator&&location.protocol!=='file:'){
-    window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=1.2.2',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{}),{once:true});
+    window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=1.2.3',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{}),{once:true});
   }
 })();
