@@ -5,10 +5,9 @@
   if(!expoFrame)return;
 
   const COMP_CSS=`
-html.bos-suite-embed #simpleExpoPanelContent{padding-top:0!important}
-html.bos-suite-embed #simpleExpoPanelContent>.bos-comp-legacy{display:none!important}
-html.bos-suite-embed .bos-comp-v2{padding:16px 0 0}
-html.bos-suite-embed .bos-comp-topline{display:flex;align-items:center;justify-content:flex-start;gap:10px;margin:0 0 14px}
+html.bos-suite-embed .bos-comp-legacy{display:none!important}
+html.bos-suite-embed .bos-comp-v3{padding:16px 0 0}
+html.bos-suite-embed .bos-comp-topline{display:flex;align-items:center;gap:10px;margin:0 0 14px}
 html.bos-suite-embed .bos-comp-auto-pill{display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:0 11px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);color:var(--muted);font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;cursor:pointer}
 html.bos-suite-embed .bos-comp-auto-pill .bos-comp-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);box-shadow:0 0 0 3px rgba(110,115,122,.13)}
 html.bos-suite-embed .bos-comp-auto-pill.is-on{border-color:#2F5B66;background:rgba(47,91,102,.14);color:#2F5B66}
@@ -51,7 +50,7 @@ html.bos-suite-embed .bos-comp-status.is-ok{border-color:rgba(47,91,102,.38);col
 html.bos-suite-embed .bos-comp-status.is-warning{border-color:rgba(164,126,62,.42);color:var(--text)}
 html.bos-suite-embed body.dark .bos-comp-status.is-ok{color:#7FA7B0;background:rgba(47,91,102,.18)}
 @media(max-width:430px){
-  html.bos-suite-embed .bos-comp-v2{padding-top:14px}
+  html.bos-suite-embed .bos-comp-v3{padding-top:14px}
   html.bos-suite-embed .bos-comp-row{padding:11px}
   html.bos-suite-embed .bos-comp-range-line{grid-template-columns:minmax(0,1fr) 78px;gap:8px}
   html.bos-suite-embed .bos-comp-value{font-size:11px}
@@ -59,341 +58,149 @@ html.bos-suite-embed body.dark .bos-comp-status.is-ok{color:#7FA7B0;background:r
 }
 `;
 
-  function inject(){
-    try{
-      const doc=expoFrame.contentDocument;
-      if(!doc||!doc.documentElement.classList.contains('bos-suite-embed'))return false;
+  const ISO_FALLBACK=[50,64,80,100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800,16000,20000,25600,32000,40000,51200];
+  const APERTURE_FALLBACK=[1,1.1,1.2,1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5,5.6,6.3,7.1,8,9,10,11,13,14,16,18,20,22];
+  const SHUTTER_VALUES=[25,40,50,100,200,400,800];
+  const ND_VALUES=[0,1,2,3,4,5,6,7,8];
 
-      let style=doc.getElementById('bos-compensate-v2-style');
-      if(!style){
-        style=doc.createElement('style');
-        style.id='bos-compensate-v2-style';
-        (doc.head||doc.documentElement).appendChild(style);
-      }
-      style.textContent=COMP_CSS;
-
-      if(doc.getElementById('bos-compensate-v2-script'))return true;
-      const script=doc.createElement('script');
-      script.id='bos-compensate-v2-script';
-      script.textContent=`
-(function(){
-  'use strict';
-  if(window.BOSCompensateV2)return;
-
-  const panel=document.getElementById('simpleExpoPanel');
-  if(!panel)return;
-  const content=panel.querySelector('.panel-collapse-content')||panel;
-  const head=panel.querySelector('.compact-section-head');
-  if(!head)return;
-
-  const oldSubtitle=head.querySelector('.panel-subtitle');
-  if(oldSubtitle)oldSubtitle.textContent='ISO, diaph, shutter et ND avec compensation automatique.';
-
-  const legacy=[...content.children].filter(function(el){return !el.classList.contains('bos-comp-v2');});
-  legacy.forEach(function(el){el.classList.add('bos-comp-legacy');});
-  document.getElementById('bosCompensateV2')?.remove();
-
-  const ui=document.createElement('div');
-  ui.className='bos-comp-v2';
-  ui.id='bosCompensateV2';
-  ui.innerHTML=''
-    +'<div class="bos-comp-topline">'
-      +'<button type="button" class="bos-comp-auto-pill" id="bosCompAuto" aria-pressed="false"><span class="bos-comp-dot"></span><strong>OFF</strong></button>'
-      +'<span class="bos-comp-mode-help" id="bosCompModeHelp">Réglage manuel : chaque ligne est indépendante.</span>'
-    +'</div>'
-    +'<div class="bos-comp-rows">'
-      +'<div class="bos-comp-row" data-bos-comp-key="iso">'
-        +'<div class="bos-comp-row-head">'
-          +'<div class="bos-comp-label-wrap"><span class="bos-comp-label" id="bosCompIsoLabel">ISO</span><span class="bos-comp-unit-switch"><button type="button" data-bos-iso-mode="iso" class="active">ISO</button><button type="button" data-bos-iso-mode="gain">GAIN</button></span></div>'
-          +'<button type="button" class="bos-comp-lock" data-bos-comp-lock="iso" aria-label="Verrouiller ISO"><svg class="lock-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 9.2-2.7"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg><svg class="lock-closed" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10V7a4 4 0 0 1 8 0v3"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg></button>'
-        +'</div>'
-        +'<div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompIso" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompIsoValue">—</output></div>'
-        +'<div class="bos-comp-foot"><span id="bosCompIsoMin">—</span><span id="bosCompIsoHint">—</span></div>'
-        +'<div class="bos-comp-iso-warning" id="bosCompIsoWarning"></div>'
-      +'</div>'
-      +'<div class="bos-comp-row" data-bos-comp-key="aperture">'
-        +'<div class="bos-comp-row-head"><span class="bos-comp-label">DIAPH</span><button type="button" class="bos-comp-lock" data-bos-comp-lock="aperture" aria-label="Verrouiller le diaph"><svg class="lock-open" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 9.2-2.7"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg><svg class="lock-closed" viewBox="0 0 24 24"><path d="M8 10V7a4 4 0 0 1 8 0v3"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg></button></div>'
-        +'<div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompAperture" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompApertureValue">—</output></div>'
-        +'<div class="bos-comp-foot"><span>Ouvert</span><span>Fermé</span></div>'
-      +'</div>'
-      +'<div class="bos-comp-row" data-bos-comp-key="shutter">'
-        +'<div class="bos-comp-row-head"><span class="bos-comp-label">SHUTTER</span><button type="button" class="bos-comp-lock" data-bos-comp-lock="shutter" aria-label="Verrouiller le shutter"><svg class="lock-open" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 9.2-2.7"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg><svg class="lock-closed" viewBox="0 0 24 24"><path d="M8 10V7a4 4 0 0 1 8 0v3"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg></button></div>'
-        +'<div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompShutter" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompShutterValue">—</output></div>'
-        +'<div class="bos-comp-foot"><span>Lent</span><span>Rapide</span></div>'
-      +'</div>'
-      +'<div class="bos-comp-row" data-bos-comp-key="nd">'
-        +'<div class="bos-comp-row-head"><span class="bos-comp-label">ND</span><button type="button" class="bos-comp-lock" data-bos-comp-lock="nd" aria-label="Verrouiller le ND"><svg class="lock-open" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 9.2-2.7"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg><svg class="lock-closed" viewBox="0 0 24 24"><path d="M8 10V7a4 4 0 0 1 8 0v3"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg></button></div>'
-        +'<div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompNd" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompNdValue">—</output></div>'
-        +'<div class="bos-comp-foot"><span>0 stop</span><span>8 stops</span></div>'
-      +'</div>'
-    +'</div>'
-    +'<div class="bos-comp-status" id="bosCompStatus">Mode manuel.</div>';
-  content.prepend(ui);
-
-  const state={on:false,target:null,isoMode:'iso',locks:{iso:false,aperture:false,shutter:false,nd:false},values:{aperture:2.8,iso:800,shutter:50,nd:0},residual:0};
-  try{
-    const saved=JSON.parse(localStorage.getItem('bos-light-compensate-v2')||'null');
-    if(saved&&saved.isoMode==='gain')state.isoMode='gain';
-    if(saved&&saved.locks)Object.keys(state.locks).forEach(function(k){state.locks[k]=!!saved.locks[k];});
-  }catch(_){ }
-
-  const byId=function(id){return document.getElementById(id);};
-  const parentValue=function(id){try{return parent.document.getElementById(id)?.value||'';}catch(_){return '';}};
-  const num=function(v){return Number(String(v==null?'':v).replace(',','.'));};
-  const log2=function(v){return Math.log(v)/Math.LN2;};
-  const fmt=function(v){return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:1});};
-  const fmtAperture=function(v){return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:1});};
-  const save=function(){try{localStorage.setItem('bos-light-compensate-v2',JSON.stringify({isoMode:state.isoMode,locks:state.locks}));}catch(_){}};
-
-  function acceptedIsoMax(){
-    const v=num(parentValue('sharedLightIso'));
-    if(v>0)return v;
-    try{return typeof simpleDefaultMax==='function'?simpleDefaultMax():51200;}catch(_){return 51200;}
+  function uniqSorted(values){return [...new Set(values.map(Number).filter(v=>Number.isFinite(v)&&v>0))].sort((a,b)=>a-b);}
+  function parseNum(value){const n=Number(String(value??'').replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:NaN;}
+  function rootValue(id){return parseNum(document.getElementById(id)?.value);}
+  function childValue(doc,id){return parseNum(doc.getElementById(id)?.value);}
+  function optionValues(doc,id){const select=doc.getElementById(id);if(!select)return [];return uniqSorted([...select.options].map(o=>parseNum(o.value)));}
+  function currentBases(doc){
+    const text=doc.getElementById('baseIsoNote')?.textContent||'';
+    const nums=(text.match(/\d[\d\s\u00a0.]*/g)||[]).map(s=>Number(s.replace(/[^\d.]/g,''))).filter(v=>Number.isFinite(v)&&v>0);
+    const vals=uniqSorted(nums);return vals.length?vals:[800];
   }
-  function bases(){
-    try{const v=currentBaseIsos();return Array.isArray(v)&&v.length?v.map(Number).filter(function(n){return n>0;}).sort(function(a,b){return a-b;}):[800];}catch(_){return [800];}
-  }
-  function gainBase(){
-    try{if(Number(gainBaseIso)>0)return Number(gainBaseIso);}catch(_){ }
-    return bases()[0]||800;
-  }
-  function activeNative(iso){
-    const b=bases();
-    let active=b[0]||800;
-    b.forEach(function(v){if(v<=iso+1e-9)active=v;});
-    return active;
-  }
-  function isoFromGain(db){
-    try{if(typeof gainDbToIso==='function'){const v=Number(gainDbToIso(db));if(v>0)return v;}}catch(_){ }
-    return gainBase()*Math.pow(2,Number(db)/6);
-  }
-  function gainFromIso(iso){
-    try{if(typeof isoToGainDb==='function'){const v=Number(isoToGainDb(iso));if(Number.isFinite(v))return v;}}catch(_){ }
-    return 6*log2(Number(iso)/gainBase());
-  }
-  function cameraIsoValues(){
-    let vals=[];
-    try{vals=simpleAvailableIsoValues().slice();}catch(_){vals=[50,64,80,100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400,8000,10000,12800,16000,20000,25600,32000,40000,51200];}
-    vals=vals.map(Number).filter(function(v){return Number.isFinite(v)&&v>0;}).sort(function(a,b){return a-b;});
-    vals=[...new Set(vals.map(function(v){return Math.round(v*1000)/1000;}))];
-    return vals.length?vals:[bases()[0]||800];
-  }
-  function isoCandidates(){
-    const cameraVals=cameraIsoValues();
-    if(state.isoMode!=='gain')return cameraVals;
-    const minIso=cameraVals[0],maxIso=cameraVals[cameraVals.length-1];
-    let vals=[];
-    try{vals=GAIN_VALUES.map(function(v){return isoFromGain(v);});}catch(_){for(let g=-12;g<=54;g+=1)vals.push(isoFromGain(g));}
-    vals=vals.map(Number).filter(function(v){return Number.isFinite(v)&&v>0&&v>=minIso-1e-8&&v<=maxIso+1e-8;}).sort(function(a,b){return a-b;});
-    vals=[...new Set(vals.map(function(v){return Math.round(v*1000)/1000;}))];
-    return vals.length?vals:cameraVals;
-  }
-  function candidates(key){
-    if(key==='iso')return isoCandidates();
-    if(key==='aperture'){try{return simpleAvailableApertureValues().slice();}catch(_){return [1,1.4,2,2.8,4,5.6,8,11,16,22];}}
-    if(key==='shutter'){try{return SHUTTER_SPEEDS.slice();}catch(_){return [25,40,50,100,200,400,800];}}
-    if(key==='nd'){try{return ND_STOPS.slice();}catch(_){return [0,1,2,3,4,5,6,7,8];}}
-    return [];
-  }
-  function stopFor(key,value){
-    const v=Number(value);
-    if(key==='aperture')return -2*log2(v);
-    if(key==='iso')return log2(v);
-    if(key==='shutter')return -log2(v);
-    if(key==='nd')return -v;
-    return 0;
-  }
-  function total(values){
-    const v=values||state.values;
-    return ['aperture','iso','shutter','nd'].reduce(function(s,k){return s+stopFor(k,v[k]);},0);
-  }
-  function nearestIndex(vals,value,key){
-    let best=0,d=Infinity;
-    vals.forEach(function(v,i){
-      const x=key==='iso'?Math.abs(stopFor('iso',v)-stopFor('iso',value)):Math.abs(Number(v)-Number(value));
-      if(x<d){d=x;best=i;}
-    });
-    return best;
-  }
-  function snapValue(key,value){
-    const vals=candidates(key);
-    return vals[nearestIndex(vals,value,key)]??value;
-  }
-  function formatValue(key,value){
-    if(key==='iso'){
-      if(state.isoMode==='gain'){
-        const db=gainFromIso(value);
-        const s=Math.abs(db)<.05?'0':(db>0?'+':'')+fmt(db);
-        return s+' dB';
-      }
-      return 'ISO '+Math.round(value).toLocaleString('fr-FR');
-    }
-    if(key==='aperture')return 'f/'+fmtAperture(value);
-    if(key==='shutter')return '1/'+fmt(value);
-    if(key==='nd')return Number(value)===0?'0 stop':fmt(value)+' stops';
-    return String(value);
-  }
-  function readInitialValues(){
-    let v={aperture:2.8,iso:bases()[0]||800,shutter:50,nd:0};
-    try{if(typeof simplePhysicalValues==='function')v={...v,...simplePhysicalValues()};}catch(_){ }
-    const ap=num(parentValue('sharedLightAperture'));if(ap>0)v.aperture=ap;
-    const sh=num(parentValue('sharedLightShutter'));if(sh>0)v.shutter=sh;
-    v.iso=Number(v.iso)||bases()[0]||800;
-    Object.keys(v).forEach(function(k){v[k]=snapValue(k,v[k]);});
-    return v;
-  }
-  function applyPhysical(){
-    try{if(typeof simpleSetCurrentFromValues==='function')simpleSetCurrentFromValues({...state.values});}catch(_){ }
-  }
-  function bestCandidate(key,current,remaining){
-    let vals=candidates(key);
-    if(key==='iso'){
-      const maxAccepted=acceptedIsoMax();
-      if(remaining<0){
-        const floor=activeNative(current);
-        vals=vals.filter(function(v){return v>=floor-1e-8&&v<=current+1e-8;});
-      }else if(remaining>0){
-        vals=vals.filter(function(v){return v>=current-1e-8&&v<=maxAccepted+1e-8;});
-      }
-    }
-    if(!vals.length)return current;
-    const currentStop=stopFor(key,current);
-    const target=currentStop+remaining;
-    let best=current,diff=Infinity;
-    vals.forEach(function(v){
-      const move=stopFor(key,v)-currentStop;
-      if(remaining>0&&move<-1e-8)return;
-      if(remaining<0&&move>1e-8)return;
-      const d=Math.abs(stopFor(key,v)-target);
-      if(d<diff-1e-12){diff=d;best=v;}
-    });
-    return best;
-  }
-  function compensate(changedKey){
-    if(!state.on||state.target===null)return;
-    let remaining=state.target-total();
-    const order=remaining<0?['iso','nd','aperture','shutter']:['iso','aperture','nd','shutter'];
-    for(const key of order){
-      if(Math.abs(remaining)<0.025)break;
-      if(key===changedKey||state.locks[key])continue;
-      const before=state.values[key];
-      const beforeStop=stopFor(key,before);
-      const next=bestCandidate(key,before,remaining);
-      if(!Number.isFinite(next)||Math.abs(next-before)<1e-9)continue;
-      state.values[key]=next;
-      remaining-=stopFor(key,next)-beforeStop;
-    }
-    state.residual=state.target-total();
-  }
-  function renderIsoWarning(){
-    const row=document.querySelector('[data-bos-comp-key="iso"]');
-    const warning=byId('bosCompIsoWarning');
-    if(!row||!warning)return;
-    const max=acceptedIsoMax();
-    const over=state.values.iso>max+1e-8;
-    row.classList.toggle('is-over-iso',over);
-    warning.textContent=over?'Attention : sensibilité au-dessus du maximum accepté dans Réglages caméra (ISO '+Math.round(max).toLocaleString('fr-FR')+').':'';
-  }
-  function renderStatus(){
-    const el=byId('bosCompStatus');
-    const help=byId('bosCompModeHelp');
-    if(!el||!help)return;
-    el.classList.remove('is-ok','is-warning');
-    if(!state.on){
-      el.textContent='Mode manuel : les quatre réglages restent indépendants.';
-      help.textContent='Réglage manuel : chaque ligne est indépendante.';
-      return;
-    }
-    help.textContent='Compensation automatique sur les réglages non verrouillés.';
-    const r=state.target-total();
-    if(Math.abs(r)<0.08){
-      el.textContent='EXPOSITION CONSERVÉE · ISO jusqu’au seuil accepté, puis diaph / ND selon le sens de correction.';
-      el.classList.add('is-ok');
-    }else{
-      el.textContent=(r>0?'+':'')+fmt(r)+' stop restant : limite atteinte ou réglage verrouillé.';
-      el.classList.add('is-warning');
-    }
-  }
-  function render(){
-    const auto=byId('bosCompAuto');
-    auto?.classList.toggle('is-on',state.on);
-    auto?.setAttribute('aria-pressed',state.on?'true':'false');
-    const strong=auto?.querySelector('strong');if(strong)strong.textContent=state.on?'ON':'OFF';
-    byId('bosCompIsoLabel').textContent=state.isoMode==='gain'?'GAIN':'ISO';
-    document.querySelectorAll('[data-bos-iso-mode]').forEach(function(btn){btn.classList.toggle('active',btn.dataset.bosIsoMode===state.isoMode);});
-    document.querySelectorAll('[data-bos-comp-lock]').forEach(function(btn){
-      const key=btn.dataset.bosCompLock,locked=!!state.locks[key];
-      btn.classList.toggle('locked',locked);btn.setAttribute('aria-pressed',locked?'true':'false');
-    });
-    const map={iso:['bosCompIso','bosCompIsoValue'],aperture:['bosCompAperture','bosCompApertureValue'],shutter:['bosCompShutter','bosCompShutterValue'],nd:['bosCompNd','bosCompNdValue']};
-    Object.entries(map).forEach(function(entry){
-      const key=entry[0],sliderId=entry[1][0],outId=entry[1][1];
-      const vals=candidates(key),slider=byId(sliderId),out=byId(outId);
-      const idx=nearestIndex(vals,state.values[key],key);
-      state.values[key]=vals[idx]??state.values[key];
-      if(slider){slider.max=String(Math.max(0,vals.length-1));slider.value=String(idx);slider.disabled=vals.length<=1;}
-      if(out)out.textContent=formatValue(key,state.values[key]);
-    });
-    const isoVals=candidates('iso');
-    byId('bosCompIsoMin').textContent=formatValue('iso',isoVals[0]);
-    if(state.isoMode==='gain'){
-      byId('bosCompIsoHint').textContent='0 dB = ISO '+Math.round(gainBase()).toLocaleString('fr-FR')+' · accepté ISO '+Math.round(acceptedIsoMax()).toLocaleString('fr-FR');
-    }else{
-      byId('bosCompIsoHint').textContent='Natif actif '+Math.round(activeNative(state.values.iso)).toLocaleString('fr-FR')+' · accepté '+Math.round(acceptedIsoMax()).toLocaleString('fr-FR');
-    }
-    renderIsoWarning();
-    renderStatus();
-    applyPhysical();
-  }
-  function changeFromSlider(key,slider){
-    const vals=candidates(key);
-    const idx=Math.max(0,Math.min(vals.length-1,Number(slider.value)||0));
-    state.values[key]=vals[idx];
-    compensate(key);
-    render();
-  }
-  function refreshFromCamera(){
-    state.on=false;state.target=null;state.residual=0;
-    state.values=readInitialValues();
-    render();
-  }
-
-  state.values=readInitialValues();
-
-  byId('bosCompAuto')?.addEventListener('click',function(){
-    state.on=!state.on;
-    state.target=state.on?total():null;
-    state.residual=0;
-    render();
-  });
-  document.querySelectorAll('[data-bos-comp-lock]').forEach(function(btn){btn.addEventListener('click',function(){
-    const key=btn.dataset.bosCompLock;state.locks[key]=!state.locks[key];save();render();
-  });});
-  document.querySelectorAll('[data-bos-iso-mode]').forEach(function(btn){btn.addEventListener('click',function(){
-    state.isoMode=btn.dataset.bosIsoMode==='gain'?'gain':'iso';save();state.values.iso=snapValue('iso',state.values.iso);render();
-  });});
-  [['iso','bosCompIso'],['aperture','bosCompAperture'],['shutter','bosCompShutter'],['nd','bosCompNd']].forEach(function(pair){byId(pair[1])?.addEventListener('input',function(e){changeFromSlider(pair[0],e.target);});});
-  byId('simpleResetBtn')?.addEventListener('click',function(){setTimeout(refreshFromCamera,0);});
-
-  ['sharedCameraBrand','sharedCameraModel','sharedCameraGamma','sharedLightAperture','sharedLightShutter'].forEach(function(id){
-    try{parent.document.getElementById(id)?.addEventListener('change',function(){setTimeout(refreshFromCamera,160);});}catch(_){ }
-  });
-  try{parent.document.getElementById('sharedLightIso')?.addEventListener('change',function(){setTimeout(render,80);});}catch(_){ }
-
-  window.BOSCompensateV2={refresh:refreshFromCamera,state:state};
-  render();
-})();
-`;
-      (doc.body||doc.documentElement).appendChild(script);
-      return true;
-    }catch(_){return false;}
-  }
+  function acceptedIsoMax(){const v=rootValue('sharedLightIso');return v>0?v:51200;}
+  function activeNative(doc,iso){const vals=currentBases(doc);let active=vals[0]||800;vals.forEach(v=>{if(v<=iso+1e-9)active=v;});return active;}
+  function log2(v){return Math.log(v)/Math.LN2;}
+  function stopFor(key,value){const v=Number(value);if(key==='aperture')return -2*log2(v);if(key==='iso')return log2(v);if(key==='shutter')return -log2(v);if(key==='nd')return -v;return 0;}
+  function total(values){return ['aperture','iso','shutter','nd'].reduce((sum,key)=>sum+stopFor(key,values[key]),0);}
+  function nearestIndex(values,value,key){let best=0,d=Infinity;values.forEach((v,i)=>{const diff=key==='iso'?Math.abs(log2(v/value)):Math.abs(Number(v)-Number(value));if(diff<d){d=diff;best=i;}});return best;}
+  function lockSvg(){return '<svg class="lock-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 9.2-2.7"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg><svg class="lock-closed" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 10V7a4 4 0 0 1 8 0v3"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg>';}
 
   function setup(){
-    if(inject())return;
-    setTimeout(setup,60);
+    try{
+      const doc=expoFrame.contentDocument;
+      if(!doc||!doc.documentElement.classList.contains('bos-suite-embed')){setTimeout(setup,50);return;}
+      const panel=doc.getElementById('simpleExpoPanel');
+      const head=panel?.querySelector('.compact-section-head');
+      if(!panel||!head){setTimeout(setup,50);return;}
+
+      if(doc.getElementById('bos-compensate-v3-style')===null){
+        const style=doc.createElement('style');style.id='bos-compensate-v3-style';style.textContent=COMP_CSS;(doc.head||doc.documentElement).appendChild(style);
+      }
+
+      doc.defaultView.BOSCompensateV2={nativeParent:true};
+      doc.getElementById('bos-compensate-v2-script')?.remove();
+      doc.getElementById('bosCompensateV2')?.remove();
+      if(doc.getElementById('bosCompensateV3'))return;
+
+      const subtitle=head.querySelector('.panel-subtitle');if(subtitle)subtitle.textContent='ISO, diaph, shutter et ND avec compensation automatique.';
+      const host=panel.querySelector('.panel-collapse-content')||panel;
+      [...host.children].forEach(el=>{if(el!==head&&!el.classList.contains('bos-comp-v3'))el.classList.add('bos-comp-legacy');});
+
+      const ui=doc.createElement('div');ui.className='bos-comp-v3';ui.id='bosCompensateV3';
+      ui.innerHTML=
+        '<div class="bos-comp-topline"><button type="button" class="bos-comp-auto-pill" id="bosCompAuto" aria-pressed="false"><span class="bos-comp-dot"></span><strong>OFF</strong></button><span class="bos-comp-mode-help" id="bosCompModeHelp">Réglage manuel : chaque ligne est indépendante.</span></div>'+
+        '<div class="bos-comp-rows">'+
+          '<div class="bos-comp-row" data-bos-comp-key="iso"><div class="bos-comp-row-head"><div class="bos-comp-label-wrap"><span class="bos-comp-label" id="bosCompIsoLabel">ISO</span><span class="bos-comp-unit-switch"><button type="button" data-bos-iso-mode="iso" class="active">ISO</button><button type="button" data-bos-iso-mode="gain">GAIN</button></span></div><button type="button" class="bos-comp-lock" data-bos-comp-lock="iso" aria-label="Verrouiller ISO">'+lockSvg()+'</button></div><div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompIso" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompIsoValue">—</output></div><div class="bos-comp-foot"><span id="bosCompIsoMin">—</span><span id="bosCompIsoHint">—</span></div><div class="bos-comp-iso-warning" id="bosCompIsoWarning"></div></div>'+
+          '<div class="bos-comp-row" data-bos-comp-key="aperture"><div class="bos-comp-row-head"><span class="bos-comp-label">DIAPH</span><button type="button" class="bos-comp-lock" data-bos-comp-lock="aperture" aria-label="Verrouiller le diaph">'+lockSvg()+'</button></div><div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompAperture" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompApertureValue">—</output></div><div class="bos-comp-foot"><span>Ouvert</span><span>Fermé</span></div></div>'+
+          '<div class="bos-comp-row" data-bos-comp-key="shutter"><div class="bos-comp-row-head"><span class="bos-comp-label">SHUTTER</span><button type="button" class="bos-comp-lock" data-bos-comp-lock="shutter" aria-label="Verrouiller le shutter">'+lockSvg()+'</button></div><div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompShutter" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompShutterValue">—</output></div><div class="bos-comp-foot"><span>Lent</span><span>Rapide</span></div></div>'+
+          '<div class="bos-comp-row" data-bos-comp-key="nd"><div class="bos-comp-row-head"><span class="bos-comp-label">ND</span><button type="button" class="bos-comp-lock" data-bos-comp-lock="nd" aria-label="Verrouiller le ND">'+lockSvg()+'</button></div><div class="bos-comp-range-line"><input class="bos-comp-range" id="bosCompNd" type="range" min="0" max="1" step="1"><output class="bos-comp-value" id="bosCompNdValue">—</output></div><div class="bos-comp-foot"><span>0 stop</span><span>8 stops</span></div></div>'+
+        '</div><div class="bos-comp-status" id="bosCompStatus">Mode manuel.</div>';
+
+      if(host===panel)head.insertAdjacentElement('afterend',ui);else host.prepend(ui);
+
+      const q=id=>doc.getElementById(id);
+      const state={on:false,target:null,isoMode:'iso',locks:{iso:false,aperture:false,shutter:false,nd:false},values:{aperture:2.8,iso:800,shutter:50,nd:0}};
+      try{const saved=JSON.parse(localStorage.getItem('bos-light-compensate-v3')||'null');if(saved?.isoMode==='gain')state.isoMode='gain';if(saved?.locks)Object.keys(state.locks).forEach(k=>state.locks[k]=!!saved.locks[k]);}catch(_){}
+      const save=()=>{try{localStorage.setItem('bos-light-compensate-v3',JSON.stringify({isoMode:state.isoMode,locks:state.locks}));}catch(_){}};
+
+      function candidates(key){
+        if(key==='iso'){const vals=optionValues(doc,'isoMaxSelect');return vals.length?vals:ISO_FALLBACK.slice();}
+        if(key==='aperture'){const vals=optionValues(doc,'apertureMaxSelect');return vals.length?vals:APERTURE_FALLBACK.slice();}
+        if(key==='shutter')return SHUTTER_VALUES.slice();
+        if(key==='nd')return ND_VALUES.slice();
+        return [];
+      }
+      function snap(key,value){const vals=candidates(key);return vals[nearestIndex(vals,value,key)]??value;}
+      function format(key,value){
+        if(key==='iso'){
+          if(state.isoMode==='gain'){const base=activeNative(doc,value);const db=6*log2(value/base);const text=Math.abs(db)<.05?'0':(db>0?'+':'')+db.toLocaleString('fr-FR',{maximumFractionDigits:1});return text+' dB';}
+          return 'ISO '+Math.round(value).toLocaleString('fr-FR');
+        }
+        if(key==='aperture')return 'f/'+Number(value).toLocaleString('fr-FR',{maximumFractionDigits:1});
+        if(key==='shutter')return '1/'+Number(value).toLocaleString('fr-FR',{maximumFractionDigits:1});
+        if(key==='nd')return Number(value)===0?'0 stop':Number(value).toLocaleString('fr-FR',{maximumFractionDigits:1})+' stops';
+        return String(value);
+      }
+      function readInitial(){
+        const values={aperture:childValue(doc,'newAperture'),iso:childValue(doc,'newIso'),shutter:childValue(doc,'newShutter'),nd:childValue(doc,'newNd')};
+        const rootAp=rootValue('sharedLightAperture'),rootSh=rootValue('sharedLightShutter');
+        if(rootAp>0)values.aperture=rootAp;if(rootSh>0)values.shutter=rootSh;
+        if(!(values.aperture>0))values.aperture=2.8;if(!(values.iso>0))values.iso=currentBases(doc)[0]||800;if(!(values.shutter>0))values.shutter=50;if(!(values.nd>=0))values.nd=0;
+        Object.keys(values).forEach(k=>values[k]=snap(k,values[k]));return values;
+      }
+      function syncHidden(){
+        const map={aperture:'newAperture',iso:'newIso',shutter:'newShutter',nd:'newNd'};
+        Object.entries(map).forEach(([key,id])=>{const el=doc.getElementById(id);if(!el)return;el.value=String(state.values[key]);const E=doc.defaultView.Event;el.dispatchEvent(new E('input',{bubbles:true}));el.dispatchEvent(new E('change',{bubbles:true}));});
+      }
+      function bestCandidate(key,current,remaining){
+        let vals=candidates(key);
+        if(key==='iso'){
+          if(remaining<0){const floor=activeNative(doc,current);vals=vals.filter(v=>v>=floor-1e-9&&v<=current+1e-9);}
+          else if(remaining>0){const max=acceptedIsoMax();vals=vals.filter(v=>v>=current-1e-9&&v<=max+1e-9);}
+        }
+        if(!vals.length)return current;
+        const currentStop=stopFor(key,current),target=currentStop+remaining;let best=current,bestDiff=Infinity;
+        vals.forEach(v=>{const move=stopFor(key,v)-currentStop;if(remaining>0&&move<-1e-9)return;if(remaining<0&&move>1e-9)return;const diff=Math.abs(stopFor(key,v)-target);if(diff<bestDiff){bestDiff=diff;best=v;}});
+        return best;
+      }
+      function compensate(changedKey){
+        if(!state.on||state.target===null)return;
+        let remaining=state.target-total(state.values);
+        const order=remaining<0?['iso','nd','aperture','shutter']:['iso','aperture','nd','shutter'];
+        for(const key of order){if(Math.abs(remaining)<0.025)break;if(key===changedKey||state.locks[key])continue;const before=state.values[key],beforeStop=stopFor(key,before),next=bestCandidate(key,before,remaining);if(!Number.isFinite(next)||Math.abs(next-before)<1e-9)continue;state.values[key]=next;remaining-=stopFor(key,next)-beforeStop;}
+      }
+      function render(){
+        const auto=q('bosCompAuto');auto?.classList.toggle('is-on',state.on);auto?.setAttribute('aria-pressed',state.on?'true':'false');const autoText=auto?.querySelector('strong');if(autoText)autoText.textContent=state.on?'ON':'OFF';
+        q('bosCompIsoLabel').textContent=state.isoMode==='gain'?'GAIN':'ISO';
+        doc.querySelectorAll('[data-bos-iso-mode]').forEach(btn=>btn.classList.toggle('active',btn.dataset.bosIsoMode===state.isoMode));
+        doc.querySelectorAll('[data-bos-comp-lock]').forEach(btn=>{const key=btn.dataset.bosCompLock;btn.classList.toggle('locked',!!state.locks[key]);btn.setAttribute('aria-pressed',state.locks[key]?'true':'false');});
+        const map={iso:['bosCompIso','bosCompIsoValue'],aperture:['bosCompAperture','bosCompApertureValue'],shutter:['bosCompShutter','bosCompShutterValue'],nd:['bosCompNd','bosCompNdValue']};
+        Object.entries(map).forEach(([key,[sliderId,outId]])=>{const vals=candidates(key),idx=nearestIndex(vals,state.values[key],key);state.values[key]=vals[idx]??state.values[key];const slider=q(sliderId);if(slider){slider.max=String(Math.max(0,vals.length-1));slider.value=String(idx);}const out=q(outId);if(out)out.textContent=format(key,state.values[key]);});
+        const isoVals=candidates('iso');q('bosCompIsoMin').textContent=format('iso',isoVals[0]);
+        const max=acceptedIsoMax(),native=activeNative(doc,state.values.iso);
+        q('bosCompIsoHint').textContent=state.isoMode==='gain'?'0 dB = ISO '+Math.round(native).toLocaleString('fr-FR')+' · accepté ISO '+Math.round(max).toLocaleString('fr-FR'):'Natif actif '+Math.round(native).toLocaleString('fr-FR')+' · accepté '+Math.round(max).toLocaleString('fr-FR');
+        const isoRow=doc.querySelector('[data-bos-comp-key="iso"]'),warning=q('bosCompIsoWarning'),over=state.values.iso>max+1e-9;isoRow?.classList.toggle('is-over-iso',over);if(warning)warning.textContent=over?'Attention : on dépasse l’ISO maximum accepté dans Réglages caméra (ISO '+Math.round(max).toLocaleString('fr-FR')+').':'';
+        const status=q('bosCompStatus'),help=q('bosCompModeHelp');status?.classList.remove('is-ok','is-warning');
+        if(!state.on){if(help)help.textContent='Réglage manuel : chaque ligne est indépendante.';if(status)status.textContent='Mode manuel : les quatre réglages restent indépendants.';}
+        else{if(help)help.textContent='Compensation automatique sur les réglages non verrouillés.';const residual=state.target-total(state.values);if(Math.abs(residual)<0.08){if(status){status.textContent='EXPOSITION CONSERVÉE';status.classList.add('is-ok');}}else if(status){status.textContent=(residual>0?'+':'')+residual.toLocaleString('fr-FR',{maximumFractionDigits:2})+' stop restant : limite atteinte ou réglage verrouillé.';status.classList.add('is-warning');}}
+        syncHidden();
+      }
+      function moveFromSlider(key,slider){const vals=candidates(key),idx=Math.max(0,Math.min(vals.length-1,Number(slider.value)||0));state.values[key]=vals[idx];compensate(key);render();}
+      function refresh(){state.on=false;state.target=null;state.values=readInitial();render();}
+
+      state.values=readInitial();
+      q('bosCompAuto')?.addEventListener('click',()=>{state.on=!state.on;state.target=state.on?total(state.values):null;render();});
+      doc.querySelectorAll('[data-bos-comp-lock]').forEach(btn=>btn.addEventListener('click',()=>{const key=btn.dataset.bosCompLock;state.locks[key]=!state.locks[key];save();render();}));
+      doc.querySelectorAll('[data-bos-iso-mode]').forEach(btn=>btn.addEventListener('click',()=>{state.isoMode=btn.dataset.bosIsoMode==='gain'?'gain':'iso';save();render();}));
+      [['iso','bosCompIso'],['aperture','bosCompAperture'],['shutter','bosCompShutter'],['nd','bosCompNd']].forEach(([key,id])=>q(id)?.addEventListener('input',event=>moveFromSlider(key,event.target)));
+      q('simpleResetBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
+      ['sharedCameraBrand','sharedCameraModel','sharedCameraGamma','sharedLightAperture','sharedLightShutter'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>setTimeout(refresh,180)));
+      document.getElementById('sharedLightIso')?.addEventListener('change',()=>setTimeout(render,60));
+
+      expoFrame._bosCompensateRefresh=refresh;
+      render();
+    }catch(error){
+      console.error('BOS COMPENSER',error);
+      setTimeout(setup,120);
+    }
   }
 
-  expoFrame.addEventListener('load',function(){setTimeout(setup,80);});
-  if(expoFrame.contentDocument?.readyState==='complete'||expoFrame.contentDocument?.readyState==='interactive')setTimeout(setup,80);
+  expoFrame.addEventListener('load',()=>setTimeout(setup,40));
+  if(expoFrame.contentDocument?.readyState==='complete'||expoFrame.contentDocument?.readyState==='interactive')setTimeout(setup,40);
 })();
