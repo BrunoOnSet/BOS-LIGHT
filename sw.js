@@ -1,4 +1,4 @@
-const CACHE="bos-light-suite-v1-1";
+const CACHE="bos-light-suite-v1-2";
 const ASSETS=[
   "./",
   "./README.txt",
@@ -52,7 +52,7 @@ const ASSETS=[
   "./shared/navigation.js",
   "./shared/state.js",
   "./style.css",
-  "./version.json",
+  "./version.json"
 ];
 const CAMERA_DB_HOST="raw.githubusercontent.com";
 const DB_PATHS=new Set(["/BrunoOnSet/BOS-CAMERA-DB/main/cameras.json","/BrunoOnSet/BOS-PROJECTEURS-DB/main/lights.json"]);
