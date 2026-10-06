@@ -3,6 +3,7 @@ const ASSETS=[
   "./",
   "./README.txt",
   "./app.js",
+  "./continuous.css",
   "./assets/logo-bos-header.jpg",
   "./data/cameras.json",
   "./data/lights.json",
