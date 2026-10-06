@@ -1,0 +1,18 @@
+/* V1.1 — LIGHT + EXPO : interface continue */
+.continuous-tools{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  margin-top:10px;
+  gap:10px;
+}
+.tool-frame{
+  display:block;
+  width:100%;
+  min-height:1px;
+  border:0;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  background:transparent;
+}
