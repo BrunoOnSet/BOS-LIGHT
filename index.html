@@ -8,13 +8,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="BOS LIGHT" />
   <title>BOS — LIGHT</title>
-  <link rel="manifest" href="manifest.webmanifest?v=1" />
+  <link rel="manifest" href="manifest.webmanifest?v=1.1" />
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1" />
+  <link rel="stylesheet" href="style.css?v=1.1" />
 </head>
 <body>
   <main class="shell">
@@ -41,34 +41,15 @@
       <button class="project-contact-btn" id="projectContactBtn" type="button">Parler de votre tournage <span aria-hidden="true">→</span></button>
     </section>
 
-    <section class="suite-intro">
-      <strong>Lumière & exposition</strong>
-      <span>Deux outils de tournage réunis dans une seule application.</span>
-    </section>
-
-    <section class="modules suite-modules" aria-label="Outils LIGHT">
-      <article class="module suite-module" data-module="light">
-        <div class="module-head-row">
-          <button class="module-head suite-open" data-open="modules/light/" type="button">
-            <span class="module-title"><i class="module-dot"></i><span><strong>LIGHT</strong><small>Projecteurs et Lux</small></span></span>
-          </button>
-          <button type="button" class="module-full-link" data-open="modules/light/">OUVRIR L’OUTIL <span aria-hidden="true">→</span></button>
-        </div>
-      </article>
-      <article class="module suite-module" data-module="expo">
-        <div class="module-head-row">
-          <button class="module-head suite-open" data-open="modules/expo/" type="button">
-            <span class="module-title"><i class="module-dot"></i><span><strong>EXPO</strong><small>Dynamique de l'image</small></span></span>
-          </button>
-          <button type="button" class="module-full-link" data-open="modules/expo/">OUVRIR L’OUTIL <span aria-hidden="true">→</span></button>
-        </div>
-      </article>
+    <section class="continuous-tools" aria-label="LIGHT et EXPO">
+      <iframe class="tool-frame" id="lightFrame" title="LIGHT" src="modules/light/?embed=1" scrolling="no"></iframe>
+      <iframe class="tool-frame" id="expoFrame" title="EXPO" src="modules/expo/?embed=1" scrolling="no"></iframe>
     </section>
 
     <div class="feedback-contact">
       <a class="feedback-contact-link" href="mailto:brunoguillardcontact@gmail.com?subject=Suggestion%20%E2%80%94%20BOS%20LIGHT&body=Bonjour%20Bruno%2C%0A%0AJ%E2%80%99ai%20une%20id%C3%A9e%20pour%20am%C3%A9liorer%20BOS%20LIGHT%20%3A%0A%0A">Une idée pour améliorer l’application ? <span aria-hidden="true">→</span></a>
     </div>
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V1.0</footer>
+    <footer class="footer">BOS — Bruno OnSet · LIGHT · V1.1</footer>
   </main>
 
   <dialog id="installDialog" class="sheet install-sheet">
@@ -92,8 +73,8 @@
     </form>
   </dialog>
 
-  <script src="shared/state.js?v=1"></script>
-  <script src="shared/navigation.js?v=1"></script>
-  <script src="app.js?v=1"></script>
+  <script src="shared/state.js?v=1.1"></script>
+  <script src="shared/navigation.js?v=1.1"></script>
+  <script src="app.js?v=1.1"></script>
 </body>
 </html>
