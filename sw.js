@@ -1,4 +1,4 @@
-const CACHE="bos-light-suite-v1-2-6";
+const CACHE="bos-light-suite-v1-2-7";
 const ASSETS=[
   "./",
   "./README.txt",
