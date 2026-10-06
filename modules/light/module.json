@@ -1,0 +1,19 @@
+{
+  "id": "light",
+  "name": "LIGHT",
+  "version": "0.62",
+  "script": "app.js",
+  "style": "styles.css",
+  "fallbackData": [
+    "lights"
+  ],
+  "localState": [
+    "bos-light-settings-v1"
+  ],
+  "entry": "index.html",
+  "integratedMode": "integrated",
+  "standaloneMode": "standalone",
+  "sharedStateOptional": true,
+  "standalonePwa": true,
+  "bosBuild": 79
+}
