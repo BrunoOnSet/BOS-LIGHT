@@ -35,7 +35,18 @@
       try{
         const doc=frame.contentDocument;
         if(!doc)return;
+        doc.documentElement.classList.add('bos-suite-embed');
         doc.documentElement.dataset.theme=document.documentElement.dataset.theme||'light';
+        if(!doc.getElementById('bos-suite-embed-style')){
+          const style=doc.createElement('style');
+          style.id='bos-suite-embed-style';
+          style.textContent=`
+html.bos-suite-embed,html.bos-suite-embed body{min-height:0!important;height:auto!important;background:transparent!important;overflow:hidden!important}
+html.bos-suite-embed .topbar,html.bos-suite-embed [data-bos-return],html.bos-suite-embed .project-contact-bottom,html.bos-suite-embed main>footer{display:none!important}
+html.bos-suite-embed .app-shell,html.bos-suite-embed .app,html.bos-suite-embed #mainApp{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important}
+html.bos-suite-embed .first-card{margin-top:0!important}`;
+          (doc.head||doc.documentElement).appendChild(style);
+        }
         fitFrame(frame);
         const resize=()=>requestAnimationFrame(()=>fitFrame(frame));
         if('ResizeObserver' in window){
@@ -100,5 +111,5 @@
   bind();
   updateInstall();
   window.BOSNavigation?.restoreCockpitPosition?.();
-  if('serviceWorker' in navigator && location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=1',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{}),{once:true});
+  if('serviceWorker' in navigator && location.protocol!=='file:')window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=1.1',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{}),{once:true});
 })();
