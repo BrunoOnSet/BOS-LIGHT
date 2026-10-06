@@ -1,9 +1,4 @@
 {
-  "version": "V1.0",
-  "build": 1,
-  "app": "BOS LIGHT",
-  "modules": [
-    "LIGHT",
-    "EXPO"
-  ]
+  "version": "V1.1",
+  "build": 2
 }
