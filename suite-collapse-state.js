@@ -91,6 +91,20 @@
     };
   }
 
+  function ensureCollapsedHeaderStyle(doc){
+    if(!doc)return;
+    let style=doc.getElementById('bos-collapsed-header-cleanup');
+    if(!style){
+      style=doc.createElement('style');
+      style.id='bos-collapsed-header-cleanup';
+      (doc.head||doc.documentElement).appendChild(style);
+    }
+    style.textContent=`
+html.bos-suite-embed #readToolPanel.bos-suite-collapsed>.quick-inline-head .waveform-explorer-value{display:none!important}
+html.bos-suite-embed #simpleExpoPanel.bos-suite-collapsed>.compact-section-head .small-action{display:none!important}
+`;
+  }
+
   function normalizeLegacyExpo(parts){
     /* EXPO garde techniquement son contenu "ouvert" ; seule la classe BOS
        décide ensuite si la bulle est visible ou repliée. */
@@ -178,6 +192,7 @@
     const frame=document.getElementById('expoFrame');
     const doc=frame&&frame.contentDocument;
     if(!doc)return false;
+    ensureCollapsedHeaderStyle(doc);
     const dynamics=bindExpoPanel(doc,'readToolPanel','dynamics');
     const compensate=bindExpoPanel(doc,'simpleExpoPanel','compensate');
     return dynamics&&compensate;
