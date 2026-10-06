@@ -1,4 +1,4 @@
-/* V1.1 — LIGHT + EXPO : interface continue */
+/* V1.2 — LIGHT + EXPO : interface continue */
 .continuous-tools{
   display:flex;
   flex-direction:column;
@@ -15,4 +15,125 @@
   padding:0;
   overflow:hidden;
   background:transparent;
+}
+
+.suite-utility-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:8px 2px 12px;
+}
+.suite-utility-btn{
+  min-height:38px;
+  padding:0 16px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--panel);
+  color:var(--text);
+  font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+.suite-utility-btn:active{transform:translateY(1px)}
+
+.shared-camera-card{
+  margin:0 0 10px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+}
+.shared-camera-heading{
+  list-style:none;
+  display:grid;
+  grid-template-columns:32px minmax(0,1fr) 24px;
+  align-items:center;
+  gap:12px;
+  padding:16px 18px;
+  cursor:pointer;
+}
+.shared-camera-heading::-webkit-details-marker{display:none}
+.shared-step{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  border:1px solid #2F5B66;
+  border-radius:9px;
+  background:rgba(47,91,102,.14);
+  color:#2F5B66;
+  font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:11px;
+  font-weight:700;
+}
+.shared-heading-copy{min-width:0}
+.shared-heading-copy h2{
+  margin:0;
+  color:var(--text);
+  font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.15;
+  font-weight:700;
+}
+.shared-heading-copy p{
+  margin:4px 0 0;
+  overflow:hidden;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.3;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.shared-chevron{
+  color:var(--muted);
+  font-size:18px;
+  transition:transform .18s ease;
+}
+.shared-camera-card[open] .shared-chevron{transform:rotate(180deg)}
+.shared-camera-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  padding:0 18px 18px;
+  border-top:1px solid var(--line);
+  padding-top:16px;
+}
+.shared-field{display:block;min-width:0}
+.shared-field>span{
+  display:block;
+  margin:0 0 6px 2px;
+  color:var(--muted);
+  font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+.shared-field select{
+  width:100%;
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--field-bg,var(--panel2));
+  color:var(--text);
+  padding:0 34px 0 12px;
+  font:inherit;
+  font-size:13px;
+  font-weight:700;
+  outline:none;
+}
+.shared-field select:focus{
+  border-color:#2F5B66;
+  box-shadow:0 0 0 3px rgba(47,91,102,.14);
+}
+
+@media(max-width:620px){
+  .shared-camera-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .shared-field-wide{grid-column:auto}
+}
+@media(max-width:390px){
+  .shared-camera-heading{padding:14px 15px;gap:10px}
+  .shared-camera-grid{padding:14px 15px 16px;grid-template-columns:1fr 1fr;gap:9px}
+  .shared-field select{font-size:12px}
 }
