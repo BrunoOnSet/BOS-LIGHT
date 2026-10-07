@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.0';
+  const VERSION='2.0.1';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
@@ -96,6 +96,17 @@ html.bos-light-split-embed .project-contact-bottom,
 html.bos-light-split-embed main>footer{display:none!important}
 html.bos-light-split-embed .app-shell{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important}
 html.bos-light-split-embed #cameraDetails{margin-top:0!important}
+
+/* V0.63 — réserve la flèche à droite dans les têtes repliables */
+html.bos-light-split-embed .collapsible-heading{padding-right:56px!important}
+html.bos-light-split-embed .collapsible-heading .summary-value{padding-right:30px!important;max-width:calc(100% - 190px)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+html.bos-light-split-embed .collapsible-heading .chevron{right:18px!important}
+html.bos-light-split-embed .camera-card .summary-value{max-width:calc(100% - 190px)!important}
+@media (max-width:760px){
+  html.bos-light-split-embed .collapsible-heading .summary-value,
+  html.bos-light-split-embed .camera-card .summary-value,
+  html.bos-light-split-embed .light-card .summary-value{max-width:calc(100% - 170px)!important}
+}
 `;
       (doc.head||doc.documentElement).appendChild(style);
     }
