@@ -1,61 +1,26 @@
-const CACHE="bos-light-suite-v1-3-7";
+const CACHE="bos-light-v2-0-0";
 const ASSETS=[
   "./",
-  "./README.txt",
-  "./app.js",
-  "./suite-patch.js",
-  "./suite-compensate.js",
-  "./suite-compensate-compact.js",
-  "./suite-collapse-state.js",
+  "./index.html",
+  "./light-host.js",
+  "./style.css",
   "./continuous.css",
+  "./manifest.webmanifest",
   "./assets/logo-bos-header.jpg",
-  "./data/cameras.json",
-  "./data/lights.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./modules/expo/README.txt",
-  "./modules/expo/adapters/integrated.js",
-  "./modules/expo/app.js",
-  "./modules/expo/assets/logo-bos-header.jpg",
-  "./modules/expo/icon-192.png",
-  "./modules/expo/icon-512.png",
-  "./modules/expo/index.html",
-  "./modules/expo/logo-bruno-guillard.png",
-  "./modules/expo/style.css",
+  "./modules/light/index.html",
+  "./modules/light/styles.css",
+  "./modules/light/app.js",
+  "./modules/light/bos-projecteurs-db.js",
   "./modules/light/adapters/integrated.js",
   "./modules/light/adapters/standalone.js",
-  "./modules/light/app.js",
-  "./modules/light/assets/gels/lee017-spectrum.png",
-  "./modules/light/assets/gels/lee017-swatch-flat.png",
-  "./modules/light/assets/gels/lee017-swatch.png",
-  "./modules/light/assets/gels/lee117-swatch-flat.png",
-  "./modules/light/assets/gels/lee201-swatch-flat.png",
-  "./modules/light/assets/gels/lee202-swatch-flat.png",
-  "./modules/light/assets/gels/lee203-swatch-flat.png",
-  "./modules/light/assets/gels/lee204-swatch-flat.png",
-  "./modules/light/assets/gels/lee205-swatch-flat.png",
-  "./modules/light/assets/gels/lee206-swatch-flat.png",
-  "./modules/light/assets/gels/lee213-swatch-flat.png",
-  "./modules/light/assets/gels/lee245-swatch-flat.png",
-  "./modules/light/assets/gels/lee246-swatch-flat.png",
-  "./modules/light/assets/gels/lee248-swatch-flat.png",
-  "./modules/light/assets/gels/lee249-swatch-flat.png",
-  "./modules/light/assets/gels/lee506-swatch-flat.png",
-  "./modules/light/assets/gels/lee603-swatch-flat.png",
-  "./modules/light/assets/gels/lee728-swatch-flat.png",
   "./modules/light/assets/logo-bos-header.jpg",
-  "./modules/light/bos-projecteurs-db.js",
-  "./modules/light/index.html",
-  "./modules/light/module.json",
-  "./modules/light/styles.css",
-  "./shared/analytics.js",
-  "./shared/db.js",
-  "./shared/module-host.js",
-  "./shared/navigation.js",
   "./shared/state.js",
-  "./style.css",
+  "./shared/navigation.js",
+  "./shared/db.js",
+  "./shared/analytics.js",
+  "./shared/module-host.js",
   "./version.json"
 ];
 const CAMERA_DB_HOST="raw.githubusercontent.com";
@@ -69,9 +34,9 @@ self.addEventListener("fetch",e=>{
   if(e.request.mode==="navigate"){
     e.respondWith(fetch(e.request).then(r=>{const cp=r.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));return r;}).catch(async()=>{
       if(/\/modules\/light(?:\/|$)/i.test(url.pathname))return (await caches.match('./modules/light/index.html'))||caches.match('./index.html');
-      if(/\/modules\/expo(?:\/|$)/i.test(url.pathname))return (await caches.match('./modules/expo/index.html'))||caches.match('./index.html');
       return caches.match('./index.html');
-    }));return;
+    }));
+    return;
   }
   e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(net=>{const cp=net.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));return net;})));
 });
