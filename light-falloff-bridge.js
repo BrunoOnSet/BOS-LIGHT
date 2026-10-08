@@ -53,8 +53,8 @@
         </button>
         <div class="bft-body">
           <div class="bft-threepoint-images">
-            <iframe src="/BOS-LIGHT/assets/lighting/three-point-system.svg" title="Système 3 points" loading="lazy"></iframe>
-            <iframe src="/BOS-LIGHT/assets/lighting/key-light-patterns.svg" title="Schémas d’éclairage Key Light" loading="lazy"></iframe>
+            <img src="/BOS-LIGHT/assets/lighting/three-point-system.jpg?v=3" alt="Système 3 points">
+            <img src="/BOS-LIGHT/assets/lighting/key-light-patterns.jpg?v=3" alt="Schémas d’éclairage Key Light">
           </div>
         </div>`;
       panel.parentNode.insertBefore(three,panel);
@@ -67,7 +67,7 @@
         setTimeout(fit,160);
       });
 
-      three.querySelectorAll('iframe').forEach(el=>el.addEventListener('load',fit));
+      three.querySelectorAll('img').forEach(el=>el.addEventListener('load',fit));
     }
     return three;
   }
@@ -111,7 +111,7 @@ html.bos-suite-embed #bosThreePointPanel.bmp-collapsed .bft-body{display:none}
 html.bos-suite-embed #bosThreePointPanel:not(.bmp-collapsed) .bft-head{border-bottom:1px solid var(--line)}
 html.bos-suite-embed #bosThreePointPanel .bft-body{padding:16px 18px 18px}
 html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images{display:flex;flex-direction:column;gap:14px}
-html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images iframe{display:block;width:100%;aspect-ratio:1/1;border:0;border-radius:12px;background:#f2f0eb;overflow:hidden}
+html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images img{display:block;width:100%;height:auto;border:0;border-radius:12px;background:#f2f0eb}
 @media(max-width:520px){html.bos-suite-embed .bft-projector{width:78px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}html.bos-suite-embed #bosThreePointPanel .bft-body{padding:14px 15px 16px}}
 `;
 
