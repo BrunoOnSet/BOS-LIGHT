@@ -53,8 +53,8 @@
         </button>
         <div class="bft-body">
           <div class="bft-threepoint-images">
-            <img src="/BOS-LIGHT/assets/lighting/three-point-system.jpg?v=3" alt="Système 3 points">
-            <img src="/BOS-LIGHT/assets/lighting/key-light-patterns.jpg?v=3" alt="Schémas d’éclairage Key Light">
+            <img src="/BOS-LIGHT/assets/lighting/3points/01-systeme-3-points.jpg" alt="Système 3 points">
+            <img src="/BOS-LIGHT/assets/lighting/3points/02-key-light.jpg" alt="Schémas d’éclairage Key Light">
           </div>
         </div>`;
       panel.parentNode.insertBefore(three,panel);
