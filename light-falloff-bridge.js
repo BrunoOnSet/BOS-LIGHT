@@ -57,9 +57,9 @@
       style.id='bosLightFalloffSimpleStyle';
       style.textContent=`
 html.bos-suite-embed .bft-head{grid-template-columns:34px minmax(0,1fr) 24px}
-html.bos-suite-embed .bft-projector{width:88px;height:64px}
-html.bos-suite-embed .bft-person{width:82px;height:82px}
-@media(max-width:520px){html.bos-suite-embed .bft-projector{width:76px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}}
+html.bos-suite-embed .bft-projector{width:92px;height:66px}
+html.bos-suite-embed .bft-person{width:84px;height:84px}
+@media(max-width:520px){html.bos-suite-embed .bft-projector{width:78px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}}
 `;
       doc.head.appendChild(style);
     }
@@ -69,17 +69,25 @@ html.bos-suite-embed .bft-person{width:82px;height:82px}
       projectorSvg.setAttribute('viewBox','0 0 120 90');
       projectorSvg.innerHTML=`
         <defs>
-          <linearGradient id="bftLightProjectorBody" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#5d5f60"/>
-            <stop offset="0.6" stop-color="#303234"/>
-            <stop offset="1" stop-color="#1a1b1c"/>
+          <linearGradient id="bftLightProjectorBody" x1="0.08" y1="0.18" x2="0.92" y2="0.84">
+            <stop offset="0" stop-color="#76787a"/>
+            <stop offset="0.42" stop-color="#4b4d4f"/>
+            <stop offset="1" stop-color="#222325"/>
           </linearGradient>
+          <radialGradient id="bftLightProjectorFace" cx="38%" cy="38%" r="75%">
+            <stop offset="0" stop-color="#f8f7f3"/>
+            <stop offset="0.52" stop-color="#eceae5"/>
+            <stop offset="1" stop-color="#c9c7c1"/>
+          </radialGradient>
         </defs>
         <g class="bft-sketch">
-          <rect x="18" y="23" width="72" height="44" rx="4" fill="url(#bftLightProjectorBody)" stroke="#111213" stroke-width="4"/>
-          <path d="M25 31 L82 28 M24 40 L84 37 M24 50 L84 47 M25 59 L80 56" stroke="#77797a" stroke-width="1.8" opacity=".55"/>
-          <ellipse cx="91" cy="45" rx="14" ry="18" fill="#f2f1ed" stroke="#111213" stroke-width="4"/>
-          <ellipse cx="93" cy="45" rx="8" ry="11" fill="#faf9f5" stroke="#77797a" stroke-width="1.5" opacity=".9"/>
+          <rect x="20" y="24" width="64" height="40" rx="3" fill="url(#bftLightProjectorBody)" stroke="#111213" stroke-width="3.2"/>
+          <ellipse cx="84" cy="44" rx="13" ry="17" fill="url(#bftLightProjectorFace)" stroke="#111213" stroke-width="3.2"/>
+          <ellipse cx="86" cy="44" rx="8" ry="11" fill="#fbfaf6" stroke="#8b8d8f" stroke-width="1.2" opacity=".96"/>
+          <path d="M27 31 Q49 27 76 29" fill="none" stroke="#9a9c9e" stroke-width="1.3" opacity=".38"/>
+          <path d="M26 39 Q49 36 78 37" fill="none" stroke="#8a8c8e" stroke-width="1.2" opacity=".32"/>
+          <path d="M26 48 Q50 46 78 47" fill="none" stroke="#838587" stroke-width="1.1" opacity=".28"/>
+          <path d="M28 57 Q50 55 75 56" fill="none" stroke="#7c7e80" stroke-width="1.1" opacity=".25"/>
         </g>`;
     }
 
@@ -88,18 +96,23 @@ html.bos-suite-embed .bft-person{width:82px;height:82px}
       personSvg.setAttribute('viewBox','0 0 100 100');
       personSvg.innerHTML=`
         <defs>
-          <radialGradient id="bftLightSphere" cx="34%" cy="28%" r="76%">
-            <stop offset="0" stop-color="#f0f0ee"/>
-            <stop offset="0.28" stop-color="#d7d7d4"/>
-            <stop offset="0.58" stop-color="#8c8e8e"/>
-            <stop offset="0.82" stop-color="#454748"/>
+          <radialGradient id="bftLightSphere" cx="34%" cy="28%" r="78%">
+            <stop offset="0" stop-color="#f4f3f0"/>
+            <stop offset="0.20" stop-color="#e7e6e2"/>
+            <stop offset="0.42" stop-color="#c9c9c5"/>
+            <stop offset="0.66" stop-color="#7f8182"/>
+            <stop offset="0.86" stop-color="#3a3c3d"/>
             <stop offset="1" stop-color="#171819"/>
           </radialGradient>
         </defs>
         <g class="bft-sketch">
-          <circle cx="50" cy="50" r="38" fill="url(#bftLightSphere)" stroke="#111213" stroke-width="4"/>
-          <path d="M23 55 Q49 42 76 49 M25 65 Q49 52 73 59 M31 75 Q49 64 67 68" fill="none" stroke="#27292a" stroke-width="1.4" opacity=".32"/>
-          <path d="M29 31 Q42 23 58 23 M24 41 Q42 31 66 31 M22 49 Q42 38 72 39" fill="none" stroke="#ffffff" stroke-width="1.2" opacity=".28"/>
+          <circle cx="50" cy="50" r="37" fill="url(#bftLightSphere)" stroke="#111213" stroke-width="3.2"/>
+          <ellipse cx="39" cy="34" rx="16" ry="11" fill="#ffffff" opacity=".17"/>
+          <path d="M24 56 Q36 47 52 46 Q67 45 77 50" fill="none" stroke="#2e3031" stroke-width="1.1" opacity=".20"/>
+          <path d="M26 64 Q38 57 53 56 Q65 56 74 60" fill="none" stroke="#2a2c2d" stroke-width="1.05" opacity=".16"/>
+          <path d="M30 72 Q42 67 54 66 Q63 66 70 69" fill="none" stroke="#242627" stroke-width="1" opacity=".12"/>
+          <path d="M31 29 Q42 24 56 24" fill="none" stroke="#ffffff" stroke-width="1" opacity=".22"/>
+          <path d="M26 39 Q38 33 60 33" fill="none" stroke="#ffffff" stroke-width="0.95" opacity=".16"/>
         </g>`;
     }
 
