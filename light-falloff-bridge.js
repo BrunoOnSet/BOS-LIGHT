@@ -53,8 +53,8 @@
         </button>
         <div class="bft-body">
           <div class="bft-threepoint-images">
-            <img src="/BOS-LIGHT/assets/lighting/three-point-system.svg" alt="Système 3 points" loading="lazy">
-            <img src="/BOS-LIGHT/assets/lighting/key-light-patterns.svg" alt="Schémas d’éclairage Key Light" loading="lazy">
+            <object data="/BOS-LIGHT/assets/lighting/three-point-system.svg" type="image/svg+xml" aria-label="Système 3 points"></object>
+            <object data="/BOS-LIGHT/assets/lighting/key-light-patterns.svg" type="image/svg+xml" aria-label="Schémas d’éclairage Key Light"></object>
           </div>
         </div>`;
       panel.parentNode.insertBefore(three,panel);
@@ -64,10 +64,10 @@
         const collapsed=three.classList.toggle('bmp-collapsed');
         toggle.setAttribute('aria-expanded',String(!collapsed));
         setTimeout(fit,20);
-        setTimeout(fit,120);
+        setTimeout(fit,160);
       });
 
-      three.querySelectorAll('img').forEach(img=>img.addEventListener('load',fit));
+      three.querySelectorAll('object').forEach(obj=>obj.addEventListener('load',fit));
     }
     return three;
   }
@@ -111,7 +111,7 @@ html.bos-suite-embed #bosThreePointPanel.bmp-collapsed .bft-body{display:none}
 html.bos-suite-embed #bosThreePointPanel:not(.bmp-collapsed) .bft-head{border-bottom:1px solid var(--line)}
 html.bos-suite-embed #bosThreePointPanel .bft-body{padding:16px 18px 18px}
 html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images{display:flex;flex-direction:column;gap:14px}
-html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images img{display:block;width:100%;height:auto;border:0;border-radius:12px;background:#f2f0eb}
+html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images object{display:block;width:100%;height:auto;aspect-ratio:1/1;border:0;border-radius:12px;background:#f2f0eb;overflow:hidden}
 @media(max-width:520px){html.bos-suite-embed .bft-projector{width:78px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}html.bos-suite-embed #bosThreePointPanel .bft-body{padding:14px 15px 16px}}
 `;
 
