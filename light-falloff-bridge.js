@@ -38,6 +38,40 @@
     return true;
   }
 
+  function ensureThreePointPanel(doc,panel){
+    let three=doc.getElementById('bosThreePointPanel');
+    if(!three){
+      three=doc.createElement('section');
+      three.id='bosThreePointPanel';
+      three.className='bmp-collapsed';
+      three.setAttribute('aria-label','Éclairage 3points');
+      three.innerHTML=`
+        <button type="button" class="bft-head" id="bftThreePointToggle" aria-expanded="false">
+          <span class="bft-number">05</span>
+          <span class="bft-title"><strong>ÉCLAIRAGE 3POINTS</strong></span>
+          <span class="bft-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="bft-body">
+          <div class="bft-threepoint-images">
+            <img src="/BOS-LIGHT/assets/lighting/three-point-system.svg" alt="Système 3 points" loading="lazy">
+            <img src="/BOS-LIGHT/assets/lighting/key-light-patterns.svg" alt="Schémas d’éclairage Key Light" loading="lazy">
+          </div>
+        </div>`;
+      panel.parentNode.insertBefore(three,panel);
+
+      const toggle=three.querySelector('#bftThreePointToggle');
+      toggle.addEventListener('click',()=>{
+        const collapsed=three.classList.toggle('bmp-collapsed');
+        toggle.setAttribute('aria-expanded',String(!collapsed));
+        setTimeout(fit,20);
+        setTimeout(fit,120);
+      });
+
+      three.querySelectorAll('img').forEach(img=>img.addEventListener('load',fit));
+    }
+    return three;
+  }
+
   function customizeFalloff(){
     const doc=frameDoc();
     if(!doc)return false;
@@ -57,6 +91,8 @@
     const reset=panel.querySelector('.bft-reset');
     if(reset)reset.remove();
 
+    ensureThreePointPanel(doc,panel);
+
     let style=doc.getElementById('bosLightFalloffSimpleStyle');
     if(!style){
       style=doc.createElement('style');
@@ -69,7 +105,14 @@ html.bos-suite-embed .bft-projector{width:92px;height:66px}
 html.bos-suite-embed .bft-person{width:84px;height:84px}
 html.bos-suite-embed #bosMiniPlateau .bft-sketch [stroke]{stroke-width:.8 !important}
 html.bos-suite-embed #bosMiniPlateau .bft-wall .bft-sketch [stroke]{stroke-width:.8 !important}
-@media(max-width:520px){html.bos-suite-embed .bft-projector{width:78px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}}
+html.bos-suite-embed #bosThreePointPanel{width:100%;margin-top:12px;border:1px solid var(--card-border,#D7D9D6);border-radius:22px;background:var(--panel);box-shadow:none;overflow:hidden;padding:0}
+html.bos-suite-embed #bosThreePointPanel.bmp-collapsed{height:82px}
+html.bos-suite-embed #bosThreePointPanel.bmp-collapsed .bft-body{display:none}
+html.bos-suite-embed #bosThreePointPanel:not(.bmp-collapsed) .bft-head{border-bottom:1px solid var(--line)}
+html.bos-suite-embed #bosThreePointPanel .bft-body{padding:16px 18px 18px}
+html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images{display:flex;flex-direction:column;gap:14px}
+html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images img{display:block;width:100%;height:auto;border:0;border-radius:12px;background:#f2f0eb}
+@media(max-width:520px){html.bos-suite-embed .bft-projector{width:78px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}html.bos-suite-embed #bosThreePointPanel .bft-body{padding:14px 15px 16px}}
 `;
 
     const projectorSvg=panel.querySelector('#bftProjector svg');
