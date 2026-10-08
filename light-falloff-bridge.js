@@ -48,6 +48,12 @@
     const number=panel.querySelector('.bft-number');
     if(number)number.textContent='06';
 
+    const title=panel.querySelector('.bft-title strong');
+    if(title)title.textContent='FALL OFF';
+
+    const subtitle=panel.querySelector('.bft-title small');
+    if(subtitle)subtitle.remove();
+
     const reset=panel.querySelector('.bft-reset');
     if(reset)reset.remove();
 
