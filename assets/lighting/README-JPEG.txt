@@ -1,0 +1,1 @@
+JPEG assets are committed as binary blobs in subsequent commit.
