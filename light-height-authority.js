@@ -13,52 +13,79 @@
     try{return frame.contentDocument||null;}catch(_){return null;}
   }
 
+  function elementBottomInsideRoot(el,root){
+    if(!el||!root)return 0;
+
+    let top=0;
+    let node=el;
+    let guard=0;
+    while(node&&node!==root&&guard<20){
+      top+=Number(node.offsetTop)||0;
+      node=node.offsetParent;
+      guard++;
+    }
+
+    if(node===root){
+      return top+(Number(el.offsetHeight)||0);
+    }
+
+    // Repli de sécurité si la chaîne offsetParent ne rejoint pas app-shell.
+    const rootRect=root.getBoundingClientRect();
+    const rect=el.getBoundingClientRect();
+    return Math.max(0,rect.bottom-rootRect.top);
+  }
+
   function measureVisibleContent(){
     const doc=frameDoc();
-    if(!doc)return 0;
+    if(!doc)return {height:0,technical:false};
     const root=doc.querySelector('.app-shell')||doc.body;
-    if(!root)return 0;
+    if(!root)return {height:0,technical:false};
 
-    const rootRect=root.getBoundingClientRect();
     const win=doc.defaultView;
     const isTechnical=doc.documentElement.classList.contains('bos-light-section-technical');
 
-    // Dans FICHES TECHNIQUES, la hauteur est ancrée directement sur le bas
-    // réel de FALL OFF. Cela garantit que son arrondi inférieur n'est jamais
-    // rogné, sans dépendre de la hauteur précédente de l'iframe.
+    // FICHES TECHNIQUES : FALL OFF est la référence absolue du bas de page.
+    // offsetTop + offsetHeight mesure sa vraie boîte de layout et ne dépend pas
+    // de la hauteur actuelle de l'iframe, donc aucun refresh ne peut la rogner.
     if(isTechnical){
       const falloff=doc.getElementById('bosMiniPlateau');
       if(falloff){
         const style=win?.getComputedStyle(falloff);
         if(style&&style.display!=='none'&&style.visibility!=='hidden'){
-          const rect=falloff.getBoundingClientRect();
           const marginBottom=parseFloat(style.marginBottom||'0')||0;
-          const SAFE_TECHNICAL_BOTTOM=24;
-          return Math.max(1,Math.ceil(rect.bottom-rootRect.top+marginBottom+SAFE_TECHNICAL_BOTTOM));
+          const SAFE_TECHNICAL_BOTTOM=32;
+          const bottom=elementBottomInsideRoot(falloff,root);
+          return {
+            height:Math.max(1,Math.ceil(bottom+marginBottom+SAFE_TECHNICAL_BOTTOM)),
+            technical:true
+          };
         }
       }
     }
 
-    let bottom=rootRect.top;
+    let bottom=0;
     Array.from(root.children).forEach(el=>{
       const style=win?.getComputedStyle(el);
       if(!style||style.display==='none'||style.visibility==='hidden')return;
-      const rect=el.getBoundingClientRect();
-      if(rect.width===0&&rect.height===0)return;
+      if((Number(el.offsetWidth)||0)===0&&(Number(el.offsetHeight)||0)===0)return;
       const marginBottom=parseFloat(style.marginBottom||'0')||0;
-      bottom=Math.max(bottom,rect.bottom+marginBottom);
+      bottom=Math.max(bottom,elementBottomInsideRoot(el,root)+marginBottom);
     });
 
-    // Applications : petite marge fixe depuis le contenu réellement visible.
-    return Math.max(1,Math.ceil(bottom-rootRect.top+6));
+    return {height:Math.max(1,Math.ceil(bottom+6)),technical:false};
   }
 
   function apply(){
     raf=0;
-    const required=measureVisibleContent();
+    const measured=measureVisibleContent();
+    const required=measured.height;
     if(!required)return;
 
-    if(frame.style.minHeight!=='1px')frame.style.minHeight='1px';
+    // En mode technique, min-height protège FALL OFF contre tout calcul trop
+    // court provenant d'un autre script pendant le chargement. En Applications,
+    // on la libère afin de ne jamais conserver un ancien grand espace vide.
+    const wantedMin=measured.technical?required+'px':'1px';
+    if(frame.style.minHeight!==wantedMin)frame.style.minHeight=wantedMin;
 
     const current=parseFloat(frame.style.height)||0;
     if(Math.abs(current-required)>1)frame.style.height=required+'px';
@@ -70,6 +97,8 @@
   }
 
   function installAuthority(){
+    // Fall Off appelle BOSExpoHostFit pendant les interactions. Il est relié à
+    // la même mesure stable que tout le reste de LIGHT.
     try{
       Object.defineProperty(window,'BOSExpoHostFit',{
         configurable:true,
@@ -79,6 +108,7 @@
     }catch(_){
       window.BOSExpoHostFit=schedule;
     }
+    window.BOSLightFit=schedule;
   }
 
   function bindInner(){
@@ -98,7 +128,15 @@
       if(falloff)innerResizeObserver.observe(falloff);
     }
 
-    innerMutationObserver=new MutationObserver(schedule);
+    innerMutationObserver=new MutationObserver(()=>{
+      // Si FALL OFF vient juste d'être injectée, on l'ajoute aussi à
+      // ResizeObserver avant de recalculer.
+      const falloff=doc.getElementById('bosMiniPlateau');
+      if(falloff&&innerResizeObserver){
+        try{innerResizeObserver.observe(falloff);}catch(_){ }
+      }
+      schedule();
+    });
     innerMutationObserver.observe(doc.documentElement,{
       subtree:true,
       childList:true,
@@ -108,10 +146,14 @@
 
     doc.addEventListener('load',schedule,true);
     doc.addEventListener('toggle',schedule,true);
-    doc.addEventListener('click',()=>setTimeout(schedule,0),true);
+    doc.addEventListener('click',()=>{
+      setTimeout(schedule,0);
+      setTimeout(schedule,60);
+      setTimeout(schedule,180);
+    },true);
 
     installAuthority();
-    [0,40,120,300,700,1200].forEach(ms=>setTimeout(schedule,ms));
+    [0,30,80,160,320,640,1000,1600].forEach(ms=>setTimeout(schedule,ms));
   }
 
   frame.addEventListener('load',()=>{
@@ -126,7 +168,7 @@
 
   installAuthority();
   if(frameDoc()?.readyState==='complete'||frameDoc()?.readyState==='interactive')bindInner();
-  [0,60,180,500,1000,1500].forEach(ms=>setTimeout(()=>{
+  [0,60,180,500,1000,1800].forEach(ms=>setTimeout(()=>{
     installAuthority();
     schedule();
   },ms));
