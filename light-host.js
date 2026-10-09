@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.4';
+  const VERSION='2.0.5';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
@@ -46,8 +46,22 @@
     if(!doc||!frame)return;
     const root=doc.querySelector('.app-shell')||doc.body;
     if(!root)return;
-    const rect=root.getBoundingClientRect();
-    const h=Math.max(1,Math.ceil(rect.height));
+
+    const rootRect=root.getBoundingClientRect();
+    let contentBottom=rootRect.top;
+    const win=doc.defaultView;
+
+    Array.from(root.children).forEach(el=>{
+      const style=win?.getComputedStyle(el);
+      if(style?.display==='none'||style?.visibility==='hidden')return;
+      const rect=el.getBoundingClientRect();
+      if(rect.width===0&&rect.height===0)return;
+      const marginBottom=parseFloat(style?.marginBottom||'0')||0;
+      contentBottom=Math.max(contentBottom,rect.bottom+marginBottom);
+    });
+
+    const visualHeight=Math.max(0,contentBottom-rootRect.top)+4;
+    const h=Math.max(1,Math.ceil(rootRect.height),Math.ceil(root.scrollHeight||0),Math.ceil(visualHeight));
     if(Math.abs((parseFloat(frame.style.height)||0)-h)>1)frame.style.height=h+'px';
   }
 
