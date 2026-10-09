@@ -1,4 +1,4 @@
-/* V1.2.7 — LIGHT + EXPO : géométrie commune des bulles */
+/* V1.2.8 — LIGHT : géométrie commune + sélecteur Applications / Fiches techniques */
 :root{
   --bos-bubble-gap:12px;
   --bos-bubble-radius:22px;
@@ -46,7 +46,33 @@
 }
 .suite-utility-btn:active{transform:translateY(1px)}
 
-/* 01 utilise exactement la même coque que 02 → 06. */
+/* Même composant que FRAME : VUE RÉELLE / PREVIEW. */
+.mode-switch.light-section-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0 0 10px;
+}
+.mode-switch.light-section-switch .mode-choice{
+  min-height:38px;
+  border:1px solid var(--line);
+  background:var(--chip-bg,#E7E7E3);
+  color:var(--muted);
+  border-radius:999px;
+  padding:8px 12px;
+  font-family:Montserrat,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+.mode-switch.light-section-switch .mode-choice.active{
+  background:var(--chip-active-bg,#92B8C0);
+  border-color:var(--chip-active-bg,#92B8C0);
+  color:var(--chip-active-text,#182126);
+}
+
+/* 01 utilise exactement la même coque que les autres bulles. */
 .shared-camera-card{
   width:100%;
   margin:0 0 var(--bos-bubble-gap);
