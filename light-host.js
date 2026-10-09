@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.1';
+  const VERSION='2.0.2';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
@@ -48,6 +48,31 @@
     if(Math.abs((parseFloat(frame.style.height)||0)-h)>1)frame.style.height=h+'px';
   }
 
+  function syncCollapsedBubbleHeights(doc){
+    const referenceDetails=doc.getElementById('cameraDetails');
+    const referenceSummary=referenceDetails?.querySelector(':scope > summary.collapsible-heading');
+    if(!referenceDetails||!referenceSummary)return;
+
+    let height=0;
+    if(!referenceDetails.open){
+      height=referenceSummary.getBoundingClientRect().height;
+    }else{
+      const width=Math.max(1,referenceDetails.getBoundingClientRect().width);
+      const probe=doc.createElement('details');
+      probe.className=referenceDetails.className;
+      probe.style.cssText=`position:absolute!important;visibility:hidden!important;pointer-events:none!important;left:-9999px!important;top:0!important;width:${width}px!important;margin:0!important;`;
+      const clone=referenceSummary.cloneNode(true);
+      probe.appendChild(clone);
+      doc.body.appendChild(probe);
+      height=clone.getBoundingClientRect().height;
+      probe.remove();
+    }
+
+    if(height>0){
+      doc.documentElement.style.setProperty('--bos-light-collapsed-heading-height',`${Math.ceil(height)}px`);
+    }
+  }
+
   function applyTheme(theme){
     const value=theme==='dark'?'dark':'light';
     document.documentElement.dataset.theme=value;
@@ -73,8 +98,14 @@
       details.addEventListener('toggle',()=>{
         bubbleState[key]=details.open;
         saveBubbles();
-        requestAnimationFrame(fit);
-        setTimeout(fit,80);
+        requestAnimationFrame(()=>{
+          syncCollapsedBubbleHeights(doc);
+          fit();
+        });
+        setTimeout(()=>{
+          syncCollapsedBubbleHeights(doc);
+          fit();
+        },80);
       });
     });
   }
@@ -102,6 +133,15 @@ html.bos-light-split-embed .collapsible-heading{padding-right:56px!important}
 html.bos-light-split-embed .collapsible-heading .summary-value{padding-right:30px!important;max-width:calc(100% - 190px)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
 html.bos-light-split-embed .collapsible-heading .chevron{right:18px!important}
 html.bos-light-split-embed .camera-card .summary-value{max-width:calc(100% - 190px)!important}
+
+/* Toutes les bulles repliées prennent exactement la hauteur de la bulle 01 */
+html.bos-light-split-embed details.collapsible-card:not([open]) > summary.collapsible-heading{
+  height:var(--bos-light-collapsed-heading-height)!important;
+  min-height:var(--bos-light-collapsed-heading-height)!important;
+  max-height:var(--bos-light-collapsed-heading-height)!important;
+  box-sizing:border-box!important;
+}
+
 @media (max-width:760px){
   html.bos-light-split-embed .collapsible-heading .summary-value,
   html.bos-light-split-embed .camera-card .summary-value,
@@ -112,11 +152,20 @@ html.bos-light-split-embed .camera-card .summary-value{max-width:calc(100% - 190
     }
     bindBubbles(doc);
     applyTheme(localStorage.getItem(THEME_KEY)||'light');
+    syncCollapsedBubbleHeights(doc);
     fit();
+
+    doc.fonts?.ready?.then(()=>{
+      syncCollapsedBubbleHeights(doc);
+      fit();
+    }).catch(()=>{});
 
     if(!frame._bosSplitResizeObserver&&'ResizeObserver' in window){
       const root=doc.querySelector('.app-shell')||doc.body;
-      const ro=new ResizeObserver(()=>requestAnimationFrame(fit));
+      const ro=new ResizeObserver(()=>requestAnimationFrame(()=>{
+        syncCollapsedBubbleHeights(doc);
+        fit();
+      }));
       if(root)ro.observe(root);
       frame._bosSplitResizeObserver=ro;
     }
@@ -126,7 +175,10 @@ html.bos-light-split-embed .camera-card .summary-value{max-width:calc(100% - 190
       frame._bosSplitMutationObserver=mo;
     }
     doc.addEventListener('click',()=>setTimeout(fit,0),true);
-    [60,180,500,1000].forEach(ms=>setTimeout(fit,ms));
+    [60,180,500,1000].forEach(ms=>setTimeout(()=>{
+      syncCollapsedBubbleHeights(doc);
+      fit();
+    },ms));
   }
 
   frame?.addEventListener('load',prepareFrame);
