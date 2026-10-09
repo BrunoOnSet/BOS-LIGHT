@@ -1,9 +1,10 @@
-const CACHE="bos-light-v2-0-7";
+const CACHE="bos-light-v2-0-8";
 const ASSETS=[
   "./",
   "./index.html",
   "./light-host.js",
   "./light-falloff-bridge.js",
+  "./light-shadow-images.js",
   "./light-iframe-height-fix.js",
   "./style.css",
   "./continuous.css",
@@ -11,6 +12,8 @@ const ASSETS=[
   "./assets/logo-bos-header.jpg",
   "./assets/lighting/3points/01-systeme-3-points.jpg?v=20261009-1",
   "./assets/lighting/3points/02-key-light.jpg?v=20261009-1",
+  "./assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=20261009-2",
+  "./assets/lighting/shadow-hardness/02-durete-des-ombres.jpg?v=20261009-2",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./modules/light/index.html",
