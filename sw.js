@@ -1,4 +1,4 @@
-const CACHE="bos-light-v2-0-12";
+const CACHE="bos-light-v2-0-13";
 const ASSETS=[
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS=[
   "./light-falloff-bridge.js",
   "./light-shadow-images.js",
   "./light-height-authority.js",
+  "./light-mobile-falloff-guard.js",
   "./style.css",
   "./continuous.css",
   "./manifest.webmanifest",
