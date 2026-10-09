@@ -14,11 +14,11 @@
 
     const images=panel.querySelectorAll('.bft-reference-images img');
     if(images[0]){
-      images[0].src='/BOS-LIGHT/assets/lighting/shadow-hardness/01-duretées-des-ombres.jpg?v=20261009-1';
+      images[0].src='/BOS-LIGHT/assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=20261009-2';
       images[0].alt='Dureté des ombres — schéma 1';
     }
     if(images[1]){
-      images[1].src='/BOS-LIGHT/assets/lighting/shadow-hardness/02-duretées-des-ombres.jpg?v=20261009-1';
+      images[1].src='/BOS-LIGHT/assets/lighting/shadow-hardness/02-durete-des-ombres.jpg?v=20261009-2';
       images[1].alt='Dureté des ombres — schéma 2';
     }
     return images.length>=2;
