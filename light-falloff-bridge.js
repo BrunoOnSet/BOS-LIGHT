@@ -16,7 +16,19 @@
     if(!doc)return;
     const root=doc.querySelector('.app-shell')||doc.body;
     if(!root)return;
-    const h=Math.max(1,Math.ceil(root.getBoundingClientRect().height));
+
+    const rootRect=root.getBoundingClientRect();
+    const scrollHeight=Math.ceil(root.scrollHeight||0);
+    const rectHeight=Math.ceil(rootRect.height||0);
+    const bodyHeight=Math.ceil(doc.body?.scrollHeight||0);
+    const documentHeight=Math.ceil(doc.documentElement?.scrollHeight||0);
+
+    // Marge de sécurité volontaire : certains navigateurs tronquent de quelques
+    // pixels la dernière carte d'un iframe auto-dimensionné, surtout après
+    // changement d'onglet ou injection dynamique des fiches techniques.
+    const SAFE_BOTTOM=36;
+    const h=Math.max(1,scrollHeight,rectHeight,bodyHeight,documentHeight)+SAFE_BOTTOM;
+
     if(Math.abs((parseFloat(frame.style.height)||0)-h)>1)frame.style.height=h+'px';
   }
 
