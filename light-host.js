@@ -1,13 +1,15 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.3';
+  const VERSION='2.0.4';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
   const frame=document.getElementById('lightFrame');
   const themeBtn=document.getElementById('themeBtn');
   const resetBtn=document.getElementById('suiteResetBtn');
+  const applicationsModeBtn=document.getElementById('applicationsModeBtn');
+  const technicalModeBtn=document.getElementById('technicalModeBtn');
   const installRow=document.getElementById('installAppRow');
   const installBtn=document.getElementById('installAppBtn');
   const installDialog=document.getElementById('installDialog');
@@ -17,6 +19,7 @@
   const projectDialog=document.getElementById('projectDialog');
   const themeColor=document.getElementById('themeColor');
   let deferredInstallPrompt=null;
+  let sectionMode='applications';
 
   function standalone(){
     return window.matchMedia?.('(display-mode: standalone)').matches===true||window.navigator.standalone===true;
@@ -46,6 +49,26 @@
     const rect=root.getBoundingClientRect();
     const h=Math.max(1,Math.ceil(rect.height));
     if(Math.abs((parseFloat(frame.style.height)||0)-h)>1)frame.style.height=h+'px';
+  }
+
+  function applySectionMode(mode){
+    sectionMode=mode==='technical'?'technical':'applications';
+    const applicationsActive=sectionMode==='applications';
+    applicationsModeBtn?.classList.toggle('active',applicationsActive);
+    technicalModeBtn?.classList.toggle('active',!applicationsActive);
+    applicationsModeBtn?.setAttribute('aria-pressed',String(applicationsActive));
+    technicalModeBtn?.setAttribute('aria-pressed',String(!applicationsActive));
+
+    const doc=frameDoc();
+    if(doc){
+      doc.documentElement.classList.toggle('bos-light-section-applications',applicationsActive);
+      doc.documentElement.classList.toggle('bos-light-section-technical',!applicationsActive);
+      doc.documentElement.dataset.bosLightSection=sectionMode;
+    }
+
+    requestAnimationFrame(fit);
+    setTimeout(fit,40);
+    setTimeout(fit,180);
   }
 
   function syncCollapsedBubbleHeights(doc){
@@ -135,6 +158,17 @@ html.bos-light-split-embed main>footer{display:none!important}
 html.bos-light-split-embed .app-shell{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important}
 html.bos-light-split-embed #cameraDetails{margin-top:0!important}
 
+/* Onglet APPLICATIONS : uniquement 01 à 04. */
+html.bos-light-split-embed.bos-light-section-applications #bosThreePointPanel,
+html.bos-light-split-embed.bos-light-section-applications #bosShadowHardnessPanel,
+html.bos-light-split-embed.bos-light-section-applications #bosMiniPlateau{display:none!important}
+
+/* Onglet FICHES TECHNIQUES : uniquement 05 à 07. */
+html.bos-light-split-embed.bos-light-section-technical #cameraDetails,
+html.bos-light-split-embed.bos-light-section-technical #lightDetails,
+html.bos-light-split-embed.bos-light-section-technical #fillDetails,
+html.bos-light-split-embed.bos-light-section-technical #gelDetails{display:none!important}
+
 /* V0.63 — réserve la flèche à droite dans les têtes repliables */
 html.bos-light-split-embed .collapsible-heading{padding-right:56px!important}
 html.bos-light-split-embed .collapsible-heading .summary-value{padding-right:30px!important;max-width:calc(100% - 190px)!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
@@ -149,8 +183,9 @@ html.bos-light-split-embed details.collapsible-card:not([open]) > summary.collap
   box-sizing:border-box!important;
 }
 
-/* 05 ÉCLAIRAGE 3POINTS et 06 FALL OFF utilisent une autre structure : même hauteur extérieure que 01 */
+/* 05, 06 et 07 utilisent une autre structure : même hauteur extérieure que 01. */
 html.bos-light-split-embed #bosThreePointPanel.bmp-collapsed,
+html.bos-light-split-embed #bosShadowHardnessPanel.bmp-collapsed,
 html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed{
   height:var(--bos-light-collapsed-card-height)!important;
   min-height:var(--bos-light-collapsed-card-height)!important;
@@ -158,6 +193,7 @@ html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed{
   box-sizing:border-box!important;
 }
 html.bos-light-split-embed #bosThreePointPanel.bmp-collapsed > .bft-head,
+html.bos-light-split-embed #bosShadowHardnessPanel.bmp-collapsed > .bft-head,
 html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed > .bft-head{
   height:100%!important;
   min-height:0!important;
@@ -175,6 +211,7 @@ html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed > .bft-head{
     }
     bindBubbles(doc);
     applyTheme(localStorage.getItem(THEME_KEY)||'light');
+    applySectionMode(sectionMode);
     syncCollapsedBubbleHeights(doc);
     fit();
 
@@ -212,6 +249,10 @@ html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed > .bft-head{
 
   frame?.addEventListener('load',prepareFrame);
   if(frameDoc()?.readyState==='complete'||frameDoc()?.readyState==='interactive')prepareFrame();
+
+  applicationsModeBtn?.addEventListener('click',()=>applySectionMode('applications'));
+  technicalModeBtn?.addEventListener('click',()=>applySectionMode('technical'));
+  applySectionMode('applications');
 
   themeBtn?.addEventListener('click',()=>{
     applyTheme((document.documentElement.dataset.theme||'light')==='dark'?'light':'dark');
