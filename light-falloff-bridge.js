@@ -38,38 +38,79 @@
     return true;
   }
 
+  function bindPanelToggle(section,toggleId){
+    const toggle=section.querySelector('#'+toggleId);
+    if(!toggle||toggle.dataset.bosBound==='1')return;
+    toggle.dataset.bosBound='1';
+    toggle.addEventListener('click',()=>{
+      const collapsed=section.classList.toggle('bmp-collapsed');
+      toggle.setAttribute('aria-expanded',String(!collapsed));
+      setTimeout(fit,20);
+      setTimeout(fit,160);
+    });
+    section.querySelectorAll('img').forEach(el=>el.addEventListener('load',fit));
+  }
+
   function ensureThreePointPanel(doc,panel){
     let three=doc.getElementById('bosThreePointPanel');
     if(!three){
       three=doc.createElement('section');
       three.id='bosThreePointPanel';
       three.className='bmp-collapsed';
-      three.setAttribute('aria-label','Éclairage 3points');
+      three.setAttribute('aria-label','Système 3 points');
       three.innerHTML=`
         <button type="button" class="bft-head" id="bftThreePointToggle" aria-expanded="false">
           <span class="bft-number">05</span>
-          <span class="bft-title"><strong>ÉCLAIRAGE 3POINTS</strong></span>
+          <span class="bft-title"><strong>SYSTÈME 3 POINTS</strong><small>ÉCLAIRAGE PORTRAIT</small></span>
           <span class="bft-chevron" aria-hidden="true">⌄</span>
         </button>
         <div class="bft-body">
-          <div class="bft-threepoint-images">
+          <div class="bft-reference-images">
             <img src="/BOS-LIGHT/assets/lighting/3points/01-systeme-3-points.jpg?v=20261009-1" alt="Système 3 points">
-            <img src="/BOS-LIGHT/assets/lighting/3points/02-key-light.jpg?v=20261009-1" alt="Schémas d’éclairage Key Light">
+            <img src="/BOS-LIGHT/assets/lighting/3points/02-key-light.jpg?v=20261009-1" alt="Schémas d’éclairage portrait">
           </div>
         </div>`;
       panel.parentNode.insertBefore(three,panel);
-
-      const toggle=three.querySelector('#bftThreePointToggle');
-      toggle.addEventListener('click',()=>{
-        const collapsed=three.classList.toggle('bmp-collapsed');
-        toggle.setAttribute('aria-expanded',String(!collapsed));
-        setTimeout(fit,20);
-        setTimeout(fit,160);
-      });
-
-      three.querySelectorAll('img').forEach(el=>el.addEventListener('load',fit));
+    }else{
+      three.setAttribute('aria-label','Système 3 points');
+      const number=three.querySelector('.bft-number');
+      if(number)number.textContent='05';
+      const title=three.querySelector('.bft-title strong');
+      if(title)title.textContent='SYSTÈME 3 POINTS';
+      let subtitle=three.querySelector('.bft-title small');
+      if(!subtitle&&three.querySelector('.bft-title')){
+        subtitle=doc.createElement('small');
+        three.querySelector('.bft-title').appendChild(subtitle);
+      }
+      if(subtitle)subtitle.textContent='ÉCLAIRAGE PORTRAIT';
     }
+    bindPanelToggle(three,'bftThreePointToggle');
     return three;
+  }
+
+  function ensureShadowHardnessPanel(doc,panel){
+    let shadow=doc.getElementById('bosShadowHardnessPanel');
+    if(!shadow){
+      shadow=doc.createElement('section');
+      shadow.id='bosShadowHardnessPanel';
+      shadow.className='bmp-collapsed';
+      shadow.setAttribute('aria-label','Dureté des ombres');
+      shadow.innerHTML=`
+        <button type="button" class="bft-head" id="bftShadowHardnessToggle" aria-expanded="false">
+          <span class="bft-number">06</span>
+          <span class="bft-title"><strong>DURETÉ DES OMBRES</strong><small>GESTION DE LA SOURCE</small></span>
+          <span class="bft-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="bft-body">
+          <div class="bft-reference-images">
+            <img src="/BOS-LIGHT/assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=1" alt="Dureté des ombres — schéma 1">
+            <img src="/BOS-LIGHT/assets/lighting/shadow-hardness/02-gestion-de-la-source.jpg?v=1" alt="Dureté des ombres — schéma 2">
+          </div>
+        </div>`;
+      panel.parentNode.insertBefore(shadow,panel);
+    }
+    bindPanelToggle(shadow,'bftShadowHardnessToggle');
+    return shadow;
   }
 
   function customizeFalloff(){
@@ -80,18 +121,24 @@
     if(!panel)return false;
 
     const number=panel.querySelector('.bft-number');
-    if(number)number.textContent='06';
+    if(number)number.textContent='07';
 
     const title=panel.querySelector('.bft-title strong');
     if(title)title.textContent='FALL OFF';
 
-    const subtitle=panel.querySelector('.bft-title small');
-    if(subtitle)subtitle.remove();
+    const titleWrap=panel.querySelector('.bft-title');
+    let subtitle=panel.querySelector('.bft-title small');
+    if(!subtitle&&titleWrap){
+      subtitle=doc.createElement('small');
+      titleWrap.appendChild(subtitle);
+    }
+    if(subtitle)subtitle.textContent='GESTION DU CONTRASTE';
 
     const reset=panel.querySelector('.bft-reset');
     if(reset)reset.remove();
 
     ensureThreePointPanel(doc,panel);
+    ensureShadowHardnessPanel(doc,panel);
 
     let style=doc.getElementById('bosLightFalloffSimpleStyle');
     if(!style){
@@ -105,14 +152,19 @@ html.bos-suite-embed .bft-projector{width:92px;height:66px}
 html.bos-suite-embed .bft-person{width:84px;height:84px}
 html.bos-suite-embed #bosMiniPlateau .bft-sketch [stroke]{stroke-width:.8 !important}
 html.bos-suite-embed #bosMiniPlateau .bft-wall .bft-sketch [stroke]{stroke-width:.8 !important}
-html.bos-suite-embed #bosThreePointPanel{width:100%;margin-top:12px;border:1px solid var(--card-border,#D7D9D6);border-radius:22px;background:var(--panel);box-shadow:none;overflow:hidden;padding:0}
-html.bos-suite-embed #bosThreePointPanel.bmp-collapsed{height:82px}
-html.bos-suite-embed #bosThreePointPanel.bmp-collapsed .bft-body{display:none}
-html.bos-suite-embed #bosThreePointPanel:not(.bmp-collapsed) .bft-head{border-bottom:1px solid var(--line)}
-html.bos-suite-embed #bosThreePointPanel .bft-body{padding:16px 18px 18px}
-html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images{display:flex;flex-direction:column;gap:14px}
-html.bos-suite-embed #bosThreePointPanel .bft-threepoint-images img{display:block;width:100%;height:auto;border:0;border-radius:12px;background:#f2f0eb}
-@media(max-width:520px){html.bos-suite-embed .bft-projector{width:78px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}html.bos-suite-embed #bosThreePointPanel .bft-body{padding:14px 15px 16px}}
+html.bos-suite-embed #bosThreePointPanel,
+html.bos-suite-embed #bosShadowHardnessPanel{width:100%;margin-top:12px;border:1px solid var(--card-border,#D7D9D6);border-radius:22px;background:var(--panel);box-shadow:none;overflow:hidden;padding:0}
+html.bos-suite-embed #bosThreePointPanel.bmp-collapsed,
+html.bos-suite-embed #bosShadowHardnessPanel.bmp-collapsed{height:82px}
+html.bos-suite-embed #bosThreePointPanel.bmp-collapsed .bft-body,
+html.bos-suite-embed #bosShadowHardnessPanel.bmp-collapsed .bft-body{display:none}
+html.bos-suite-embed #bosThreePointPanel:not(.bmp-collapsed) .bft-head,
+html.bos-suite-embed #bosShadowHardnessPanel:not(.bmp-collapsed) .bft-head{border-bottom:1px solid var(--line)}
+html.bos-suite-embed #bosThreePointPanel .bft-body,
+html.bos-suite-embed #bosShadowHardnessPanel .bft-body{padding:16px 18px 18px}
+html.bos-suite-embed .bft-reference-images{display:flex;flex-direction:column;gap:14px}
+html.bos-suite-embed .bft-reference-images img{display:block;width:100%;height:auto;border:0;border-radius:12px;background:#f2f0eb}
+@media(max-width:520px){html.bos-suite-embed .bft-projector{width:78px;height:56px}html.bos-suite-embed .bft-person{width:72px;height:72px}html.bos-suite-embed #bosThreePointPanel .bft-body,html.bos-suite-embed #bosShadowHardnessPanel .bft-body{padding:14px 15px 16px}}
 `;
 
     const projectorSvg=panel.querySelector('#bftProjector svg');
