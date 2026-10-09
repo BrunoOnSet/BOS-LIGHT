@@ -1,12 +1,15 @@
-const CACHE="bos-light-v2-0-0";
+const CACHE="bos-light-v2-0-1";
 const ASSETS=[
   "./",
   "./index.html",
   "./light-host.js",
+  "./light-falloff-bridge.js",
   "./style.css",
   "./continuous.css",
   "./manifest.webmanifest",
   "./assets/logo-bos-header.jpg",
+  "./assets/lighting/3points/01-systeme-3-points.jpg?v=20261009-1",
+  "./assets/lighting/3points/02-key-light.jpg?v=20261009-1",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./modules/light/index.html",
@@ -32,11 +35,11 @@ self.addEventListener("fetch",e=>{
   const url=new URL(e.request.url);
   if(url.hostname===CAMERA_DB_HOST&&DB_PATHS.has(url.pathname))return;
   if(e.request.mode==="navigate"){
-    e.respondWith(fetch(e.request).then(r=>{const cp=r.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));return r;}).catch(async()=>{
+    e.respondWith(fetch(e.request).then(r=>{if(r.ok){const cp=r.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));}return r;}).catch(async()=>{
       if(/\/modules\/light(?:\/|$)/i.test(url.pathname))return (await caches.match('./modules/light/index.html'))||caches.match('./index.html');
       return caches.match('./index.html');
     }));
     return;
   }
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(net=>{const cp=net.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));return net;})));
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(net=>{if(net.ok){const cp=net.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));}return net;})));
 });
