@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.2';
+  const VERSION='2.0.3';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
@@ -53,9 +53,12 @@
     const referenceSummary=referenceDetails?.querySelector(':scope > summary.collapsible-heading');
     if(!referenceDetails||!referenceSummary)return;
 
-    let height=0;
+    let headingHeight=0;
+    let cardHeight=0;
+
     if(!referenceDetails.open){
-      height=referenceSummary.getBoundingClientRect().height;
+      headingHeight=referenceSummary.getBoundingClientRect().height;
+      cardHeight=referenceDetails.getBoundingClientRect().height;
     }else{
       const width=Math.max(1,referenceDetails.getBoundingClientRect().width);
       const probe=doc.createElement('details');
@@ -64,12 +67,16 @@
       const clone=referenceSummary.cloneNode(true);
       probe.appendChild(clone);
       doc.body.appendChild(probe);
-      height=clone.getBoundingClientRect().height;
+      headingHeight=clone.getBoundingClientRect().height;
+      cardHeight=probe.getBoundingClientRect().height;
       probe.remove();
     }
 
-    if(height>0){
-      doc.documentElement.style.setProperty('--bos-light-collapsed-heading-height',`${Math.ceil(height)}px`);
+    if(headingHeight>0){
+      doc.documentElement.style.setProperty('--bos-light-collapsed-heading-height',`${Math.ceil(headingHeight)}px`);
+    }
+    if(cardHeight>0){
+      doc.documentElement.style.setProperty('--bos-light-collapsed-card-height',`${Math.ceil(cardHeight)}px`);
     }
   }
 
@@ -142,6 +149,22 @@ html.bos-light-split-embed details.collapsible-card:not([open]) > summary.collap
   box-sizing:border-box!important;
 }
 
+/* 05 ÉCLAIRAGE 3POINTS et 06 FALL OFF utilisent une autre structure : même hauteur extérieure que 01 */
+html.bos-light-split-embed #bosThreePointPanel.bmp-collapsed,
+html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed{
+  height:var(--bos-light-collapsed-card-height)!important;
+  min-height:var(--bos-light-collapsed-card-height)!important;
+  max-height:var(--bos-light-collapsed-card-height)!important;
+  box-sizing:border-box!important;
+}
+html.bos-light-split-embed #bosThreePointPanel.bmp-collapsed > .bft-head,
+html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed > .bft-head{
+  height:100%!important;
+  min-height:0!important;
+  max-height:100%!important;
+  box-sizing:border-box!important;
+}
+
 @media (max-width:760px){
   html.bos-light-split-embed .collapsible-heading .summary-value,
   html.bos-light-split-embed .camera-card .summary-value,
@@ -170,11 +193,17 @@ html.bos-light-split-embed details.collapsible-card:not([open]) > summary.collap
       frame._bosSplitResizeObserver=ro;
     }
     if(!frame._bosSplitMutationObserver){
-      const mo=new MutationObserver(()=>requestAnimationFrame(fit));
+      const mo=new MutationObserver(()=>requestAnimationFrame(()=>{
+        syncCollapsedBubbleHeights(doc);
+        fit();
+      }));
       mo.observe(doc.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['open','hidden','class','style']});
       frame._bosSplitMutationObserver=mo;
     }
-    doc.addEventListener('click',()=>setTimeout(fit,0),true);
+    doc.addEventListener('click',()=>setTimeout(()=>{
+      syncCollapsedBubbleHeights(doc);
+      fit();
+    },0),true);
     [60,180,500,1000].forEach(ms=>setTimeout(()=>{
       syncCollapsedBubbleHeights(doc);
       fit();
