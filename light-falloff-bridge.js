@@ -72,7 +72,7 @@
       three.setAttribute('aria-label','Système 3 points');
       three.innerHTML=`
         <button type="button" class="bft-head" id="bftThreePointToggle" aria-expanded="false">
-          <span class="bft-number">05</span>
+          <span class="bft-number">01</span>
           <span class="bft-title"><strong>SYSTÈME 3 POINTS</strong><small>ÉCLAIRAGE PORTRAIT</small></span>
           <span class="bft-chevron" aria-hidden="true">⌄</span>
         </button>
@@ -86,7 +86,7 @@
     }else{
       three.setAttribute('aria-label','Système 3 points');
       const number=three.querySelector('.bft-number');
-      if(number)number.textContent='05';
+      if(number)number.textContent='01';
       const title=three.querySelector('.bft-title strong');
       if(title)title.textContent='SYSTÈME 3 POINTS';
       let subtitle=three.querySelector('.bft-title small');
@@ -109,7 +109,7 @@
       shadow.setAttribute('aria-label','Dureté des ombres');
       shadow.innerHTML=`
         <button type="button" class="bft-head" id="bftShadowHardnessToggle" aria-expanded="false">
-          <span class="bft-number">06</span>
+          <span class="bft-number">02</span>
           <span class="bft-title"><strong>DURETÉ DES OMBRES</strong><small>GESTION DE LA SOURCE</small></span>
           <span class="bft-chevron" aria-hidden="true">⌄</span>
         </button>
@@ -120,6 +120,9 @@
           </div>
         </div>`;
       panel.parentNode.insertBefore(shadow,panel);
+    }else{
+      const number=shadow.querySelector('.bft-number');
+      if(number)number.textContent='02';
     }
     bindPanelToggle(shadow,'bftShadowHardnessToggle');
     return shadow;
@@ -133,7 +136,7 @@
     if(!panel)return false;
 
     const number=panel.querySelector('.bft-number');
-    if(number)number.textContent='07';
+    if(number)number.textContent='03';
 
     const title=panel.querySelector('.bft-title strong');
     if(title)title.textContent='FALL OFF';
