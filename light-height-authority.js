@@ -21,8 +21,25 @@
 
     const rootRect=root.getBoundingClientRect();
     const win=doc.defaultView;
-    let bottom=rootRect.top;
+    const isTechnical=doc.documentElement.classList.contains('bos-light-section-technical');
 
+    // Dans FICHES TECHNIQUES, la hauteur est ancrée directement sur le bas
+    // réel de FALL OFF. Cela garantit que son arrondi inférieur n'est jamais
+    // rogné, sans dépendre de la hauteur précédente de l'iframe.
+    if(isTechnical){
+      const falloff=doc.getElementById('bosMiniPlateau');
+      if(falloff){
+        const style=win?.getComputedStyle(falloff);
+        if(style&&style.display!=='none'&&style.visibility!=='hidden'){
+          const rect=falloff.getBoundingClientRect();
+          const marginBottom=parseFloat(style.marginBottom||'0')||0;
+          const SAFE_TECHNICAL_BOTTOM=24;
+          return Math.max(1,Math.ceil(rect.bottom-rootRect.top+marginBottom+SAFE_TECHNICAL_BOTTOM));
+        }
+      }
+    }
+
+    let bottom=rootRect.top;
     Array.from(root.children).forEach(el=>{
       const style=win?.getComputedStyle(el);
       if(!style||style.display==='none'||style.visibility==='hidden')return;
@@ -32,8 +49,7 @@
       bottom=Math.max(bottom,rect.bottom+marginBottom);
     });
 
-    // Petite marge fixe. Elle est calculée depuis le contenu visible et ne
-    // dépend jamais de la hauteur précédente de l'iframe.
+    // Applications : petite marge fixe depuis le contenu réellement visible.
     return Math.max(1,Math.ceil(bottom-rootRect.top+6));
   }
 
@@ -42,8 +58,6 @@
     const required=measureVisibleContent();
     if(!required)return;
 
-    // Aucun min-height hérité ne doit pouvoir conserver une ancienne grande
-    // hauteur après un refresh ou un changement d'onglet.
     if(frame.style.minHeight!=='1px')frame.style.minHeight='1px';
 
     const current=parseFloat(frame.style.height)||0;
@@ -56,9 +70,6 @@
   }
 
   function installAuthority(){
-    // Fall Off appelle BOSExpoHostFit à chaque déplacement. On verrouille cette
-    // fonction sur notre mesure stable afin qu'aucun autre script ne puisse
-    // réintroduire un calcul cumulatif.
     try{
       Object.defineProperty(window,'BOSExpoHostFit',{
         configurable:true,
@@ -83,6 +94,8 @@
       innerResizeObserver=new ResizeObserver(schedule);
       innerResizeObserver.observe(root);
       Array.from(root.children).forEach(el=>innerResizeObserver.observe(el));
+      const falloff=doc.getElementById('bosMiniPlateau');
+      if(falloff)innerResizeObserver.observe(falloff);
     }
 
     innerMutationObserver=new MutationObserver(schedule);
