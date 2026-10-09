@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=2.0.0" />
-  <link rel="stylesheet" href="continuous.css?v=2.0.0" />
+  <link rel="stylesheet" href="continuous.css?v=2.0.1" />
 </head>
 <body>
   <main class="shell">
@@ -44,6 +44,11 @@
 
     <div class="suite-utility-row" aria-label="Outils rapides">
       <button class="suite-utility-btn" id="suiteResetBtn" type="button">RESET</button>
+    </div>
+
+    <div class="mode-switch light-section-switch" role="group" aria-label="Type de contenu LIGHT">
+      <button class="mode-choice active" id="applicationsModeBtn" type="button" aria-pressed="true">APPLICATIONS</button>
+      <button class="mode-choice" id="technicalModeBtn" type="button" aria-pressed="false">FICHES TECHNIQUES</button>
     </div>
 
     <section class="continuous-tools light-only-tools" aria-label="LIGHT">
@@ -77,7 +82,7 @@
     </form>
   </dialog>
 
-  <script src="light-host.js?v=2.0.3"></script>
+  <script src="light-host.js?v=2.0.4"></script>
   <script src="light-falloff-bridge.js?v=1.0.2"></script>
 </body>
 </html>
