@@ -82,8 +82,9 @@ self.addEventListener('fetch',event=>{
       url.pathname.endsWith('/')||
       url.pathname.includes('/modules/light')||
       url.pathname.includes('/shared/');
+    const isTechnicalThumb=url.pathname.includes('/assets/thumb-tech-');
 
-    if(isLiveCode){
+    if(isLiveCode||isTechnicalThumb){
       event.respondWith(networkFirst(event.request));
       return;
     }
