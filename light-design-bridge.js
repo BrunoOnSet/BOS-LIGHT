@@ -4,16 +4,20 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
-  /* Fail-safe: the LIGHT content must never remain hidden, even if an older
-     cached index still contains the temporary anti-flash visibility rule. */
-  frame.style.setProperty('visibility','visible','important');
-
-  const DESIGN_VERSION='20261012-lock5';
+  const DESIGN_VERSION='20261012-lock6';
   let activeDoc=null;
   let loadPromise=null;
 
   function frameDoc(){
     try{return frame.contentDocument||null;}catch(_){return null;}
+  }
+
+  function isLightDocument(doc){
+    try{return !!doc&&/\/modules\/light(?:\/|$)/i.test(doc.location.pathname);}catch(_){return false;}
+  }
+
+  function revealFrame(){
+    requestAnimationFrame(()=>frame.classList.add('bos-design-ready'));
   }
 
   function ensureFont(doc){
@@ -98,7 +102,7 @@ html,body,body *,button,input,select,textarea{
   }
 
   function positionOpenDialogs(doc){
-    if(doc!==frameDoc())return;
+    if(doc!==frameDoc()||!isLightDocument(doc))return;
     const rect=frame.getBoundingClientRect();
     const safeViewportTop=getSafeViewportTop();
     const viewportTop=Math.max(12,safeViewportTop-rect.top);
@@ -136,26 +140,8 @@ html,body,body *,button,input,select,textarea{
     },true);
   }
 
-  async function loadFullDesign(doc){
-    try{
-      const [designCss,bubblesCss]=await Promise.all([
-        fetchCss('/BOS-LIGHT/light-design.css'),
-        fetchCss('/BOS-LIGHT/light-bubbles.css')
-      ]);
-      if(doc!==frameDoc())return;
-      ensureStyle(doc,'bosLightDesignInline',designCss);
-      ensureStyle(doc,'bosLightBubblesInline',bubblesCss);
-      enforceOrder(doc);
-      [40,120,300,700,1400,2400].forEach(ms=>setTimeout(()=>enforceOrder(doc),ms));
-    }catch(err){
-      console.warn('[BOS LIGHT design]',err);
-      enforceOrder(doc);
-    }
-  }
-
   function enforceOrder(doc){
-    if(doc!==frameDoc()||!doc.head)return;
-    frame.style.setProperty('visibility','visible','important');
+    if(doc!==frameDoc()||!doc.head||!isLightDocument(doc))return;
     const critical=doc.getElementById('bosLightDesignCritical');
     const design=doc.getElementById('bosLightDesignInline');
     const bubbles=doc.getElementById('bosLightBubblesInline');
@@ -166,10 +152,30 @@ html,body,body *,button,input,select,textarea{
     requestAnimationFrame(()=>window.BOSLightFit?.());
   }
 
+  async function loadFullDesign(doc){
+    try{
+      const [designCss,bubblesCss]=await Promise.all([
+        fetchCss('/BOS-LIGHT/light-design.css'),
+        fetchCss('/BOS-LIGHT/light-bubbles.css')
+      ]);
+      if(doc!==frameDoc()||!isLightDocument(doc))return;
+      ensureStyle(doc,'bosLightDesignInline',designCss);
+      ensureStyle(doc,'bosLightBubblesInline',bubblesCss);
+      enforceOrder(doc);
+      revealFrame();
+      [40,120,300,700,1400,2400].forEach(ms=>setTimeout(()=>enforceOrder(doc),ms));
+    }catch(err){
+      console.warn('[BOS LIGHT design]',err);
+      if(doc===frameDoc()&&isLightDocument(doc)){
+        enforceOrder(doc);
+        revealFrame();
+      }
+    }
+  }
+
   function inject(){
-    frame.style.setProperty('visibility','visible','important');
     const doc=frameDoc();
-    if(!doc||!doc.head)return false;
+    if(!doc||!doc.head||!isLightDocument(doc))return false;
 
     if(doc!==activeDoc){
       activeDoc=doc;
@@ -187,24 +193,26 @@ html,body,body *,button,input,select,textarea{
   }
 
   function refresh(){
-    frame.style.setProperty('visibility','visible','important');
+    frame.classList.remove('bos-design-ready');
     inject();
     [40,120,300,700,1400,2400].forEach(ms=>setTimeout(()=>{
       inject();
       const doc=frameDoc();
-      if(doc)enforceOrder(doc);
+      if(doc&&isLightDocument(doc))enforceOrder(doc);
     },ms));
   }
 
   window.addEventListener('scroll',()=>{
     const doc=frameDoc();
-    if(doc)positionOpenDialogs(doc);
+    if(doc&&isLightDocument(doc))positionOpenDialogs(doc);
   },{passive:true});
   window.addEventListener('resize',()=>{
     const doc=frameDoc();
-    if(doc)positionOpenDialogs(doc);
+    if(doc&&isLightDocument(doc))positionOpenDialogs(doc);
   });
 
   frame.addEventListener('load',refresh);
-  refresh();
+
+  const initialDoc=frameDoc();
+  if(initialDoc&&isLightDocument(initialDoc)&&initialDoc.readyState==='complete')refresh();
 })();
