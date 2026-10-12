@@ -36,7 +36,7 @@
     }
 
     ensureStylesheet(doc,'bosLightDesignCss','/BOS-LIGHT/light-design.css?v=1.1.0');
-    ensureStylesheet(doc,'bosLightBubblesCss','/BOS-LIGHT/light-bubbles.css?v=1.0.0');
+    ensureStylesheet(doc,'bosLightBubblesCss','/BOS-LIGHT/light-bubbles.css?v=1.1.0');
 
     return true;
   }
