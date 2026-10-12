@@ -35,3 +35,50 @@ html[data-theme="dark"],body.dark{
 #bosMiniPlateau:not(.bmp-collapsed){
   border-color:color-mix(in srgb,var(--bos-bubble-warm) 14%,var(--bos-line))!important;
 }
+
+/*
+  FICHES TECHNIQUES — chevron strictement calqué sur les bulles Applications.
+  Le glyphe reste toujours le même (⌄) et pivote à 180° en 0,2 s.
+  On masque le caractère historique injecté par EXPO pour éviter le système ⌄/⌃.
+*/
+#bosThreePointPanel .bft-head,
+#bosShadowHardnessPanel .bft-head,
+#bosMiniPlateau .bft-head{
+  position:relative!important;
+}
+
+#bosThreePointPanel .bft-chevron,
+#bosShadowHardnessPanel .bft-chevron,
+#bosMiniPlateau .bft-chevron{
+  position:absolute!important;
+  right:18px!important;
+  top:50%!important;
+  width:24px!important;
+  height:24px!important;
+  display:grid!important;
+  place-items:center!important;
+  color:var(--bos-accent)!important;
+  font-size:0!important;
+  line-height:1!important;
+  transform:translateY(-50%)!important;
+  pointer-events:none!important;
+}
+
+#bosThreePointPanel .bft-chevron::before,
+#bosShadowHardnessPanel .bft-chevron::before,
+#bosMiniPlateau .bft-chevron::before{
+  content:"⌄";
+  display:block;
+  color:inherit;
+  font-size:18px;
+  line-height:1;
+  transform:rotate(0deg);
+  transform-origin:50% 50%;
+  transition:transform .2s ease;
+}
+
+#bosThreePointPanel:not(.bmp-collapsed) .bft-chevron::before,
+#bosShadowHardnessPanel:not(.bmp-collapsed) .bft-chevron::before,
+#bosMiniPlateau:not(.bmp-collapsed) .bft-chevron::before{
+  transform:rotate(180deg);
+}
