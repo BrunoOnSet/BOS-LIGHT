@@ -4,7 +4,7 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
-  const DESIGN_VERSION='20261012-lock3';
+  const DESIGN_VERSION='20261012-lock4';
   let activeDoc=null;
   let loadPromise=null;
 
@@ -86,12 +86,24 @@ html,body,body *,button,input,select,textarea{
     return response.text();
   }
 
+  function getSafeViewportTop(){
+    let safeTop=12;
+    const stickyHeader=document.querySelector('.topbar');
+    if(stickyHeader){
+      const headerRect=stickyHeader.getBoundingClientRect();
+      const headerIsVisible=headerRect.bottom>0&&headerRect.top<window.innerHeight;
+      if(headerIsVisible)safeTop=Math.max(safeTop,headerRect.bottom+14);
+    }
+    return safeTop;
+  }
+
   function positionOpenDialogs(doc){
     if(doc!==frameDoc())return;
     const rect=frame.getBoundingClientRect();
-    const viewportTop=Math.max(12,-rect.top+12);
+    const safeViewportTop=getSafeViewportTop();
+    const viewportTop=Math.max(12,safeViewportTop-rect.top);
     const viewportBottom=Math.min(rect.height-12,-rect.top+window.innerHeight-12);
-    const available=Math.max(240,viewportBottom-viewportTop);
+    const available=Math.max(180,viewportBottom-viewportTop);
 
     doc.querySelectorAll('dialog.add-dialog[open]').forEach(dialog=>{
       dialog.style.setProperty('top',`${Math.round(viewportTop)}px`,'important');
@@ -102,7 +114,7 @@ html,body,body *,button,input,select,textarea{
       dialog.style.setProperty('transform','translateX(-50%)','important');
       const shell=dialog.querySelector('.dialog-shell');
       if(shell){
-        shell.style.setProperty('max-height',`${Math.max(220,Math.min(760,Math.floor(available)))}px`,'important');
+        shell.style.setProperty('max-height',`${Math.max(180,Math.min(720,Math.floor(available)))}px`,'important');
         shell.style.setProperty('overflow','auto','important');
       }
     });
