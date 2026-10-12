@@ -9,9 +9,12 @@
   }
 
   function ensureThumbStyle(doc){
-    if(doc.getElementById('bosTechnicalThumbStyle'))return;
-    const style=doc.createElement('style');
-    style.id='bosTechnicalThumbStyle';
+    let style=doc.getElementById('bosTechnicalThumbStyle');
+    if(!style){
+      style=doc.createElement('style');
+      style.id='bosTechnicalThumbStyle';
+      doc.head.appendChild(style);
+    }
     style.textContent=`
 #bosThreePointPanel .bft-head,
 #bosShadowHardnessPanel .bft-head,
@@ -49,6 +52,18 @@
 #bosShadowHardnessPanel .bft-chevron,
 #bosMiniPlateau .bft-chevron{z-index:5!important}
 
+/* Sous-titres : réduction très légère, identique sur toutes les bulles. */
+html.bos-light-split-embed .shared-heading-copy p,
+html.bos-light-split-embed .heading-copy p,
+html.bos-light-split-embed .bft-title small{
+  font-size:9.5px!important;
+}
+
+/* Même espace switch → 01 qu'en mode Applications : aucun retrait interne supplémentaire. */
+html.bos-light-split-embed.bos-light-section-technical #bosThreePointPanel{
+  margin-top:0!important;
+}
+
 html[data-theme="dark"] .bos-tech-thumb,
 body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity:.88!important}
 
@@ -65,7 +80,6 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
   .bos-tech-thumb{width:clamp(94px,29vw,112px)!important;border-radius:0 17px 17px 0!important}
 }
 `;
-    doc.head.appendChild(style);
   }
 
   function ensureHeaderThumb(doc,panelId,src){
@@ -99,6 +113,38 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
     return a&&b&&c;
   }
 
+  function setTextIfDifferent(el,value){
+    if(el&&el.textContent!==value)el.textContent=value;
+  }
+
+  function setAttrIfDifferent(el,name,value){
+    if(el&&el.getAttribute(name)!==value)el.setAttribute(name,value);
+  }
+
+  function applyTechnicalLabels(){
+    const doc=frameDoc();
+    if(!doc)return false;
+
+    const three=doc.getElementById('bosThreePointPanel');
+    const shadow=doc.getElementById('bosShadowHardnessPanel');
+    const falloff=doc.getElementById('bosMiniPlateau');
+
+    if(three){
+      setTextIfDifferent(three.querySelector('.bft-title strong'),'POSITION');
+      setAttrIfDifferent(three,'aria-label','Position');
+    }
+    if(shadow){
+      setTextIfDifferent(shadow.querySelector('.bft-title strong'),'SHADOWS');
+      setAttrIfDifferent(shadow,'aria-label','Shadows');
+    }
+    if(falloff){
+      setTextIfDifferent(falloff.querySelector('.bft-title strong'),'FALL OFF');
+      setAttrIfDifferent(falloff,'aria-label','Fall Off');
+    }
+
+    return !!(three&&shadow&&falloff);
+  }
+
   function applyShadowImages(){
     const doc=frameDoc();
     if(!doc)return false;
@@ -121,6 +167,7 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
   function applyAll(){
     applyShadowImages();
     applyTechnicalThumbs();
+    applyTechnicalLabels();
   }
 
   function watchFrame(){
