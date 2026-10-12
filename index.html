@@ -21,8 +21,32 @@
     .project-actions{margin-top:10px}
     @media(max-width:520px){.project-sheet-inner{padding:14px}}
   </style>
-  <link rel="stylesheet" href="light-design.css?v=1.1.0" />
-  <link rel="stylesheet" href="light-bubbles.css?v=1.1.0" />
+  <link rel="stylesheet" href="light-design.css?v=20261012-1024" />
+  <link rel="stylesheet" href="light-bubbles.css?v=20261012-1024" />
+  <style>
+    .bos-brand-text{gap:2px!important;align-items:flex-start!important}
+    .bos-header-name{
+      display:block!important;
+      color:var(--bos-accent)!important;
+      font-size:10.5px!important;
+      line-height:1!important;
+      font-weight:500!important;
+      letter-spacing:.01em!important;
+    }
+    .bos-header-app{
+      display:block!important;
+      margin-left:0!important;
+      color:var(--bos-ink)!important;
+      font-size:25px!important;
+      line-height:.95!important;
+      font-weight:600!important;
+      letter-spacing:-.045em!important;
+    }
+    @media(max-width:520px){
+      .bos-header-name{font-size:10px!important}
+      .bos-header-app{font-size:23px!important}
+    }
+  </style>
 </head>
 <body>
   <main class="shell">
@@ -35,8 +59,8 @@
         <div class="bos-brand-lockup" aria-label="Bruno OnSet LIGHT">
           <img class="bos-header-logo" src="assets/logo-bos-header.jpg" alt="Logo Bruno OnSet">
           <div class="bos-brand-text">
-            <span class="bos-header-name">Bruno OnSet<span class="bos-header-app">- LIGHT</span></span>
-            <span class="bos-header-tagline">Avec vous, sur chaque tournage.</span>
+            <span class="bos-header-name">Bruno OnSet</span>
+            <span class="bos-header-app">LIGHT</span>
           </div>
         </div>
         <div class="top-actions bos-top-actions">
@@ -85,7 +109,7 @@
   <script src="light-host.js?v=2.0.5"></script>
   <script src="light-falloff-bridge.js?v=1.0.4"></script>
   <script src="light-shadow-images.js?v=1.0.1"></script>
-  <script src="light-design-bridge.js?v=1.2.1"></script>
+  <script src="light-design-bridge.js?v=1.2.2"></script>
   <script src="light-height-authority.js?v=1.0.2"></script>
   <script src="light-mobile-falloff-guard.js?v=1.0.0"></script>
 </body>
