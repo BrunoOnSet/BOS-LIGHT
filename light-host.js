@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.6';
+  const VERSION='2.0.7';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
@@ -42,6 +42,13 @@
   function frameDoc(){try{return frame?.contentDocument||null;}catch(_){return null;}}
 
   function fit(){
+    if(typeof window.BOSLightFit==='function'){
+      window.BOSLightFit();
+      return;
+    }
+
+    // Secours uniquement pendant les toutes premières millisecondes, avant que
+    // light-height-authority.js n'installe BOSLightFit.
     const doc=frameDoc();
     if(!doc||!frame)return;
     const root=doc.querySelector('.app-shell')||doc.body;
@@ -61,7 +68,7 @@
     });
 
     const visualHeight=Math.max(0,contentBottom-rootRect.top)+4;
-    const h=Math.max(1,Math.ceil(rootRect.height),Math.ceil(root.scrollHeight||0),Math.ceil(visualHeight));
+    const h=Math.max(1,Math.ceil(visualHeight));
     if(Math.abs((parseFloat(frame.style.height)||0)-h)>1)frame.style.height=h+'px';
   }
 
