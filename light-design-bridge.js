@@ -13,7 +13,7 @@
       const fonts=doc.createElement('link');
       fonts.id='bosLightDesignFonts';
       fonts.rel='stylesheet';
-      fonts.href='https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@400;500;600&display=swap';
+      fonts.href='https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap';
       doc.head.appendChild(fonts);
     }
 
@@ -21,7 +21,7 @@
       const css=doc.createElement('link');
       css.id='bosLightDesignCss';
       css.rel='stylesheet';
-      css.href='/BOS-LIGHT/light-design.css?v=1.0.0';
+      css.href='/BOS-LIGHT/light-design.css?v=1.1.0';
       css.addEventListener('load',()=>{
         requestAnimationFrame(()=>window.BOSLightFit?.());
         setTimeout(()=>window.BOSLightFit?.(),80);
