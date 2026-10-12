@@ -4,12 +4,16 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
-  const DESIGN_VERSION='20261012-lock2';
+  const DESIGN_VERSION='20261012-lock3';
   let activeDoc=null;
   let loadPromise=null;
 
   function frameDoc(){
     try{return frame.contentDocument||null;}catch(_){return null;}
+  }
+
+  function revealFrame(){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>frame.classList.add('bos-design-ready')));
   }
 
   function ensureFont(doc){
@@ -131,9 +135,11 @@ html,body,body *,button,input,select,textarea{
       ensureStyle(doc,'bosLightBubblesInline',bubblesCss);
       enforceOrder(doc);
       [40,120,300,700,1400,2400].forEach(ms=>setTimeout(()=>enforceOrder(doc),ms));
+      revealFrame();
     }catch(err){
       console.warn('[BOS LIGHT design]',err);
       enforceOrder(doc);
+      revealFrame();
     }
   }
 
@@ -169,6 +175,7 @@ html,body,body *,button,input,select,textarea{
   }
 
   function refresh(){
+    frame.classList.remove('bos-design-ready');
     inject();
     [40,120,300,700,1400,2400].forEach(ms=>setTimeout(()=>{
       inject();
