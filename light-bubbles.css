@@ -1,0 +1,245 @@
+/* BOS LIGHT — Bubble identity pass 2026-10
+   DESIGN ONLY: no functional or interaction rules. */
+
+:root{
+  --bos-bubble-warm:#8B857F;
+  --bos-bubble-warm-soft:#F0EEEC;
+  --bos-bubble-warm-line:rgba(139,133,127,.34);
+}
+
+html[data-theme="dark"],body.dark{
+  --bos-bubble-warm:#AAA19A;
+  --bos-bubble-warm-soft:rgba(170,161,154,.12);
+  --bos-bubble-warm-line:rgba(170,161,154,.30);
+}
+
+/* ---------- CARD SILHOUETTE ---------- */
+.shared-camera-card,
+.controls-card,
+#bosThreePointPanel,
+#bosShadowHardnessPanel,
+#bosMiniPlateau{
+  position:relative!important;
+  border-radius:15px!important;
+  border:1px solid color-mix(in srgb,var(--bos-ink) 11%,transparent)!important;
+  box-shadow:0 8px 24px rgba(22,31,35,.055),0 1px 3px rgba(22,31,35,.025)!important;
+  overflow:hidden!important;
+}
+
+/* Petit repère vertical : purement graphique, identique sur chaque bulle. */
+.shared-camera-card::before,
+.controls-card::before,
+#bosThreePointPanel::before,
+#bosShadowHardnessPanel::before,
+#bosMiniPlateau::before{
+  content:"";
+  position:absolute;
+  z-index:3;
+  left:0;
+  top:17px;
+  width:3px;
+  height:46px;
+  border-radius:0 3px 3px 0;
+  background:var(--bos-bubble-warm);
+  pointer-events:none;
+}
+
+/* ---------- HEADERS ---------- */
+.shared-camera-heading,
+.card-heading.collapsible-heading,
+#bosThreePointPanel .bft-head,
+#bosShadowHardnessPanel .bft-head,
+#bosMiniPlateau .bft-head{
+  min-height:80px!important;
+  background:var(--bos-panel)!important;
+}
+
+.shared-camera-heading{
+  grid-template-columns:42px minmax(0,1fr) 20px!important;
+  gap:13px!important;
+  padding:13px 15px 13px 14px!important;
+}
+
+.card-heading.collapsible-heading{
+  gap:13px!important;
+  padding:13px 44px 13px 14px!important;
+}
+
+#bosThreePointPanel .bft-head,
+#bosShadowHardnessPanel .bft-head,
+#bosMiniPlateau .bft-head{
+  grid-template-columns:42px minmax(0,1fr) 20px!important;
+  gap:13px!important;
+  padding:13px 15px 13px 14px!important;
+}
+
+/* ---------- INDEX TILE ---------- */
+.shared-step,
+.step,
+.bft-number{
+  width:42px!important;
+  min-width:42px!important;
+  height:42px!important;
+  border:0!important;
+  border-radius:11px!important;
+  background:var(--bos-bubble-warm)!important;
+  color:#fff!important;
+  box-shadow:inset 0 -3px 0 var(--bos-accent)!important;
+  font-size:11px!important;
+  font-weight:600!important;
+  letter-spacing:-.015em!important;
+  font-variant-numeric:tabular-nums!important;
+}
+
+/* ---------- TITLE HIERARCHY ---------- */
+.shared-heading-copy,
+.heading-copy,
+.bft-title{
+  min-width:0!important;
+}
+
+.shared-heading-copy h2,
+.heading-copy h2,
+.bft-title strong{
+  color:var(--bos-ink)!important;
+  font-size:16px!important;
+  line-height:1.08!important;
+  font-weight:600!important;
+  letter-spacing:-.028em!important;
+}
+
+.shared-heading-copy p,
+.heading-copy p,
+.bft-title small{
+  margin-top:5px!important;
+  color:var(--bos-muted)!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+  font-weight:400!important;
+  letter-spacing:-.008em!important;
+}
+
+/* ---------- RIGHT-HAND INFORMATION ZONE ---------- */
+.summary-value,
+.light-summary{
+  position:relative!important;
+  max-width:34%!important;
+  margin-left:auto!important;
+  padding-left:15px!important;
+  color:var(--bos-accent-2)!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  font-weight:500!important;
+  text-align:right!important;
+  white-space:normal!important;
+}
+
+.summary-value::before,
+.light-summary::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  width:1px;
+  height:28px;
+  transform:translateY(-50%);
+  background:var(--bos-bubble-warm-line);
+  pointer-events:none;
+}
+
+.chevron,
+.shared-chevron,
+.bft-chevron{
+  color:var(--bos-faint)!important;
+  font-size:16px!important;
+  opacity:.76!important;
+}
+
+/* Le header ouvert reste très net : simple séparation, pas de nouvel aplat. */
+.shared-camera-card[open] .shared-camera-heading,
+.controls-card[open] .card-heading,
+#bosThreePointPanel:not(.bmp-collapsed) .bft-head,
+#bosShadowHardnessPanel:not(.bmp-collapsed) .bft-head,
+#bosMiniPlateau:not(.bmp-collapsed) .bft-head{
+  border-bottom:1px solid var(--bos-line)!important;
+}
+
+/* ---------- MOBILE ---------- */
+@media(max-width:520px){
+  .shared-camera-card,
+  .controls-card,
+  #bosThreePointPanel,
+  #bosShadowHardnessPanel,
+  #bosMiniPlateau{
+    border-radius:14px!important;
+  }
+
+  .shared-camera-card::before,
+  .controls-card::before,
+  #bosThreePointPanel::before,
+  #bosShadowHardnessPanel::before,
+  #bosMiniPlateau::before{
+    top:16px;
+    height:44px;
+  }
+
+  .shared-camera-heading{
+    grid-template-columns:40px minmax(0,1fr) 18px!important;
+    gap:11px!important;
+    padding:12px 12px 12px 11px!important;
+  }
+
+  .card-heading.collapsible-heading{
+    gap:11px!important;
+    padding:12px 40px 12px 11px!important;
+  }
+
+  #bosThreePointPanel .bft-head,
+  #bosShadowHardnessPanel .bft-head,
+  #bosMiniPlateau .bft-head{
+    grid-template-columns:40px minmax(0,1fr) 18px!important;
+    gap:11px!important;
+    padding:12px 12px 12px 11px!important;
+  }
+
+  .shared-step,
+  .step,
+  .bft-number{
+    width:40px!important;
+    min-width:40px!important;
+    height:40px!important;
+    border-radius:10px!important;
+  }
+
+  .shared-heading-copy h2,
+  .heading-copy h2,
+  .bft-title strong{
+    font-size:15px!important;
+  }
+
+  .shared-heading-copy p,
+  .heading-copy p,
+  .bft-title small{
+    font-size:9.5px!important;
+  }
+
+  .summary-value,
+  .light-summary{
+    max-width:31%!important;
+    padding-left:10px!important;
+    font-size:8.8px!important;
+  }
+
+  .summary-value::before,
+  .light-summary::before{
+    height:24px;
+  }
+}
+
+@media(max-width:390px){
+  .summary-value,
+  .light-summary{
+    max-width:28%!important;
+    font-size:8.2px!important;
+  }
+}
