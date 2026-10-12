@@ -3,44 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" id="themeColor" content="#F3F1EC" />
+  <meta name="theme-color" id="themeColor" content="#F4F5F5" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="LIGHT · BOS" />
-  <title>BOS — Bruno OnSet / LIGHT</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=0.62-light1" />
-  <link rel="stylesheet" href="../../shared/module-shell.css?v=1" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="BOS LIGHT" />
+  <title>BOS — LIGHT</title>
+  <link rel="stylesheet" href="styles.css?v=2.1.0" />
+  <link rel="stylesheet" href="../../shared/module-shell.css?v=20261012-clean1" />
 </head>
 <body>
   <main class="app-shell">
-    <header class="topbar cardlike">
-      <div class="top-inner bos-top-inner">
-        <div class="top-title bos-top-title">
-          <div class="bos-brand-lockup" aria-label="Bruno OnSet">
-            <img class="bos-header-logo" src="assets/logo-bos-header.jpg" alt="Logo Bruno OnSet">
-            <div class="bos-brand-text">
-              <span class="bos-header-name">Bruno OnSet<span class="bos-header-app">- LIGHT</span></span>
-              <span class="bos-header-tagline">Avec vous, sur chaque tournage.</span>
-            </div>
-          </div>
-        </div>
-        <div class="top-actions bos-top-actions">
-          <button class="mode-btn" id="themeToggle" type="button" aria-label="Changer de thème">DARK</button>
-        </div>
-      </div>
-    </header>
-
-    <section class="dof-bos-return-row" aria-label="Retour à LIGHT" data-bos-return>
-      <a class="dof-bos-return-link" id="bosBackBtn" href="../../">← Retour à LIGHT</a>
-    </section>
-
-    <div class="utility-row bos-utility-row">
-      <button class="utility-link" id="resetBtn" type="button">RESET</button>
-      
-    </div>
+    <!-- Kept only as an internal compatibility hook for the module controller. -->
+    <button id="resetBtn" type="button" hidden aria-hidden="true" tabindex="-1"></button>
 
     <details class="controls-card camera-card first-card collapsible-card" id="cameraDetails">
       <summary class="card-heading collapsible-heading">
@@ -110,9 +84,7 @@
           <div>
             <div class="embedded-kicker">RÉSULTAT</div>
             <h3>Résultat Key Light</h3>
-            
           </div>
-          
         </div>
         <div class="hero-card result-card-inner" id="resultHeroCard">
           <div class="eyebrow">DISTANCE MAX SOURCE → SUJET · KEY LIGHT</div>
@@ -139,7 +111,6 @@
           <div class="technical-caption plain-tech-info"><strong>Informations techniques</strong><span>LIGHT estime la lumière reçue à l’emplacement du sujet, comme un posemètre incident. Il ne juge ni une peau ni un blanc : il vérifie si la quantité de lumière suffit pour tes réglages caméra.</span></div>
         </div>
       </div>
-
     </details>
 
     <details class="controls-card light-card fill-card collapsible-card" id="fillDetails">
@@ -196,7 +167,6 @@
             <div>
               <div class="embedded-kicker">RÉSULTAT</div>
               <h3>Résultat Key / Fill</h3>
-              
             </div>
           </div>
           <div class="result-body">
@@ -217,7 +187,6 @@
       </div>
     </details>
 
-    
     <details class="controls-card gel-card collapsible-card" id="gelDetails">
       <summary class="card-heading collapsible-heading">
         <span class="step">04</span>
@@ -316,16 +285,7 @@
         </div>
       </div>
     </details>
-
-    <section class="project-contact project-contact-bottom" aria-label="Suggestion application">
-      <button class="project-contact-btn" id="ideaContactBtn" type="button">
-        Une idée pour améliorer l’application ? <span aria-hidden="true">→</span>
-      </button>
-    </section>
-
-    <footer class="footer">BOS — Bruno OnSet · LIGHT · V0.62</footer>
   </main>
-
 
   <dialog id="projectorDialog" class="add-dialog projector-dialog">
     <div class="dialog-shell">
@@ -356,7 +316,6 @@
     </div>
   </dialog>
 
-
   <dialog id="numericDialog" class="numeric-dialog">
     <form method="dialog" class="numeric-dialog-card" id="numericDialogForm">
       <div class="numeric-dialog-head">
@@ -376,13 +335,14 @@
       </div>
     </form>
   </dialog>
-  <script src="bos-projecteurs-db.js?v=1.0"></script>
+
+  <script src="bos-projecteurs-db.js?v=2.1.0"></script>
   <script src="../../shared/state.js?v=1"></script>
-<script src="../../shared/navigation.js?v=1"></script>
-<script src="../../shared/db.js?v=1"></script>
-<script src="../../shared/analytics.js?v=1"></script>
-<script src="adapters/integrated.js?v=1"></script>
-<script src="../../shared/module-host.js?v=1"></script>
-<script src="app.js?v=0.62-light1"></script>
+  <script src="../../shared/navigation.js?v=1"></script>
+  <script src="../../shared/db.js?v=1"></script>
+  <script src="../../shared/analytics.js?v=1"></script>
+  <script src="adapters/integrated.js?v=1"></script>
+  <script src="../../shared/module-host.js?v=1"></script>
+  <script src="app.js?v=2.1.0"></script>
 </body>
 </html>
