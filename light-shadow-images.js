@@ -8,6 +8,10 @@
     try{return frame.contentDocument||null;}catch(_){return null;}
   }
 
+  function fit(){
+    if(typeof window.BOSLightFit==='function')window.BOSLightFit();
+  }
+
   function ensureThumbStyle(doc){
     let style=doc.getElementById('bosTechnicalThumbStyle');
     if(!style){
@@ -16,32 +20,11 @@
       doc.head.appendChild(style);
     }
     style.textContent=`
-#bosThreePointPanel .bft-head,
-#bosShadowHardnessPanel .bft-head,
-#bosMiniPlateau .bft-head{position:relative!important;overflow:hidden!important}
-
-#bosThreePointPanel .bft-head::after,
-#bosShadowHardnessPanel .bft-head::after,
-#bosMiniPlateau .bft-head::after{display:none!important;content:none!important}
-
-/* Les bulles techniques gardent exactement le même en-tête ouvertes ou fermées. */
-html.bos-suite-embed #bosThreePointPanel,
-html.bos-suite-embed #bosShadowHardnessPanel,
-html.bos-suite-embed #bosMiniPlateau{box-sizing:border-box!important}
-html.bos-suite-embed #bosThreePointPanel .bft-head,
-html.bos-suite-embed #bosShadowHardnessPanel .bft-head,
-html.bos-suite-embed #bosMiniPlateau .bft-head{
-  height:80px!important;
-  min-height:80px!important;
-  max-height:80px!important;
-  box-sizing:border-box!important;
-}
-html.bos-suite-embed #bosThreePointPanel.bmp-collapsed,
-html.bos-suite-embed #bosShadowHardnessPanel.bmp-collapsed,
-html.bos-suite-embed #bosMiniPlateau.bmp-collapsed{
-  height:82px!important;
-  min-height:82px!important;
-  max-height:82px!important;
+/* Les fiches techniques utilisent maintenant la même tête que Applications. */
+html.bos-light-split-embed .technical-native-card > summary.collapsible-heading{
+  position:relative!important;
+  overflow:hidden!important;
+  padding-right:calc(clamp(180px,23vw,240px) + 46px)!important;
 }
 
 .bos-tech-thumb{
@@ -61,21 +44,25 @@ html.bos-suite-embed #bosMiniPlateau.bmp-collapsed{
   mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 15%,#000 34%,#000 100%)!important;
 }
 
-#bosThreePointPanel .bft-number,
-#bosShadowHardnessPanel .bft-number,
-#bosMiniPlateau .bft-number,
-#bosThreePointPanel .bft-title,
-#bosShadowHardnessPanel .bft-title,
-#bosMiniPlateau .bft-title{position:relative!important;z-index:3!important}
+html.bos-light-split-embed .technical-native-card .step,
+html.bos-light-split-embed .technical-native-card .heading-copy{
+  position:relative!important;
+  z-index:3!important;
+}
+html.bos-light-split-embed .technical-native-card .chevron{
+  right:14px!important;
+  z-index:5!important;
+  text-shadow:
+    -.6px 0 rgba(255,255,255,.95),
+    .6px 0 rgba(255,255,255,.95),
+    0 -.6px rgba(255,255,255,.95),
+    0 .6px rgba(255,255,255,.95),
+    0 0 2px rgba(255,255,255,.72)!important;
+}
 
-#bosThreePointPanel .bft-chevron,
-#bosShadowHardnessPanel .bft-chevron,
-#bosMiniPlateau .bft-chevron{z-index:5!important}
-
-/* Sous-titres : réduction très légère, identique sur toutes les bulles. */
+/* Sous-titres identiques sur Applications et Fiches techniques. */
 html.bos-light-split-embed .shared-heading-copy p,
-html.bos-light-split-embed .heading-copy p,
-html.bos-light-split-embed .bft-title small{
+html.bos-light-split-embed .heading-copy p{
   font-size:9.5px!important;
 }
 
@@ -101,11 +88,8 @@ html.bos-suite-embed #bosMiniPlateau .bft-distance span,
 html.bos-suite-embed #bosMiniPlateau .bft-readout span{
   font-weight:400!important;
 }
-html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
-  font-weight:500!important;
-}
+html.bos-suite-embed #bosMiniPlateau .bft-readout strong{font-weight:500!important}
 
-/* FALL OFF — supprimer les petits repères bleus sous les libellés. */
 html.bos-suite-embed #bosMiniPlateau .bft-item-label::before,
 html.bos-suite-embed #bosMiniPlateau .bft-item-label::after{
   content:none!important;
@@ -113,15 +97,10 @@ html.bos-suite-embed #bosMiniPlateau .bft-item-label::after{
   visibility:hidden!important;
 }
 
-/* FALL OFF — ne pas afficher une valeur en stops, seulement l'indication qualitative. */
-html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
-  display:none!important;
-}
-html.bos-suite-embed #bosMiniPlateau .bft-readout{
-  justify-content:flex-start!important;
-}
+html.bos-suite-embed #bosMiniPlateau .bft-readout strong{display:none!important}
+html.bos-suite-embed #bosMiniPlateau .bft-readout{justify-content:flex-start!important}
 
-/* Deux images optionnelles après le module interactif Fall Off. */
+/* Deux images après le module interactif Fall Off. */
 html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images{
   display:flex;
   flex-direction:column;
@@ -133,6 +112,7 @@ html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images[hidden]{display:no
 html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img{
   display:block;
   width:100%;
+  max-width:100%;
   height:auto;
   margin:0;
   border:0;
@@ -142,26 +122,36 @@ html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img{
 }
 html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img[hidden]{display:none!important}
 
-/* Même espace switch → 01 qu'en mode Applications : aucun retrait interne supplémentaire. */
-html.bos-light-split-embed.bos-light-section-technical #bosThreePointPanel{
-  margin-top:0!important;
-}
+html.bos-light-split-embed.bos-light-section-technical #bosThreePointPanel{margin-top:0!important}
 
 html[data-theme="dark"] .bos-tech-thumb,
 body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity:.88!important}
 
 @media(max-width:560px){
+  html.bos-light-split-embed .technical-native-card > summary.collapsible-heading{
+    padding-left:12px!important;
+    padding-right:calc(clamp(104px,30vw,124px) + 34px)!important;
+  }
   .bos-tech-thumb{
     width:clamp(104px,30vw,124px)!important;
     border-radius:0 18px 18px 0!important;
     -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%)!important;
     mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%)!important;
   }
+  html.bos-light-split-embed .technical-native-card .chevron{
+    right:12px!important;
+    width:22px!important;
+    height:22px!important;
+  }
   html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images{gap:12px;margin-top:12px}
   html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img{border-radius:12px}
 }
 
 @media(max-width:420px){
+  html.bos-light-split-embed .technical-native-card > summary.collapsible-heading{
+    padding-left:10px!important;
+    padding-right:calc(clamp(94px,29vw,112px) + 32px)!important;
+  }
   .bos-tech-thumb{width:clamp(94px,29vw,112px)!important;border-radius:0 17px 17px 0!important}
 }
 `;
@@ -170,7 +160,7 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
   function ensureHeaderThumb(doc,panelId,src){
     const panel=doc.getElementById(panelId);
     if(!panel)return false;
-    const head=panel.querySelector('.bft-head');
+    const head=panel.querySelector(':scope > summary.collapsible-heading');
     if(!head)return false;
 
     let img=head.querySelector('img.bos-tech-thumb');
@@ -180,6 +170,7 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
       img.alt='';
       img.setAttribute('aria-hidden','true');
       img.decoding='async';
+      img.addEventListener('load',fit);
       head.appendChild(img);
     }
     if(img.getAttribute('src')!==src)img.setAttribute('src',src);
@@ -189,9 +180,7 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
   function applyTechnicalThumbs(){
     const doc=frameDoc();
     if(!doc)return false;
-
     ensureThumbStyle(doc);
-
     const a=ensureHeaderThumb(doc,'bosThreePointPanel','/BOS-LIGHT/assets/thumb-tech-3points.webp?v=20261012-3');
     const b=ensureHeaderThumb(doc,'bosShadowHardnessPanel','/BOS-LIGHT/assets/thumb-tech-shadow.webp?v=20261012-3');
     const c=ensureHeaderThumb(doc,'bosMiniPlateau','/BOS-LIGHT/assets/thumb-tech-falloff.webp?v=20261012-3');
@@ -209,37 +198,26 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
   function applyTechnicalLabels(){
     const doc=frameDoc();
     if(!doc)return false;
-
-    const three=doc.getElementById('bosThreePointPanel');
-    const shadow=doc.getElementById('bosShadowHardnessPanel');
-    const falloff=doc.getElementById('bosMiniPlateau');
-
-    if(three){
-      setTextIfDifferent(three.querySelector('.bft-title strong'),'POSITION');
-      setTextIfDifferent(three.querySelector('.bft-title small'),'Système 3 points');
-      setAttrIfDifferent(three,'aria-label','Position — Système 3 points');
-    }
-    if(shadow){
-      setTextIfDifferent(shadow.querySelector('.bft-title strong'),'SHADOWS');
-      setTextIfDifferent(shadow.querySelector('.bft-title small'),'Dureté des ombres');
-      setAttrIfDifferent(shadow,'aria-label','Shadows — Dureté des ombres');
-    }
-    if(falloff){
-      setTextIfDifferent(falloff.querySelector('.bft-title strong'),'FALL OFF');
-      setTextIfDifferent(falloff.querySelector('.bft-title small'),'Gestion du contraste');
-      setAttrIfDifferent(falloff,'aria-label','Fall Off — Gestion du contraste');
-    }
-
-    return !!(three&&shadow&&falloff);
+    const values={
+      bosThreePointPanel:['POSITION','Système 3 points','Position — Système 3 points'],
+      bosShadowHardnessPanel:['SHADOWS','Dureté des ombres','Shadows — Dureté des ombres'],
+      bosMiniPlateau:['FALL OFF','Gestion du contraste','Fall Off — Gestion du contraste']
+    };
+    Object.entries(values).forEach(([id,[title,subtitle,aria]])=>{
+      const panel=doc.getElementById(id);
+      if(!panel)return;
+      setTextIfDifferent(panel.querySelector(':scope > summary .heading-copy h2'),title);
+      setTextIfDifferent(panel.querySelector(':scope > summary .heading-copy p'),subtitle);
+      setAttrIfDifferent(panel,'aria-label',aria);
+    });
+    return true;
   }
 
   function applyShadowImages(){
     const doc=frameDoc();
     if(!doc)return false;
-
     const panel=doc.getElementById('bosShadowHardnessPanel');
     if(!panel)return false;
-
     const images=panel.querySelectorAll('.bft-reference-images img');
     if(images[0]){
       images[0].src='/BOS-LIGHT/assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=20261009-2';
@@ -255,9 +233,7 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
   function removeFalloffIntro(){
     const doc=frameDoc();
     if(!doc)return false;
-    const panel=doc.getElementById('bosMiniPlateau');
-    if(!panel)return false;
-    const intro=panel.querySelector('.bft-intro');
+    const intro=doc.getElementById('bosMiniPlateau')?.querySelector('.bft-intro');
     if(intro)intro.remove();
     return true;
   }
@@ -266,9 +242,8 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
     const doc=frameDoc();
     if(!doc)return false;
     const panel=doc.getElementById('bosMiniPlateau');
-    if(!panel)return false;
-    const body=panel.querySelector('.bft-body');
-    if(!body)return false;
+    const body=panel?.querySelector('.bft-body');
+    if(!panel||!body)return false;
 
     let wrap=panel.querySelector('.bft-falloff-post-images');
     if(!wrap){
@@ -293,14 +268,8 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
         img.decoding='async';
         img.loading='eager';
         img.hidden=true;
-        img.addEventListener('load',()=>{
-          img.hidden=false;
-          syncVisibility();
-        });
-        img.addEventListener('error',()=>{
-          img.hidden=true;
-          syncVisibility();
-        });
+        img.addEventListener('load',()=>{img.hidden=false;syncVisibility();});
+        img.addEventListener('error',()=>{img.hidden=true;syncVisibility();});
         img.src=src;
         wrap.appendChild(img);
       });
@@ -309,7 +278,6 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
       if(anchor)anchor.insertAdjacentElement('afterend',wrap);
       else body.appendChild(wrap);
     }
-
     return true;
   }
 
