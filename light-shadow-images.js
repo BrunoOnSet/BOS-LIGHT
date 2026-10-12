@@ -131,15 +131,18 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
 
     if(three){
       setTextIfDifferent(three.querySelector('.bft-title strong'),'POSITION');
-      setAttrIfDifferent(three,'aria-label','Position');
+      setTextIfDifferent(three.querySelector('.bft-title small'),'Système 3 points');
+      setAttrIfDifferent(three,'aria-label','Position — Système 3 points');
     }
     if(shadow){
       setTextIfDifferent(shadow.querySelector('.bft-title strong'),'SHADOWS');
-      setAttrIfDifferent(shadow,'aria-label','Shadows');
+      setTextIfDifferent(shadow.querySelector('.bft-title small'),'Dureté des ombres');
+      setAttrIfDifferent(shadow,'aria-label','Shadows — Dureté des ombres');
     }
     if(falloff){
       setTextIfDifferent(falloff.querySelector('.bft-title strong'),'FALL OFF');
-      setAttrIfDifferent(falloff,'aria-label','Fall Off');
+      setTextIfDifferent(falloff.querySelector('.bft-title small'),'Gestion du contraste');
+      setAttrIfDifferent(falloff,'aria-label','Fall Off — Gestion du contraste');
     }
 
     return !!(three&&shadow&&falloff);
