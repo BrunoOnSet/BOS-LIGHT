@@ -59,20 +59,32 @@ html.bos-light-split-embed .bft-title small{
   font-size:9.5px!important;
 }
 
-/* FALL OFF — typographie stable et sobre sur toutes les plateformes. */
-html.bos-light-split-embed #bosMiniPlateau .bft-item-label{
+/* FALL OFF — typo sobre, identique ordinateur / téléphone. */
+html.bos-suite-embed #bosMiniPlateau .bft-item-label,
+html.bos-suite-embed #bosMiniPlateau .bft-hint,
+html.bos-suite-embed #bosMiniPlateau .bft-distance span,
+html.bos-suite-embed #bosMiniPlateau .bft-intro,
+html.bos-suite-embed #bosMiniPlateau .bft-readout,
+html.bos-suite-embed #bosMiniPlateau .bft-readout span,
+html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
   font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+html.bos-suite-embed #bosMiniPlateau .bft-item-label{
   font-size:9.5px!important;
   line-height:1.25!important;
   font-weight:400!important;
-  letter-spacing:-.005em!important;
+  letter-spacing:0!important;
   text-transform:uppercase!important;
   transform:translateX(-50%)!important;
 }
-html.bos-light-split-embed #bosMiniPlateau .bft-hint,
-html.bos-light-split-embed #bosMiniPlateau .bft-distance span{
-  font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+html.bos-suite-embed #bosMiniPlateau .bft-hint,
+html.bos-suite-embed #bosMiniPlateau .bft-distance span,
+html.bos-suite-embed #bosMiniPlateau .bft-intro,
+html.bos-suite-embed #bosMiniPlateau .bft-readout span{
   font-weight:400!important;
+}
+html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
+  font-weight:500!important;
 }
 
 /* Même espace switch → 01 qu'en mode Applications : aucun retrait interne supplémentaire. */
