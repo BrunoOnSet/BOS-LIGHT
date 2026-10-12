@@ -4,7 +4,7 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
-  const DESIGN_VERSION='20261012-lock1';
+  const DESIGN_VERSION='20261012-lock2';
   let activeDoc=null;
   let loadPromise=null;
 
@@ -59,6 +59,14 @@ html,body,body *,button,input,select,textarea{
 .shared-heading-copy p,.heading-copy p,.bft-title small{color:var(--bos-muted)!important}
 .summary-value,.light-summary{color:var(--bos-accent-2)!important}
 .chevron,.shared-chevron,.bft-chevron{color:var(--bos-faint)!important}
+.add-dialog[open]{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  margin:0!important;
+  transform:translateX(-50%)!important;
+}
 `;
     return ensureStyle(doc,'bosLightDesignCritical',css);
   }
@@ -74,15 +82,42 @@ html,body,body *,button,input,select,textarea{
     return response.text();
   }
 
-  function enforceOrder(doc){
-    if(doc!==frameDoc()||!doc.head)return;
-    const critical=doc.getElementById('bosLightDesignCritical');
-    const design=doc.getElementById('bosLightDesignInline');
-    const bubbles=doc.getElementById('bosLightBubblesInline');
-    if(critical)doc.head.appendChild(critical);
-    if(design)doc.head.appendChild(design);
-    if(bubbles)doc.head.appendChild(bubbles);
-    requestAnimationFrame(()=>window.BOSLightFit?.());
+  function positionOpenDialogs(doc){
+    if(doc!==frameDoc())return;
+    const rect=frame.getBoundingClientRect();
+    const viewportTop=Math.max(12,-rect.top+12);
+    const viewportBottom=Math.min(rect.height-12,-rect.top+window.innerHeight-12);
+    const available=Math.max(240,viewportBottom-viewportTop);
+
+    doc.querySelectorAll('dialog.add-dialog[open]').forEach(dialog=>{
+      dialog.style.setProperty('top',`${Math.round(viewportTop)}px`,'important');
+      dialog.style.setProperty('left','50%','important');
+      dialog.style.setProperty('right','auto','important');
+      dialog.style.setProperty('bottom','auto','important');
+      dialog.style.setProperty('margin','0','important');
+      dialog.style.setProperty('transform','translateX(-50%)','important');
+      const shell=dialog.querySelector('.dialog-shell');
+      if(shell){
+        shell.style.setProperty('max-height',`${Math.max(220,Math.min(760,Math.floor(available)))}px`,'important');
+        shell.style.setProperty('overflow','auto','important');
+      }
+    });
+  }
+
+  function bindDialogPositioning(doc){
+    if(doc.documentElement.dataset.bosDialogPositioning==='1')return;
+    doc.documentElement.dataset.bosDialogPositioning='1';
+
+    const refreshPosition=()=>requestAnimationFrame(()=>positionOpenDialogs(doc));
+    const observer=new MutationObserver(mutations=>{
+      if(mutations.some(m=>m.type==='attributes'&&m.attributeName==='open'))refreshPosition();
+    });
+    observer.observe(doc.documentElement,{subtree:true,attributes:true,attributeFilter:['open']});
+
+    doc.addEventListener('click',()=>{
+      setTimeout(()=>positionOpenDialogs(doc),0);
+      setTimeout(()=>positionOpenDialogs(doc),60);
+    },true);
   }
 
   async function loadFullDesign(doc){
@@ -102,6 +137,18 @@ html,body,body *,button,input,select,textarea{
     }
   }
 
+  function enforceOrder(doc){
+    if(doc!==frameDoc()||!doc.head)return;
+    const critical=doc.getElementById('bosLightDesignCritical');
+    const design=doc.getElementById('bosLightDesignInline');
+    const bubbles=doc.getElementById('bosLightBubblesInline');
+    if(critical)doc.head.appendChild(critical);
+    if(design)doc.head.appendChild(design);
+    if(bubbles)doc.head.appendChild(bubbles);
+    positionOpenDialogs(doc);
+    requestAnimationFrame(()=>window.BOSLightFit?.());
+  }
+
   function inject(){
     const doc=frameDoc();
     if(!doc||!doc.head)return false;
@@ -114,6 +161,7 @@ html,body,body *,button,input,select,textarea{
     ensureFont(doc);
     removeLegacyLinks(doc);
     ensureCritical(doc);
+    bindDialogPositioning(doc);
     enforceOrder(doc);
 
     if(!loadPromise)loadPromise=loadFullDesign(doc);
@@ -128,6 +176,15 @@ html,body,body *,button,input,select,textarea{
       if(doc)enforceOrder(doc);
     },ms));
   }
+
+  window.addEventListener('scroll',()=>{
+    const doc=frameDoc();
+    if(doc)positionOpenDialogs(doc);
+  },{passive:true});
+  window.addEventListener('resize',()=>{
+    const doc=frameDoc();
+    if(doc)positionOpenDialogs(doc);
+  });
 
   frame.addEventListener('load',refresh);
   refresh();
