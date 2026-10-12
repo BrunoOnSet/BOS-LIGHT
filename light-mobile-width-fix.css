@@ -1,0 +1,35 @@
+/* BOS LIGHT — garde-fou largeur mobile */
+html,
+body{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:hidden;
+}
+
+.shell,
+.continuous-tools,
+.tool-frame,
+.mode-switch.light-section-switch,
+.topbar,
+.project-contact,
+.feedback-contact{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+
+.tool-frame{
+  display:block;
+  margin-left:0;
+  margin-right:0;
+}
+
+@supports (overflow:clip){
+  html,
+  body,
+  .shell{
+    overflow-x:clip;
+  }
+}
