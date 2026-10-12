@@ -1,15 +1,11 @@
-const CACHE="bos-light-v2-0-23";
+const CACHE="bos-light-v2-0-24";
 const ASSETS=[
   "./",
   "./index.html",
-  "./light-host.js",
   "./light-falloff-bridge.js",
   "./light-shadow-images.js",
-  "./light-design-bridge.js?v=1.2.2",
   "./light-height-authority.js",
   "./light-mobile-falloff-guard.js",
-  "./light-design.css?v=20261012-1024",
-  "./light-bubbles.css?v=20261012-1024",
   "./style.css",
   "./continuous.css",
   "./manifest.webmanifest",
@@ -34,20 +30,73 @@ const ASSETS=[
   "./shared/module-host.js",
   "./version.json"
 ];
+
 const CAMERA_DB_HOST="raw.githubusercontent.com";
-const DB_PATHS=new Set(["/BrunoOnSet/BOS-CAMERA-DB/main/cameras.json","/BrunoOnSet/BOS-PROJECTEURS-DB/main/lights.json"]);
-self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));self.skipWaiting();});
-self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
+const DB_PATHS=new Set([
+  "/BrunoOnSet/BOS-CAMERA-DB/main/cameras.json",
+  "/BrunoOnSet/BOS-PROJECTEURS-DB/main/lights.json"
+]);
+
+const FRESH_ASSETS=[
+  "/light-host.js",
+  "/light-design-bridge.js",
+  "/light-design.css",
+  "/light-bubbles.css"
+];
+
+self.addEventListener("install",e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
+  self.skipWaiting();
+});
+
+self.addEventListener("activate",e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+
+function putIfOk(request,response){
+  if(response&&response.ok){
+    const copy=response.clone();
+    caches.open(CACHE).then(c=>c.put(request,copy));
+  }
+  return response;
+}
+
+async function freshFirst(request){
+  try{
+    const response=await fetch(request,{cache:"no-store"});
+    return putIfOk(request,response);
+  }catch(_){
+    return (await caches.match(request))||Response.error();
+  }
+}
+
 self.addEventListener("fetch",e=>{
   if(e.request.method!=="GET")return;
+
   const url=new URL(e.request.url);
   if(url.hostname===CAMERA_DB_HOST&&DB_PATHS.has(url.pathname))return;
+
   if(e.request.mode==="navigate"){
-    e.respondWith(fetch(e.request).then(r=>{if(r.ok){const cp=r.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));}return r;}).catch(async()=>{
-      if(/\/modules\/light(?:\/|$)/i.test(url.pathname))return (await caches.match('./modules/light/index.html'))||caches.match('./index.html');
-      return caches.match('./index.html');
-    }));
+    e.respondWith((async()=>{
+      try{
+        const response=await fetch(e.request,{cache:"no-store"});
+        return putIfOk(e.request,response);
+      }catch(_){
+        if(/\/modules\/light(?:\/|$)/i.test(url.pathname)){
+          return (await caches.match("./modules/light/index.html"))||(await caches.match("./index.html"));
+        }
+        return caches.match("./index.html");
+      }
+    })());
     return;
   }
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(net=>{if(net.ok){const cp=net.clone();caches.open(CACHE).then(c=>c.put(e.request,cp));}return net;})));
+
+  const isFreshAsset=url.origin===self.location.origin&&FRESH_ASSETS.some(path=>url.pathname.endsWith(path));
+  if(isFreshAsset){
+    e.respondWith(freshFirst(e.request));
+    return;
+  }
+
+  e.respondWith(caches.match(e.request).then(cached=>cached||fetch(e.request).then(net=>putIfOk(e.request,net))));
 });
