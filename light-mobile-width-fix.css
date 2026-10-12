@@ -1,35 +1,73 @@
-/* BOS LIGHT — garde-fou largeur mobile */
+/* BOS LIGHT — largeur mobile strictement contenue dans le viewport */
 html,
 body{
   width:100%;
   max-width:100%;
   min-width:0;
+  margin:0;
   overflow-x:hidden;
 }
 
+body,
 .shell,
 .continuous-tools,
+.light-only-tools,
+.tool-frame,
+.mode-switch.light-section-switch,
+.topbar,
+.top-inner,
+.project-contact,
+.feedback-contact,
+.footer{
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+
+.shell{
+  width:100%!important;
+  max-width:760px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+.continuous-tools,
+.light-only-tools,
 .tool-frame,
 .mode-switch.light-section-switch,
 .topbar,
 .project-contact,
-.feedback-contact{
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  box-sizing:border-box;
+.feedback-contact,
+.footer{
+  width:100%!important;
+  max-width:100%!important;
 }
 
 .tool-frame{
-  display:block;
-  margin-left:0;
-  margin-right:0;
+  display:block!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  border:0!important;
+}
+
+img,
+svg,
+canvas,
+video{
+  max-width:100%;
+}
+
+@media(max-width:520px){
+  .shell{
+    padding-left:max(9px,env(safe-area-inset-left))!important;
+    padding-right:max(9px,env(safe-area-inset-right))!important;
+  }
 }
 
 @supports (overflow:clip){
   html,
   body,
-  .shell{
+  .shell,
+  .continuous-tools{
     overflow-x:clip;
   }
 }
