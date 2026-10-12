@@ -1,4 +1,4 @@
-const CACHE='bos-light-v2-1-clean8';
+const CACHE='bos-light-v2-1-clean9';
 
 const STATIC_ASSETS=[
   './manifest.webmanifest',
