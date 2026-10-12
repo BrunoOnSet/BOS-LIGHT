@@ -1,5 +1,5 @@
 /* BOS LIGHT — Signature visuelle / lame spectrale
-   DESIGN ONLY. Grande présence lumineuse non interactive. */
+   DESIGN ONLY. Présence lumineuse non interactive, visible au bord de l'interface. */
 
 .shell{
   position:relative!important;
@@ -12,86 +12,110 @@
   content:"";
   position:fixed;
   pointer-events:none;
-  z-index:0;
 }
 
-/* Nappe diffuse : chaud vers froid, volontairement très douce. */
+/* Grande nappe chromatique : elle chevauche légèrement le bord droit
+   de la colonne LIGHT afin de rester visible sur desktop comme sur mobile. */
 .shell::before{
-  top:58px;
-  right:-48px;
-  width:132px;
-  height:76vh;
-  min-height:520px;
-  max-height:860px;
+  top:88px;
+  right:max(8px,calc((100vw - 760px)/2 - 48px));
+  width:136px;
+  height:72vh;
+  min-height:500px;
+  max-height:820px;
+  z-index:2;
   border-radius:999px;
-  opacity:.52;
-  filter:blur(28px);
+  opacity:.42;
+  filter:blur(24px);
+  mix-blend-mode:multiply;
   background:linear-gradient(
     180deg,
-    rgba(255,223,172,.52) 0%,
-    rgba(255,238,207,.31) 18%,
-    rgba(247,248,246,.05) 43%,
-    rgba(213,232,240,.22) 67%,
-    rgba(119,166,186,.43) 100%
+    rgba(255,191,108,.72) 0%,
+    rgba(255,221,171,.52) 18%,
+    rgba(250,248,240,.10) 42%,
+    rgba(203,230,242,.42) 66%,
+    rgba(91,157,185,.68) 100%
   );
 }
 
-/* Cœur plus précis de la lame, sans ressembler à un bouton. */
+/* Trait de réfraction plus net : assez large pour être perçu comme un
+   élément graphique, jamais comme un bouton. */
 .shell::after{
-  top:78px;
-  right:12px;
-  width:22px;
-  height:67vh;
-  min-height:450px;
-  max-height:760px;
+  top:106px;
+  right:max(22px,calc((100vw - 760px)/2 + 10px));
+  width:12px;
+  height:64vh;
+  min-height:440px;
+  max-height:720px;
+  z-index:3;
   border-radius:999px;
-  opacity:.68;
-  filter:blur(7px);
+  opacity:.62;
+  filter:blur(4px);
+  mix-blend-mode:multiply;
   background:linear-gradient(
     180deg,
-    rgba(255,216,151,.76) 0%,
-    rgba(255,240,211,.43) 21%,
-    rgba(255,255,255,0) 45%,
-    rgba(191,219,231,.31) 70%,
-    rgba(87,137,158,.62) 100%
+    rgba(255,170,72,.82) 0%,
+    rgba(255,219,160,.62) 23%,
+    rgba(255,255,255,0) 46%,
+    rgba(170,214,232,.46) 69%,
+    rgba(63,124,151,.78) 100%
   );
-  box-shadow:0 0 32px rgba(122,169,189,.08);
+  box-shadow:0 0 26px rgba(103,158,180,.15);
 }
 
-/* Tout le contenu reste au-dessus de la lumière. */
+/* Le contenu reste parfaitement utilisable ; la lame est purement décorative. */
 .shell > *{
   position:relative;
   z-index:1;
 }
+.topbar{z-index:20!important}
 
 html[data-theme="dark"] .shell::before,
 body.dark .shell::before{
-  opacity:.34;
+  opacity:.36;
   mix-blend-mode:screen;
 }
 html[data-theme="dark"] .shell::after,
 body.dark .shell::after{
-  opacity:.46;
+  opacity:.54;
   mix-blend-mode:screen;
+}
+
+@media(max-width:800px){
+  .shell::before{
+    top:92px;
+    right:-18px;
+    width:104px;
+    height:68vh;
+    min-height:440px;
+    opacity:.38;
+    filter:blur(22px);
+  }
+  .shell::after{
+    top:108px;
+    right:20px;
+    width:10px;
+    height:61vh;
+    min-height:400px;
+    opacity:.56;
+  }
 }
 
 @media(max-width:520px){
   .shell::before{
-    top:82px;
-    right:-42px;
-    width:92px;
-    height:66vh;
-    min-height:430px;
-    opacity:.46;
-    filter:blur(24px);
+    top:108px;
+    right:-24px;
+    width:94px;
+    height:62vh;
+    min-height:390px;
+    opacity:.35;
   }
   .shell::after{
-    top:96px;
-    right:5px;
-    width:16px;
-    height:59vh;
-    min-height:390px;
-    opacity:.58;
-    filter:blur(6px);
+    top:122px;
+    right:16px;
+    width:9px;
+    height:56vh;
+    min-height:360px;
+    opacity:.52;
   }
 }
