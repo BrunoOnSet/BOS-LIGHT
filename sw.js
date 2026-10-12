@@ -1,4 +1,4 @@
-const CACHE='bos-light-v2-1-clean14';
+const CACHE='bos-light-v2-1-clean15';
 
 const STATIC_ASSETS=[
   './manifest.webmanifest',
@@ -13,9 +13,9 @@ const STATIC_ASSETS=[
   './assets/thumb-key.webp?v=20261012-1',
   './assets/thumb-fill.webp?v=20261012-1',
   './assets/thumb-gels.webp?v=20261012-1',
-  './assets/thumb-tech-3points.webp?v=20261012-2',
-  './assets/thumb-tech-shadow.webp?v=20261012-2',
-  './assets/thumb-tech-falloff.webp?v=20261012-2'
+  './assets/thumb-tech-3points.webp?v=20261012-3',
+  './assets/thumb-tech-shadow.webp?v=20261012-3',
+  './assets/thumb-tech-falloff.webp?v=20261012-3'
 ];
 
 const CAMERA_DB_HOST='raw.githubusercontent.com';
