@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.5';
+  const VERSION='2.0.6';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
@@ -320,6 +320,6 @@ html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed > .bft-head{
   updateInstall();
 
   if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v='+VERSION).catch(()=>{}));
+    window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v='+VERSION,{updateViaCache:'none'}).catch(()=>{}));
   }
 })();
