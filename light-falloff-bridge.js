@@ -180,64 +180,64 @@
     style.textContent=`
 html.bos-suite-embed .bft-head{grid-template-columns:34px minmax(0,1fr) 24px}
 
-/* FALL OFF — nouvelle DA illustration BOS */
+/* FALL OFF — géométrie BOS minimale */
 html.bos-suite-embed #bosMiniPlateau .bft-stage{
-  border-color:rgba(45,47,47,.15)!important;
+  border-color:rgba(31,34,35,.14)!important;
   background:
-    radial-gradient(circle at 17% 19%,rgba(45,47,47,.028) 0 1px,transparent 1.35px),
-    radial-gradient(circle at 76% 67%,rgba(45,47,47,.022) 0 1px,transparent 1.25px),
-    linear-gradient(180deg,#F8F5ED 0%,#F3EFE6 100%)!important;
+    radial-gradient(circle at 18% 22%,rgba(32,34,35,.026) 0 1px,transparent 1.3px),
+    radial-gradient(circle at 79% 66%,rgba(32,34,35,.02) 0 1px,transparent 1.2px),
+    linear-gradient(180deg,#F5F2EA 0%,#EEEAE1 100%)!important;
 }
-html.bos-suite-embed #bosMiniPlateau .bft-paper-lines{opacity:.12!important}
-html.bos-suite-embed #bosMiniPlateau .bft-beam-fill{fill:rgba(241,201,82,.17)!important}
+html.bos-suite-embed #bosMiniPlateau .bft-paper-lines{opacity:.08!important}
+html.bos-suite-embed #bosMiniPlateau .bft-beam-fill{fill:rgba(232,193,79,.14)!important}
 html.bos-suite-embed #bosMiniPlateau .bft-beam-edge{
-  stroke:#D9B44E!important;
-  stroke-width:1.05!important;
+  stroke:#C8A547!important;
+  stroke-width:.8!important;
   stroke-dasharray:none!important;
-  opacity:.58!important;
+  opacity:.5!important;
 }
-html.bos-suite-embed #bosMiniPlateau .bft-distance{border-top-color:rgba(47,91,102,.28)!important}
+html.bos-suite-embed #bosMiniPlateau .bft-distance{border-top-color:rgba(47,91,102,.22)!important}
 html.bos-suite-embed #bosMiniPlateau .bft-distance span{
-  background:rgba(248,245,237,.94)!important;
-  color:#68767A!important;
+  background:rgba(245,242,234,.94)!important;
+  color:#667276!important;
   font-family:"Instrument Sans",Inter,sans-serif!important;
   font-size:8px!important;
   font-weight:500!important;
 }
-html.bos-suite-embed #bosMiniPlateau .bft-projector{width:94px;height:72px}
-html.bos-suite-embed #bosMiniPlateau .bft-person{width:82px;height:92px}
-html.bos-suite-embed #bosMiniPlateau .bft-wall{width:50px;height:140px}
-html.bos-suite-embed #bosMiniPlateau .bft-sketch{filter:url(#bftRoughen)}
+html.bos-suite-embed #bosMiniPlateau .bft-projector{width:58px;height:58px}
+html.bos-suite-embed #bosMiniPlateau .bft-person{width:60px;height:60px}
+html.bos-suite-embed #bosMiniPlateau .bft-wall{width:34px;height:118px}
+html.bos-suite-embed #bosMiniPlateau .bft-sketch{filter:none!important}
 html.bos-suite-embed #bosMiniPlateau .bft-sketch [stroke]{vector-effect:non-scaling-stroke}
 html.bos-suite-embed #bosMiniPlateau .bft-item-label{
   top:calc(100% + 8px)!important;
-  color:#25292B!important;
+  color:#262A2B!important;
   font-family:"Marker Felt","Bradley Hand","Segoe Print",cursive!important;
-  font-size:10px!important;
+  font-size:9px!important;
   font-weight:600!important;
-  letter-spacing:.085em!important;
-  transform:translateX(-50%) rotate(-.45deg)!important;
+  letter-spacing:.08em!important;
+  transform:translateX(-50%) rotate(-.35deg)!important;
 }
 html.bos-suite-embed #bosMiniPlateau .bft-item-label::before{
   content:"";
   position:absolute;
-  left:-9px;
-  right:-9px;
+  left:-8px;
+  right:-8px;
   bottom:-5px;
   height:1px;
-  background:rgba(66,152,205,.72);
+  background:rgba(66,152,205,.58);
 }
 html.bos-suite-embed #bosMiniPlateau .bft-item-label::after{
   content:"";
   position:absolute;
-  left:-5px;
-  bottom:-10px;
+  left:-4px;
+  bottom:-9px;
   width:1px;
-  height:13px;
-  background:rgba(66,152,205,.72);
+  height:11px;
+  background:rgba(66,152,205,.58);
 }
 html.bos-suite-embed #bosMiniPlateau .bft-hint{
-  color:#707A7D!important;
+  color:#737B7E!important;
   font-family:"Instrument Sans",Inter,sans-serif!important;
   font-size:9px!important;
   font-weight:400!important;
@@ -258,82 +258,61 @@ html.bos-suite-embed .bft-reference-images{display:flex;flex-direction:column;ga
 html.bos-suite-embed .bft-reference-images img{display:block;width:100%;height:auto;border:0;border-radius:12px;background:#f2f0eb}
 
 @media(max-width:520px){
-  html.bos-suite-embed #bosMiniPlateau .bft-projector{width:80px;height:62px}
-  html.bos-suite-embed #bosMiniPlateau .bft-person{width:70px;height:79px}
-  html.bos-suite-embed #bosMiniPlateau .bft-wall{width:43px;height:122px}
-  html.bos-suite-embed #bosMiniPlateau .bft-item-label{font-size:9px!important}
+  html.bos-suite-embed #bosMiniPlateau .bft-projector{width:52px;height:52px}
+  html.bos-suite-embed #bosMiniPlateau .bft-person{width:54px;height:54px}
+  html.bos-suite-embed #bosMiniPlateau .bft-wall{width:31px;height:106px}
+  html.bos-suite-embed #bosMiniPlateau .bft-item-label{font-size:8.5px!important}
   html.bos-suite-embed #bosThreePointPanel .bft-body,
   html.bos-suite-embed #bosShadowHardnessPanel .bft-body{padding:14px 15px 16px}
 }
 `;
 
-    /* Projecteur : dessin technique graphite + petit repère bleu BOS. */
+    /* Projecteur = carré sombre, sans détail figuratif. */
     const projectorSvg=panel.querySelector('#bftProjector svg');
     if(projectorSvg){
-      projectorSvg.setAttribute('viewBox','0 0 120 90');
+      projectorSvg.setAttribute('viewBox','0 0 80 80');
       projectorSvg.innerHTML=`
         <defs>
-          <linearGradient id="bftBosLampBody" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#777A7B"/>
-            <stop offset=".48" stop-color="#4B4E4F"/>
-            <stop offset="1" stop-color="#252728"/>
+          <linearGradient id="bftBosSquare" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3E4142"/>
+            <stop offset="1" stop-color="#1B1E1F"/>
           </linearGradient>
-          <radialGradient id="bftBosLampGlass" cx="36%" cy="36%" r="72%">
-            <stop offset="0" stop-color="#FFFDF7"/>
-            <stop offset=".58" stop-color="#EFECE4"/>
-            <stop offset="1" stop-color="#C8C5BC"/>
-          </radialGradient>
         </defs>
         <g class="bft-sketch">
-          <path d="M18 35 L43 27 L70 30 L88 38 L88 52 L70 60 L43 63 L18 55 Z" fill="url(#bftBosLampBody)" stroke="#202325" stroke-width="1.15" stroke-linejoin="round"/>
-          <path d="M68 30 L92 25 L106 34 L106 56 L92 65 L68 60 Q82 53 82 45 Q82 37 68 30 Z" fill="#D5D2CA" stroke="#202325" stroke-width="1.05"/>
-          <ellipse cx="104" cy="45" rx="9" ry="15" fill="url(#bftBosLampGlass)" stroke="#202325" stroke-width="1"/>
-          <ellipse cx="105" cy="45" rx="4.8" ry="9" fill="#FAF7EE" stroke="#85898A" stroke-width=".55"/>
-          <path d="M27 34 Q45 30 67 34 M24 42 Q46 38 76 41 M24 50 Q48 46 76 49 M28 57 Q48 53 66 55" fill="none" stroke="#A1A3A2" stroke-width=".55" opacity=".55"/>
-          <path d="M46 64 L43 75 M65 62 L69 75 M43 75 L32 84 M43 75 L52 84 M69 75 L61 84 M69 75 L80 83" fill="none" stroke="#313536" stroke-width="1" stroke-linecap="round"/>
-          <circle cx="56" cy="66" r="3.5" fill="#626667" stroke="#232627" stroke-width=".8"/>
-          <path d="M36 24 Q55 16 76 23" fill="none" stroke="#4298CD" stroke-width=".8" opacity=".82"/>
-          <path d="M35 20 L35 28 M78 19 L78 27" fill="none" stroke="#4298CD" stroke-width=".65" opacity=".70"/>
+          <rect x="14" y="14" width="52" height="52" rx="2" fill="url(#bftBosSquare)" stroke="#121415" stroke-width="1.05"/>
+          <path d="M21 25 L58 25 M21 35 L58 35 M21 45 L58 45 M21 55 L58 55" fill="none" stroke="#737778" stroke-width=".42" opacity=".28"/>
+          <path d="M18 10 L30 10 M18 7 L18 13" fill="none" stroke="#4298CD" stroke-width=".65" opacity=".58"/>
         </g>`;
     }
 
-    /* Personnage : vue du dessus, comme les schémas de la nouvelle DA. */
+    /* Personne = boule sombre, simple et lisible. */
     const personSvg=panel.querySelector('#bftPerson svg');
     if(personSvg){
-      personSvg.setAttribute('viewBox','0 0 100 112');
+      personSvg.setAttribute('viewBox','0 0 80 80');
       personSvg.innerHTML=`
         <defs>
-          <radialGradient id="bftBosHead" cx="38%" cy="30%" r="72%">
-            <stop offset="0" stop-color="#EFEDE7"/>
-            <stop offset=".62" stop-color="#BFC0BD"/>
-            <stop offset="1" stop-color="#656869"/>
+          <radialGradient id="bftBosBall" cx="34%" cy="28%" r="76%">
+            <stop offset="0" stop-color="#6E7172"/>
+            <stop offset=".48" stop-color="#3C3F40"/>
+            <stop offset="1" stop-color="#17191A"/>
           </radialGradient>
-          <linearGradient id="bftBosShirt" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#F3F1EB"/>
-            <stop offset="1" stop-color="#D8D6D0"/>
-          </linearGradient>
         </defs>
         <g class="bft-sketch">
-          <ellipse cx="50" cy="29" rx="18" ry="20" fill="url(#bftBosHead)" stroke="#202325" stroke-width="1.05"/>
-          <path d="M30 47 Q39 41 50 41 Q61 41 70 47 L79 63 Q74 69 68 66 L65 59 L65 86 Q58 93 50 93 Q42 93 35 86 L35 59 L32 66 Q26 69 21 63 Z" fill="url(#bftBosShirt)" stroke="#202325" stroke-width="1.05" stroke-linejoin="round"/>
-          <path d="M36 84 L31 101 Q30 106 35 108 Q40 108 43 101 L47 91 M64 84 L69 101 Q70 106 65 108 Q60 108 57 101 L53 91" fill="#8D9090" stroke="#202325" stroke-width="1" stroke-linecap="round"/>
-          <path d="M22 63 Q18 68 22 73 Q26 76 31 70 M78 63 Q82 68 78 73 Q74 76 69 70" fill="#CBCAC5" stroke="#202325" stroke-width=".9"/>
-          <path d="M33 49 Q40 54 42 63 M67 49 Q60 54 58 63 M40 47 Q50 51 60 47" fill="none" stroke="#A8AAA8" stroke-width=".55" opacity=".65"/>
-          <path d="M39 20 Q50 14 61 20 M36 28 Q50 21 64 28 M39 36 Q50 30 61 36" fill="none" stroke="#777A7A" stroke-width=".5" opacity=".52"/>
-          <path d="M17 45 L28 45 M72 45 L83 45 M50 3 L50 12" fill="none" stroke="#4298CD" stroke-width=".7" opacity=".68"/>
+          <circle cx="40" cy="40" r="27" fill="url(#bftBosBall)" stroke="#101213" stroke-width="1.05"/>
+          <ellipse cx="31" cy="29" rx="9" ry="6" fill="#FFFFFF" opacity=".10"/>
+          <path d="M15 12 L25 12 M15 9 L15 15" fill="none" stroke="#4298CD" stroke-width=".65" opacity=".52"/>
         </g>`;
     }
 
-    /* Mur : panneau ivoire/graphite, luminosité toujours pilotée par le calcul existant. */
+    /* Mur = rectangle vertical, luminosité toujours pilotée par le calcul existant. */
     const wallSvg=panel.querySelector('#bftWall svg');
     if(wallSvg){
-      wallSvg.setAttribute('viewBox','0 0 60 150');
+      wallSvg.setAttribute('viewBox','0 0 50 150');
       wallSvg.innerHTML=`
         <g class="bft-sketch">
-          <rect class="bft-wall-fill" x="11" y="5" width="36" height="140" rx="1.5" stroke="#272A2B" stroke-width="1.05"/>
-          <path d="M15 20 L42 13 M15 36 L43 28 M15 53 L43 45 M15 70 L43 62 M15 87 L43 79 M15 104 L43 96 M15 121 L43 113 M15 138 L43 130" fill="none" stroke="rgba(35,38,39,.24)" stroke-width=".55"/>
-          <path d="M18 7 L18 143 M31 7 L31 143" fill="none" stroke="rgba(255,255,255,.18)" stroke-width=".45"/>
-          <path d="M6 22 L6 40 M2 31 L10 31 M51 113 L57 113" fill="none" stroke="#4298CD" stroke-width=".7" opacity=".72"/>
+          <rect class="bft-wall-fill" x="11" y="7" width="28" height="136" rx="1" stroke="#1B1E1F" stroke-width="1.05"/>
+          <path d="M15 32 L35 32 M15 58 L35 58 M15 84 L35 84 M15 110 L35 110" fill="none" stroke="rgba(25,28,29,.20)" stroke-width=".42"/>
+          <path d="M5 21 L5 33 M2 27 L8 27" fill="none" stroke="#4298CD" stroke-width=".65" opacity=".52"/>
         </g>`;
     }
 
