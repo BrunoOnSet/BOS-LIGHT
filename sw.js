@@ -1,4 +1,4 @@
-const CACHE='bos-light-v2-1-clean4';
+const CACHE='bos-light-v2-1-clean5';
 
 const STATIC_ASSETS=[
   './manifest.webmanifest',
@@ -8,7 +8,11 @@ const STATIC_ASSETS=[
   './assets/lighting/3points/01-systeme-3-points.jpg?v=20261009-1',
   './assets/lighting/3points/02-key-light.jpg?v=20261009-1',
   './assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=20261009-2',
-  './assets/lighting/shadow-hardness/02-durete-des-ombres.jpg?v=20261009-2'
+  './assets/lighting/shadow-hardness/02-durete-des-ombres.jpg?v=20261009-2',
+  './assets/thumb-camera.webp?v=20261012-1',
+  './assets/thumb-key.webp?v=20261012-1',
+  './assets/thumb-fill.webp?v=20261012-1',
+  './assets/thumb-gels.webp?v=20261012-1'
 ];
 
 const CAMERA_DB_HOST='raw.githubusercontent.com';
