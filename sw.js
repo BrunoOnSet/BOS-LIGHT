@@ -1,8 +1,7 @@
-const CACHE="bos-light-v2-0-24";
+const CACHE="bos-light-v2-0-25";
 const ASSETS=[
   "./",
   "./index.html",
-  "./light-falloff-bridge.js",
   "./light-shadow-images.js",
   "./light-height-authority.js",
   "./light-mobile-falloff-guard.js",
@@ -39,6 +38,7 @@ const DB_PATHS=new Set([
 
 const FRESH_ASSETS=[
   "/light-host.js",
+  "/light-falloff-bridge.js",
   "/light-design-bridge.js",
   "/light-design.css",
   "/light-bubbles.css"
