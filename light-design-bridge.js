@@ -4,16 +4,16 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
-  const DESIGN_VERSION='20261012-lock4';
+  /* Fail-safe: the LIGHT content must never remain hidden, even if an older
+     cached index still contains the temporary anti-flash visibility rule. */
+  frame.style.setProperty('visibility','visible','important');
+
+  const DESIGN_VERSION='20261012-lock5';
   let activeDoc=null;
   let loadPromise=null;
 
   function frameDoc(){
     try{return frame.contentDocument||null;}catch(_){return null;}
-  }
-
-  function revealFrame(){
-    requestAnimationFrame(()=>requestAnimationFrame(()=>frame.classList.add('bos-design-ready')));
   }
 
   function ensureFont(doc){
@@ -147,16 +147,15 @@ html,body,body *,button,input,select,textarea{
       ensureStyle(doc,'bosLightBubblesInline',bubblesCss);
       enforceOrder(doc);
       [40,120,300,700,1400,2400].forEach(ms=>setTimeout(()=>enforceOrder(doc),ms));
-      revealFrame();
     }catch(err){
       console.warn('[BOS LIGHT design]',err);
       enforceOrder(doc);
-      revealFrame();
     }
   }
 
   function enforceOrder(doc){
     if(doc!==frameDoc()||!doc.head)return;
+    frame.style.setProperty('visibility','visible','important');
     const critical=doc.getElementById('bosLightDesignCritical');
     const design=doc.getElementById('bosLightDesignInline');
     const bubbles=doc.getElementById('bosLightBubblesInline');
@@ -168,6 +167,7 @@ html,body,body *,button,input,select,textarea{
   }
 
   function inject(){
+    frame.style.setProperty('visibility','visible','important');
     const doc=frameDoc();
     if(!doc||!doc.head)return false;
 
@@ -187,7 +187,7 @@ html,body,body *,button,input,select,textarea{
   }
 
   function refresh(){
-    frame.classList.remove('bos-design-ready');
+    frame.style.setProperty('visibility','visible','important');
     inject();
     [40,120,300,700,1400,2400].forEach(ms=>setTimeout(()=>{
       inject();
