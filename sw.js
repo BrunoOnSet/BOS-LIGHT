@@ -1,4 +1,4 @@
-const CACHE="bos-light-v2-0-20";
+const CACHE="bos-light-v2-0-21";
 const ASSETS=[
   "./",
   "./index.html",
