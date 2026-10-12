@@ -77,6 +77,39 @@
     bindChevronState(section);
   }
 
+  function ensureFalloffReferenceImage(doc,panel){
+    const body=panel.querySelector('.bft-body');
+    const stage=panel.querySelector('.bft-stage');
+    if(!body||!stage)return false;
+
+    let wrap=panel.querySelector('.bft-falloff-reference');
+    if(!wrap){
+      wrap=doc.createElement('div');
+      wrap.className='bft-falloff-reference';
+      wrap.hidden=true;
+
+      const img=doc.createElement('img');
+      img.alt='Référence Fall Off';
+      img.decoding='async';
+      img.loading='eager';
+      img.addEventListener('load',()=>{
+        wrap.hidden=false;
+        fit();
+      });
+      img.addEventListener('error',()=>{
+        wrap.hidden=true;
+        fit();
+      });
+      wrap.appendChild(img);
+      body.insertBefore(wrap,stage);
+    }
+
+    const img=wrap.querySelector('img');
+    const src='/BOS-LIGHT/assets/lighting/falloff/01-fall-off.png?v=20261012-1';
+    if(img&&img.getAttribute('src')!==src)img.setAttribute('src',src);
+    return true;
+  }
+
   function ensureThreePointPanel(doc,panel){
     let three=doc.getElementById('bosThreePointPanel');
     if(!three){
@@ -169,6 +202,7 @@
     ensureThreePointPanel(doc,panel);
     ensureShadowHardnessPanel(doc,panel);
     bindChevronState(panel);
+    ensureFalloffReferenceImage(doc,panel);
 
     let style=doc.getElementById('bosLightFalloffSimpleStyle');
     if(!style){
@@ -179,6 +213,24 @@
 
     style.textContent=`
 html.bos-suite-embed .bft-head{grid-template-columns:34px minmax(0,1fr) 24px}
+
+/* Image de référence optionnelle, juste avant l'animation Fall Off. */
+html.bos-suite-embed #bosMiniPlateau .bft-falloff-reference{
+  width:100%;
+  margin:0 0 14px;
+}
+html.bos-suite-embed #bosMiniPlateau .bft-falloff-reference[hidden]{display:none!important}
+html.bos-suite-embed #bosMiniPlateau .bft-falloff-reference img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:none;
+  margin:0;
+  border:0;
+  border-radius:13px;
+  background:#F5F2EA;
+  object-fit:contain;
+}
 
 /* FALL OFF — géométrie BOS minimale */
 html.bos-suite-embed #bosMiniPlateau .bft-stage{
@@ -262,6 +314,8 @@ html.bos-suite-embed .bft-reference-images img{display:block;width:100%;height:a
   html.bos-suite-embed #bosMiniPlateau .bft-person{width:54px;height:54px}
   html.bos-suite-embed #bosMiniPlateau .bft-wall{width:31px;height:106px}
   html.bos-suite-embed #bosMiniPlateau .bft-item-label{font-size:8.5px!important}
+  html.bos-suite-embed #bosMiniPlateau .bft-falloff-reference{margin-bottom:12px}
+  html.bos-suite-embed #bosMiniPlateau .bft-falloff-reference img{border-radius:12px}
   html.bos-suite-embed #bosThreePointPanel .bft-body,
   html.bos-suite-embed #bosShadowHardnessPanel .bft-body{padding:14px 15px 16px}
 }
