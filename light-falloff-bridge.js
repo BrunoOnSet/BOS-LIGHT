@@ -105,7 +105,7 @@
     }
 
     const img=wrap.querySelector('img');
-    const src='/BOS-LIGHT/assets/lighting/falloff/01-fall-off.png?v=20261012-1';
+    const src='/BOS-LIGHT/assets/lighting/falloff/01-fall-off.jpg?v=20261012-1';
     if(img&&img.getAttribute('src')!==src)img.setAttribute('src',src);
     return true;
   }
