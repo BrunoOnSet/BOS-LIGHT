@@ -1,0 +1,97 @@
+/* BOS LIGHT — Signature visuelle / lame spectrale
+   DESIGN ONLY. Grande présence lumineuse non interactive. */
+
+.shell{
+  position:relative!important;
+  isolation:isolate;
+  overflow:visible;
+}
+
+.shell::before,
+.shell::after{
+  content:"";
+  position:fixed;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Nappe diffuse : chaud vers froid, volontairement très douce. */
+.shell::before{
+  top:58px;
+  right:-48px;
+  width:132px;
+  height:76vh;
+  min-height:520px;
+  max-height:860px;
+  border-radius:999px;
+  opacity:.52;
+  filter:blur(28px);
+  background:linear-gradient(
+    180deg,
+    rgba(255,223,172,.52) 0%,
+    rgba(255,238,207,.31) 18%,
+    rgba(247,248,246,.05) 43%,
+    rgba(213,232,240,.22) 67%,
+    rgba(119,166,186,.43) 100%
+  );
+}
+
+/* Cœur plus précis de la lame, sans ressembler à un bouton. */
+.shell::after{
+  top:78px;
+  right:12px;
+  width:22px;
+  height:67vh;
+  min-height:450px;
+  max-height:760px;
+  border-radius:999px;
+  opacity:.68;
+  filter:blur(7px);
+  background:linear-gradient(
+    180deg,
+    rgba(255,216,151,.76) 0%,
+    rgba(255,240,211,.43) 21%,
+    rgba(255,255,255,0) 45%,
+    rgba(191,219,231,.31) 70%,
+    rgba(87,137,158,.62) 100%
+  );
+  box-shadow:0 0 32px rgba(122,169,189,.08);
+}
+
+/* Tout le contenu reste au-dessus de la lumière. */
+.shell > *{
+  position:relative;
+  z-index:1;
+}
+
+html[data-theme="dark"] .shell::before,
+body.dark .shell::before{
+  opacity:.34;
+  mix-blend-mode:screen;
+}
+html[data-theme="dark"] .shell::after,
+body.dark .shell::after{
+  opacity:.46;
+  mix-blend-mode:screen;
+}
+
+@media(max-width:520px){
+  .shell::before{
+    top:82px;
+    right:-42px;
+    width:92px;
+    height:66vh;
+    min-height:430px;
+    opacity:.46;
+    filter:blur(24px);
+  }
+  .shell::after{
+    top:96px;
+    right:5px;
+    width:16px;
+    height:59vh;
+    min-height:390px;
+    opacity:.58;
+    filter:blur(6px);
+  }
+}
