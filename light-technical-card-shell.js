@@ -4,294 +4,241 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
-  const CARDS={
-    bosThreePointPanel:{number:'01',title:'POSITION',subtitle:'Système 3 points',toggleId:'bftThreePointToggle',thumb:'/BOS-LIGHT/assets/thumb-tech-3points.webp?v=20261012-3'},
-    bosShadowHardnessPanel:{number:'02',title:'SHADOWS',subtitle:'Dureté des ombres',toggleId:'bftShadowHardnessToggle',thumb:'/BOS-LIGHT/assets/thumb-tech-shadow.webp?v=20261012-3'},
-    bosMiniPlateau:{number:'03',title:'FALL OFF',subtitle:'Gestion du contraste',toggleId:'bftToggle',thumb:'/BOS-LIGHT/assets/thumb-tech-falloff.webp?v=20261012-3'}
-  };
+  const CARDS=[
+    {panelId:'bosThreePointPanel',wrapperId:'bosTechThreePointDetails',number:'01',title:'POSITION',subtitle:'Système 3 points',thumb:'/BOS-LIGHT/assets/thumb-tech-3points.webp?v=20261012-3'},
+    {panelId:'bosShadowHardnessPanel',wrapperId:'bosTechShadowDetails',number:'02',title:'SHADOWS',subtitle:'Dureté des ombres',thumb:'/BOS-LIGHT/assets/thumb-tech-shadow.webp?v=20261012-3'},
+    {panelId:'bosMiniPlateau',wrapperId:'bosTechFalloffDetails',number:'03',title:'FALL OFF',subtitle:'Gestion du contraste',thumb:'/BOS-LIGHT/assets/thumb-tech-falloff.webp?v=20261012-3'}
+  ];
 
   function frameDoc(){
     try{return frame.contentDocument||null;}catch(_){return null;}
   }
 
   function fit(){
-    if(typeof window.BOSLightFit==='function'){
-      window.BOSLightFit();
-      return;
-    }
-    requestAnimationFrame(()=>{
-      if(typeof window.BOSLightFit==='function')window.BOSLightFit();
-    });
+    if(typeof window.BOSLightFit==='function')window.BOSLightFit();
+  }
+
+  function applicationSummaryTemplate(doc){
+    return doc.querySelector('#cameraDetails > summary.card-heading.collapsible-heading') ||
+           doc.querySelector('details.collapsible-card > summary.card-heading.collapsible-heading');
   }
 
   function makeSummary(doc,meta){
-    const summary=doc.createElement('summary');
-    summary.className='card-heading collapsible-heading';
-    summary.id=meta.toggleId;
-    summary.dataset.bosApplicationSummary='1';
-    summary.dataset.bosBound='1';
-    summary.dataset.bosChevronBound='1';
-    summary.innerHTML=`
-      <span class="step">${meta.number}</span>
-      <div class="heading-copy">
-        <h2>${meta.title}</h2>
-        <p>${meta.subtitle}</p>
-      </div>
-      <div class="summary-value light-summary" aria-hidden="true"></div>
-      <span class="chevron" aria-hidden="true">⌄</span>
-      <img class="bos-tech-thumb" src="${meta.thumb}" alt="" aria-hidden="true" decoding="async">`;
-    return summary;
-  }
-
-  function ensureSummary(doc,details,meta){
-    let summary=details.querySelector(':scope > summary.card-heading.collapsible-heading');
-    if(!summary||summary.dataset.bosApplicationSummary!=='1'){
-      const oldHead=details.querySelector(':scope > summary, :scope > .bft-head');
-      summary=makeSummary(doc,meta);
-      if(oldHead)oldHead.replaceWith(summary);
-      else details.insertBefore(summary,details.firstChild);
-    }
+    const source=applicationSummaryTemplate(doc);
+    const summary=source ? source.cloneNode(true) : doc.createElement('summary');
 
     summary.className='card-heading collapsible-heading';
-    summary.id=meta.toggleId;
-    summary.dataset.bosApplicationSummary='1';
-    summary.dataset.bosBound='1';
-    summary.dataset.bosChevronBound='1';
+    summary.removeAttribute('id');
     summary.removeAttribute('aria-expanded');
+    summary.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
 
-    const step=summary.querySelector('.step');
-    const h2=summary.querySelector('.heading-copy h2');
-    const p=summary.querySelector('.heading-copy p');
-    if(step)step.textContent=meta.number;
-    if(h2)h2.textContent=meta.title;
-    if(p)p.textContent=meta.subtitle;
-
-    let thumb=summary.querySelector('.bos-tech-thumb');
-    if(!thumb){
-      thumb=doc.createElement('img');
-      thumb.className='bos-tech-thumb';
-      thumb.alt='';
-      thumb.setAttribute('aria-hidden','true');
-      thumb.decoding='async';
-      summary.appendChild(thumb);
+    if(!source){
+      summary.innerHTML='<span class="step"></span><div class="heading-copy"><h2></h2><p></p></div><div class="summary-value light-summary"></div><span class="chevron">⌄</span>';
     }
-    if(thumb.getAttribute('src')!==meta.thumb)thumb.setAttribute('src',meta.thumb);
+
+    let step=summary.querySelector('.step');
+    if(!step){step=doc.createElement('span');step.className='step';summary.prepend(step);}
+    step.textContent=meta.number;
+
+    let copy=summary.querySelector('.heading-copy');
+    if(!copy){copy=doc.createElement('div');copy.className='heading-copy';summary.appendChild(copy);}
+    let h2=copy.querySelector('h2');
+    if(!h2){h2=doc.createElement('h2');copy.prepend(h2);}
+    let p=copy.querySelector('p');
+    if(!p){p=doc.createElement('p');copy.appendChild(p);}
+    h2.textContent=meta.title;
+    p.textContent=meta.subtitle;
+
+    let value=summary.querySelector('.summary-value');
+    if(!value){value=doc.createElement('div');value.className='summary-value light-summary';summary.appendChild(value);}
+    value.textContent='';
+    value.setAttribute('aria-hidden','true');
+
+    let chevron=summary.querySelector('.chevron');
+    if(!chevron){chevron=doc.createElement('span');chevron.className='chevron';summary.appendChild(chevron);}
+    chevron.textContent='⌄';
+    chevron.setAttribute('aria-hidden','true');
+
+    summary.querySelectorAll('.bos-tech-thumb').forEach(img=>img.remove());
+    const img=doc.createElement('img');
+    img.className='bos-tech-thumb';
+    img.src=meta.thumb;
+    img.alt='';
+    img.decoding='async';
+    img.setAttribute('aria-hidden','true');
+    img.addEventListener('load',fit);
+    summary.appendChild(img);
+
     return summary;
-  }
-
-  function rebuildPanel(doc,id,meta){
-    let panel=doc.getElementById(id);
-    if(!panel)return false;
-
-    if(panel.tagName!=='DETAILS'||panel.dataset.bosApplicationsCard!=='1'){
-      const body=panel.querySelector(':scope > .bft-body')||panel.querySelector('.bft-body');
-      if(!body)return false;
-
-      const details=doc.createElement('details');
-      details.id=id;
-      details.className='controls-card collapsible-card technical-native-card';
-      details.dataset.bosApplicationsCard='1';
-      details.setAttribute('aria-label',`${meta.title} — ${meta.subtitle}`);
-      details.appendChild(makeSummary(doc,meta));
-      details.appendChild(body);
-      panel.replaceWith(details);
-      panel=details;
-    }else{
-      panel.className='controls-card collapsible-card technical-native-card';
-      panel.setAttribute('aria-label',`${meta.title} — ${meta.subtitle}`);
-      ensureSummary(doc,panel,meta);
-    }
-
-    /* Aucun état .bmp-collapsed : seule l'ouverture native <details> pilote la carte. */
-    panel.classList.remove('bmp-collapsed');
-
-    if(panel.dataset.bosNativeToggleBound!=='1'){
-      panel.dataset.bosNativeToggleBound='1';
-      panel.addEventListener('toggle',()=>{
-        requestAnimationFrame(()=>{
-          if(panel.open)doc.defaultView?.dispatchEvent(new Event('resize'));
-          fit();
-        });
-        setTimeout(()=>{
-          if(panel.open)doc.defaultView?.dispatchEvent(new Event('resize'));
-          fit();
-        },80);
-      });
-      panel.querySelectorAll('img').forEach(img=>img.addEventListener('load',fit));
-    }
-
-    return true;
   }
 
   function ensureStyle(doc){
-    let style=doc.getElementById('bosTechnicalApplicationsStructure');
+    let style=doc.getElementById('bosTechnicalExactApplicationsShell');
     if(!style){
       style=doc.createElement('style');
-      style.id='bosTechnicalApplicationsStructure';
+      style.id='bosTechnicalExactApplicationsShell';
       doc.head.appendChild(style);
     }
 
     style.textContent=`
-/* Aucune largeur interne ne peut dépasser l'écran. */
-html.bos-light-split-embed,
-html.bos-light-split-embed body{
+/* Les fiches techniques utilisent la vraie coque <details> Applications. */
+html.bos-light-split-embed .technical-application-card{
   width:100%!important;
   max-width:100%!important;
-  overflow-x:hidden!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
 }
-html.bos-light-split-embed .app-shell{
+html.bos-light-split-embed .technical-application-card > summary.card-heading.collapsible-heading{
   width:100%!important;
-  max-width:620px!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+html.bos-light-split-embed .technical-application-card > summary .heading-copy{
   min-width:0!important;
 }
-html.bos-light-split-embed .technical-native-card,
-html.bos-light-split-embed .technical-native-card > summary,
-html.bos-light-split-embed .technical-native-card > .bft-body,
-html.bos-light-split-embed .technical-native-card .bft-reference-images,
-html.bos-light-split-embed .technical-native-card .bft-stage,
-html.bos-light-split-embed .technical-native-card img{
+html.bos-light-split-embed .technical-application-card > summary .summary-value{
+  min-width:0!important;
+}
+
+/* Le panneau technique historique devient uniquement le contenu de la bulle. */
+html.bos-light-split-embed .technical-application-card > .technical-source-panel{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+html.bos-light-split-embed .technical-application-card > .technical-source-panel > .bft-head{
+  display:none!important;
+}
+html.bos-light-split-embed .technical-application-card > .technical-source-panel > .bft-body{
+  display:block!important;
+  width:100%!important;
   max-width:100%!important;
   min-width:0!important;
   box-sizing:border-box!important;
 }
 
-/* La carte utilise uniquement la coque Applications. */
-html.bos-light-split-embed .technical-native-card{
-  width:100%!important;
-  height:auto!important;
-  min-height:0!important;
-  max-height:none!important;
-  padding:0!important;
+/* La première fiche garde le même départ vertical que la bulle 01 Applications. */
+html.bos-light-split-embed.bos-light-section-technical #bosTechThreePointDetails{
+  margin-top:0!important;
 }
 
-/* Exactement le résumé Applications : card-heading + collapsible-heading. */
-html.bos-light-split-embed .technical-native-card > summary.card-heading.collapsible-heading{
-  position:relative!important;
-  width:100%!important;
-  max-width:100%!important;
-  list-style:none!important;
-  overflow:hidden!important;
-  cursor:pointer!important;
-}
-html.bos-light-split-embed .technical-native-card > summary.card-heading.collapsible-heading::-webkit-details-marker{
+/* Une seule section visible à la fois. */
+html.bos-light-split-embed.bos-light-section-applications .technical-application-card{
   display:none!important;
 }
-html.bos-light-split-embed .technical-native-card > summary .step,
-html.bos-light-split-embed .technical-native-card > summary .heading-copy,
-html.bos-light-split-embed .technical-native-card > summary .summary-value{
-  position:relative!important;
-  z-index:3!important;
+html.bos-light-split-embed.bos-light-section-technical .technical-application-card{
+  display:block!important;
 }
-html.bos-light-split-embed .technical-native-card > summary .heading-copy{
+
+/* Aucun élément interne ne doit agrandir la largeur du téléphone. */
+html.bos-light-split-embed .technical-application-card .bft-body,
+html.bos-light-split-embed .technical-application-card .bft-reference-images,
+html.bos-light-split-embed .technical-application-card .bft-stage,
+html.bos-light-split-embed .technical-application-card .bft-readout,
+html.bos-light-split-embed .technical-application-card .bft-falloff-reference,
+html.bos-light-split-embed .technical-application-card .bft-falloff-post-images,
+html.bos-light-split-embed .technical-application-card img{
+  max-width:100%!important;
   min-width:0!important;
-}
-html.bos-light-split-embed .technical-native-card > summary .heading-copy h2,
-html.bos-light-split-embed .technical-native-card > summary .heading-copy p{
-  overflow:hidden!important;
-  white-space:nowrap!important;
-  text-overflow:ellipsis!important;
-}
-html.bos-light-split-embed .technical-native-card > summary .chevron{
-  z-index:5!important;
+  box-sizing:border-box!important;
 }
 
-/* Photo latérale calquée sur Applications. */
-html.bos-light-split-embed .technical-native-card .bos-tech-thumb{
-  position:absolute!important;
-  z-index:1!important;
-  top:0!important;
-  right:0!important;
-  bottom:0!important;
-  width:clamp(180px,23vw,240px)!important;
-  height:100%!important;
-  max-width:none!important;
-  object-fit:cover!important;
-  object-position:center center!important;
-  pointer-events:none!important;
-  opacity:.97!important;
-  border-radius:0 18px 18px 0!important;
-  -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 15%,#000 34%,#000 100%)!important;
-  mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 15%,#000 34%,#000 100%)!important;
-}
-
-/* Ordinateur : même composition que les bulles Applications. */
-@media(min-width:561px){
-  html.bos-light-split-embed .technical-native-card > summary.card-heading.collapsible-heading{
-    display:grid!important;
-    grid-template-columns:32px minmax(150px,1fr) minmax(110px,180px)!important;
-    align-items:center!important;
-    column-gap:12px!important;
-    padding-right:calc(clamp(180px,23vw,240px) + 48px)!important;
-  }
-  html.bos-light-split-embed .technical-native-card > summary .step{grid-column:1!important;grid-row:1!important}
-  html.bos-light-split-embed .technical-native-card > summary .heading-copy{grid-column:2!important;grid-row:1!important}
-  html.bos-light-split-embed .technical-native-card > summary .summary-value{grid-column:3!important;grid-row:1!important;visibility:hidden!important}
-}
-
-/* Téléphone : mêmes règles de placement que Applications. */
 @media(max-width:560px){
-  html.bos-light-split-embed .app-shell{
-    padding-left:10px!important;
-    padding-right:10px!important;
-  }
-  html.bos-light-split-embed .technical-native-card > summary.card-heading.collapsible-heading{
-    display:flex!important;
-    align-items:center!important;
-    column-gap:10px!important;
-    padding-left:12px!important;
-    padding-right:calc(clamp(104px,30vw,124px) + 34px)!important;
-  }
-  html.bos-light-split-embed .technical-native-card > summary .step{
-    flex:0 0 31px!important;
-  }
-  html.bos-light-split-embed .technical-native-card > summary .heading-copy{
-    flex:1 1 auto!important;
-    min-width:0!important;
-  }
-  html.bos-light-split-embed .technical-native-card > summary .summary-value{
-    display:none!important;
-  }
-  html.bos-light-split-embed .technical-native-card .bos-tech-thumb{
-    width:clamp(104px,30vw,124px)!important;
-    border-radius:0 18px 18px 0!important;
-    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%)!important;
-    mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%)!important;
-  }
-  html.bos-light-split-embed .technical-native-card > .bft-body{
-    padding:14px 15px 16px!important;
-  }
-}
-
-@media(max-width:420px){
-  html.bos-light-split-embed .technical-native-card > summary.card-heading.collapsible-heading{
-    column-gap:8px!important;
-    padding-left:10px!important;
-    padding-right:calc(clamp(94px,29vw,112px) + 32px)!important;
-  }
-  html.bos-light-split-embed .technical-native-card .bos-tech-thumb{
-    width:clamp(94px,29vw,112px)!important;
-    border-radius:0 17px 17px 0!important;
+  html.bos-light-split-embed .technical-application-card,
+  html.bos-light-split-embed .technical-application-card > summary,
+  html.bos-light-split-embed .technical-application-card > .technical-source-panel{
+    width:100%!important;
+    max-width:100%!important;
   }
 }
 `;
+  }
+
+  function unwrapObsoleteNativeCard(doc,meta){
+    const native=doc.getElementById(meta.panelId);
+    if(!native||native.tagName!=='DETAILS'||native.dataset.bosApplicationsCard!=='1')return native;
+
+    const body=native.querySelector(':scope > .bft-body');
+    if(!body)return native;
+
+    const section=doc.createElement('section');
+    section.id=meta.panelId;
+    section.className='technical-source-panel';
+    section.setAttribute('aria-label',native.getAttribute('aria-label')||meta.title);
+
+    const oldHead=doc.createElement('button');
+    oldHead.type='button';
+    oldHead.className='bft-head';
+    oldHead.hidden=true;
+    section.appendChild(oldHead);
+    section.appendChild(body);
+    native.replaceWith(section);
+    return section;
+  }
+
+  function ensureWrapper(doc,meta){
+    let panel=doc.getElementById(meta.panelId);
+    if(!panel)return false;
+
+    panel=unwrapObsoleteNativeCard(doc,meta)||panel;
+
+    let wrapper=doc.getElementById(meta.wrapperId);
+    if(wrapper){
+      if(panel.parentElement!==wrapper)wrapper.appendChild(panel);
+      panel.classList.add('technical-source-panel');
+      panel.classList.remove('bmp-collapsed');
+      return true;
+    }
+
+    wrapper=doc.createElement('details');
+    wrapper.id=meta.wrapperId;
+    wrapper.className='controls-card collapsible-card technical-application-card';
+    wrapper.dataset.bosTechnicalWrapper='1';
+    wrapper.setAttribute('aria-label',`${meta.title} — ${meta.subtitle}`);
+    wrapper.appendChild(makeSummary(doc,meta));
+
+    panel.parentNode.insertBefore(wrapper,panel);
+    wrapper.appendChild(panel);
+    panel.classList.add('technical-source-panel');
+    panel.classList.remove('bmp-collapsed');
+
+    wrapper.addEventListener('toggle',()=>{
+      requestAnimationFrame(fit);
+      setTimeout(fit,80);
+    });
+    panel.querySelectorAll('img').forEach(img=>img.addEventListener('load',fit));
+    return true;
   }
 
   function apply(){
     const doc=frameDoc();
     if(!doc||!doc.head)return false;
     ensureStyle(doc);
-    let count=0;
-    Object.entries(CARDS).forEach(([id,meta])=>{
-      if(rebuildPanel(doc,id,meta))count++;
-    });
-    if(count)fit();
-    return count===3;
+    let ready=0;
+    CARDS.forEach(meta=>{if(ensureWrapper(doc,meta))ready++;});
+    if(ready)fit();
+    return ready===CARDS.length;
   }
 
   function watch(){
     const doc=frameDoc();
-    if(!doc||!doc.body||doc.documentElement.dataset.bosTechnicalApplicationsWatch==='1')return;
-    doc.documentElement.dataset.bosTechnicalApplicationsWatch='1';
+    if(!doc||!doc.body||doc.documentElement.dataset.bosTechnicalExactWatch==='1')return;
+    doc.documentElement.dataset.bosTechnicalExactWatch='1';
     const observer=new MutationObserver(()=>apply());
     observer.observe(doc.body,{childList:true,subtree:true});
   }
@@ -299,11 +246,7 @@ html.bos-light-split-embed .technical-native-card .bos-tech-thumb{
   function refresh(){
     apply();
     watch();
-    [40,100,220,500,1000,1800,3000].forEach(ms=>setTimeout(()=>{
-      apply();
-      watch();
-      fit();
-    },ms));
+    [40,100,220,500,1000,1800,3000].forEach(ms=>setTimeout(()=>{apply();watch();fit();},ms));
   }
 
   frame.addEventListener('load',refresh);
