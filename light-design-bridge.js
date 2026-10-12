@@ -35,8 +35,8 @@
       doc.head.appendChild(fonts);
     }
 
-    ensureStylesheet(doc,'bosLightDesignCss','/BOS-LIGHT/light-design.css?v=1.1.0');
-    ensureStylesheet(doc,'bosLightBubblesCss','/BOS-LIGHT/light-bubbles.css?v=1.1.0');
+    ensureStylesheet(doc,'bosLightDesignCss','/BOS-LIGHT/light-design.css?v=20261012-1024');
+    ensureStylesheet(doc,'bosLightBubblesCss','/BOS-LIGHT/light-bubbles.css?v=20261012-1024');
 
     return true;
   }
