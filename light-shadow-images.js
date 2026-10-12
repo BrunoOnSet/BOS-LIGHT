@@ -24,6 +24,26 @@
 #bosShadowHardnessPanel .bft-head::after,
 #bosMiniPlateau .bft-head::after{display:none!important;content:none!important}
 
+/* Les bulles techniques gardent exactement le même en-tête ouvertes ou fermées. */
+html.bos-suite-embed #bosThreePointPanel,
+html.bos-suite-embed #bosShadowHardnessPanel,
+html.bos-suite-embed #bosMiniPlateau{box-sizing:border-box!important}
+html.bos-suite-embed #bosThreePointPanel .bft-head,
+html.bos-suite-embed #bosShadowHardnessPanel .bft-head,
+html.bos-suite-embed #bosMiniPlateau .bft-head{
+  height:80px!important;
+  min-height:80px!important;
+  max-height:80px!important;
+  box-sizing:border-box!important;
+}
+html.bos-suite-embed #bosThreePointPanel.bmp-collapsed,
+html.bos-suite-embed #bosShadowHardnessPanel.bmp-collapsed,
+html.bos-suite-embed #bosMiniPlateau.bmp-collapsed{
+  height:82px!important;
+  min-height:82px!important;
+  max-height:82px!important;
+}
+
 .bos-tech-thumb{
   position:absolute!important;
   z-index:1!important;
@@ -63,7 +83,6 @@ html.bos-light-split-embed .bft-title small{
 html.bos-suite-embed #bosMiniPlateau .bft-item-label,
 html.bos-suite-embed #bosMiniPlateau .bft-hint,
 html.bos-suite-embed #bosMiniPlateau .bft-distance span,
-html.bos-suite-embed #bosMiniPlateau .bft-intro,
 html.bos-suite-embed #bosMiniPlateau .bft-readout,
 html.bos-suite-embed #bosMiniPlateau .bft-readout span,
 html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
@@ -79,7 +98,6 @@ html.bos-suite-embed #bosMiniPlateau .bft-item-label{
 }
 html.bos-suite-embed #bosMiniPlateau .bft-hint,
 html.bos-suite-embed #bosMiniPlateau .bft-distance span,
-html.bos-suite-embed #bosMiniPlateau .bft-intro,
 html.bos-suite-embed #bosMiniPlateau .bft-readout span{
   font-weight:400!important;
 }
@@ -92,6 +110,7 @@ html.bos-suite-embed #bosMiniPlateau .bft-item-label::before,
 html.bos-suite-embed #bosMiniPlateau .bft-item-label::after{
   content:none!important;
   display:none!important;
+  visibility:hidden!important;
 }
 
 /* FALL OFF — ne pas afficher une valeur en stops, seulement l'indication qualitative. */
@@ -101,6 +120,27 @@ html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
 html.bos-suite-embed #bosMiniPlateau .bft-readout{
   justify-content:flex-start!important;
 }
+
+/* Deux images optionnelles après le module interactif Fall Off. */
+html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  width:100%;
+  margin-top:14px;
+}
+html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images[hidden]{display:none!important}
+html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img{
+  display:block;
+  width:100%;
+  height:auto;
+  margin:0;
+  border:0;
+  border-radius:13px;
+  background:#F5F2EA;
+  object-fit:contain;
+}
+html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img[hidden]{display:none!important}
 
 /* Même espace switch → 01 qu'en mode Applications : aucun retrait interne supplémentaire. */
 html.bos-light-split-embed.bos-light-section-technical #bosThreePointPanel{
@@ -117,6 +157,8 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
     -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%)!important;
     mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%)!important;
   }
+  html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images{gap:12px;margin-top:12px}
+  html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img{border-radius:12px}
 }
 
 @media(max-width:420px){
@@ -210,10 +252,73 @@ body.dark .bos-tech-thumb{filter:brightness(.72) saturate(.86)!important;opacity
     return images.length>=2;
   }
 
+  function removeFalloffIntro(){
+    const doc=frameDoc();
+    if(!doc)return false;
+    const panel=doc.getElementById('bosMiniPlateau');
+    if(!panel)return false;
+    const intro=panel.querySelector('.bft-intro');
+    if(intro)intro.remove();
+    return true;
+  }
+
+  function ensureFalloffPostImages(){
+    const doc=frameDoc();
+    if(!doc)return false;
+    const panel=doc.getElementById('bosMiniPlateau');
+    if(!panel)return false;
+    const body=panel.querySelector('.bft-body');
+    if(!body)return false;
+
+    let wrap=panel.querySelector('.bft-falloff-post-images');
+    if(!wrap){
+      wrap=doc.createElement('div');
+      wrap.className='bft-falloff-post-images';
+      wrap.hidden=true;
+
+      const sources=[
+        ['/BOS-LIGHT/assets/lighting/falloff/02-fall-off-fort.jpg?v=20261012-1','Fall Off fort'],
+        ['/BOS-LIGHT/assets/lighting/falloff/03-fall-off-doux.jpg?v=20261012-1','Fall Off doux']
+      ];
+
+      const syncVisibility=()=>{
+        const imgs=Array.from(wrap.querySelectorAll('img'));
+        wrap.hidden=!imgs.some(img=>!img.hidden);
+        if(!wrap.hidden)fit();
+      };
+
+      sources.forEach(([src,alt])=>{
+        const img=doc.createElement('img');
+        img.alt=alt;
+        img.decoding='async';
+        img.loading='eager';
+        img.hidden=true;
+        img.addEventListener('load',()=>{
+          img.hidden=false;
+          syncVisibility();
+        });
+        img.addEventListener('error',()=>{
+          img.hidden=true;
+          syncVisibility();
+        });
+        img.src=src;
+        wrap.appendChild(img);
+      });
+
+      const anchor=panel.querySelector('.bft-readout')||panel.querySelector('.bft-stage');
+      if(anchor)anchor.insertAdjacentElement('afterend',wrap);
+      else body.appendChild(wrap);
+    }
+
+    return true;
+  }
+
   function applyAll(){
     applyShadowImages();
     applyTechnicalThumbs();
     applyTechnicalLabels();
+    removeFalloffIntro();
+    ensureFalloffPostImages();
   }
 
   function watchFrame(){
