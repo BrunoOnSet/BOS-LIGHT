@@ -1,10 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap");
-@import url("../light-design.css?v=20261012-clean1");
-@import url("../light-bubbles.css?v=20261012-clean1");
-
-/* BOS LIGHT — authoritative module shell.
-   Loaded by modules/light/index.html before first paint.
-   It owns typography and removes obsolete internal chrome. */
+/* BOS LIGHT — final module shell.
+   Design and font stylesheets are linked directly by modules/light/index.html.
+   This file only contains authoritative module structure rules. */
 
 html,body,body *,button,input,select,textarea{
   font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
@@ -14,15 +10,6 @@ html,body{
   min-height:0!important;
   height:auto!important;
   overflow-x:hidden!important;
-}
-
-/* Public LIGHT shell owns branding, navigation, install, theme and contact. */
-body>.app-shell>.topbar,
-body>.app-shell>[data-bos-return],
-body>.app-shell>.utility-row,
-body>.app-shell>.project-contact-bottom,
-body>.app-shell>footer{
-  display:none!important;
 }
 
 body>.app-shell{
@@ -35,7 +22,8 @@ body>.app-shell{
 
 #cameraDetails{margin-top:0!important}
 
-/* Projector chooser: host bridge supplies the viewport-aware top value. */
+/* The projector chooser is positioned relative to the visible parent viewport
+   by light-dialog-position.js. */
 .add-dialog[open]{
   position:fixed!important;
   left:50%!important;
