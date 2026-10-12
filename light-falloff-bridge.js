@@ -252,9 +252,9 @@ html.bos-suite-embed #bosMiniPlateau .bft-distance{border-top-color:rgba(47,91,1
 html.bos-suite-embed #bosMiniPlateau .bft-distance span{
   background:rgba(245,242,234,.94)!important;
   color:#667276!important;
-  font-family:"Instrument Sans",Inter,sans-serif!important;
+  font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-size:8px!important;
-  font-weight:500!important;
+  font-weight:400!important;
 }
 html.bos-suite-embed #bosMiniPlateau .bft-projector{width:58px;height:58px}
 html.bos-suite-embed #bosMiniPlateau .bft-person{width:60px;height:60px}
@@ -264,11 +264,13 @@ html.bos-suite-embed #bosMiniPlateau .bft-sketch [stroke]{vector-effect:non-scal
 html.bos-suite-embed #bosMiniPlateau .bft-item-label{
   top:calc(100% + 8px)!important;
   color:#262A2B!important;
-  font-family:"Marker Felt","Bradley Hand","Segoe Print",cursive!important;
-  font-size:9px!important;
-  font-weight:600!important;
-  letter-spacing:.08em!important;
-  transform:translateX(-50%) rotate(-.35deg)!important;
+  font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-size:9.5px!important;
+  line-height:1.25!important;
+  font-weight:400!important;
+  letter-spacing:0!important;
+  text-transform:uppercase!important;
+  transform:translateX(-50%)!important;
 }
 html.bos-suite-embed #bosMiniPlateau .bft-item-label::before{
   content:"";
@@ -288,13 +290,22 @@ html.bos-suite-embed #bosMiniPlateau .bft-item-label::after{
   height:11px;
   background:rgba(66,152,205,.58);
 }
+html.bos-suite-embed #bosMiniPlateau .bft-hint,
+html.bos-suite-embed #bosMiniPlateau .bft-intro,
+html.bos-suite-embed #bosMiniPlateau .bft-readout,
+html.bos-suite-embed #bosMiniPlateau .bft-readout span,
+html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
+  font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
 html.bos-suite-embed #bosMiniPlateau .bft-hint{
   color:#737B7E!important;
-  font-family:"Instrument Sans",Inter,sans-serif!important;
   font-size:9px!important;
   font-weight:400!important;
   letter-spacing:0!important;
 }
+html.bos-suite-embed #bosMiniPlateau .bft-intro,
+html.bos-suite-embed #bosMiniPlateau .bft-readout span{font-weight:400!important}
+html.bos-suite-embed #bosMiniPlateau .bft-readout strong{font-weight:500!important}
 
 html.bos-suite-embed #bosThreePointPanel,
 html.bos-suite-embed #bosShadowHardnessPanel{width:100%;margin-top:12px;border:1px solid var(--card-border,#D7D9D6);border-radius:22px;background:var(--panel);box-shadow:none;overflow:hidden;padding:0}
@@ -313,7 +324,7 @@ html.bos-suite-embed .bft-reference-images img{display:block;width:100%;height:a
   html.bos-suite-embed #bosMiniPlateau .bft-projector{width:52px;height:52px}
   html.bos-suite-embed #bosMiniPlateau .bft-person{width:54px;height:54px}
   html.bos-suite-embed #bosMiniPlateau .bft-wall{width:31px;height:106px}
-  html.bos-suite-embed #bosMiniPlateau .bft-item-label{font-size:8.5px!important}
+  html.bos-suite-embed #bosMiniPlateau .bft-item-label{font-size:9.5px!important}
   html.bos-suite-embed #bosMiniPlateau .bft-falloff-reference{margin-bottom:12px}
   html.bos-suite-embed #bosMiniPlateau .bft-falloff-reference img{border-radius:12px}
   html.bos-suite-embed #bosThreePointPanel .bft-body,
