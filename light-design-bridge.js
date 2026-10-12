@@ -4,6 +4,24 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
+  function ensureStylesheet(doc,id,href){
+    let link=doc.getElementById(id);
+    if(link){
+      if(link.getAttribute('href')!==href)link.setAttribute('href',href);
+      return link;
+    }
+    link=doc.createElement('link');
+    link.id=id;
+    link.rel='stylesheet';
+    link.href=href;
+    link.addEventListener('load',()=>{
+      requestAnimationFrame(()=>window.BOSLightFit?.());
+      setTimeout(()=>window.BOSLightFit?.(),80);
+    });
+    doc.head.appendChild(link);
+    return link;
+  }
+
   function inject(){
     let doc;
     try{doc=frame.contentDocument||null;}catch(_){doc=null;}
@@ -17,17 +35,8 @@
       doc.head.appendChild(fonts);
     }
 
-    if(!doc.getElementById('bosLightDesignCss')){
-      const css=doc.createElement('link');
-      css.id='bosLightDesignCss';
-      css.rel='stylesheet';
-      css.href='/BOS-LIGHT/light-design.css?v=1.1.0';
-      css.addEventListener('load',()=>{
-        requestAnimationFrame(()=>window.BOSLightFit?.());
-        setTimeout(()=>window.BOSLightFit?.(),80);
-      });
-      doc.head.appendChild(css);
-    }
+    ensureStylesheet(doc,'bosLightDesignCss','/BOS-LIGHT/light-design.css?v=1.1.0');
+    ensureStylesheet(doc,'bosLightBubblesCss','/BOS-LIGHT/light-bubbles.css?v=1.0.0');
 
     return true;
   }
