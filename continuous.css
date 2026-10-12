@@ -196,3 +196,8 @@ html[data-theme="dark"] .shared-heading-copy h2{color:#7FA7B0}
   .shared-camera-grid{padding:14px 15px 16px;grid-template-columns:1fr 1fr;gap:9px}
   .shared-field select{font-size:12px}
 }
+
+/* Harmonisation verticale du shell : même espace au-dessus et au-dessous du sélecteur. */
+body .mode-switch.light-section-switch{
+  margin-top:12px!important;
+}
