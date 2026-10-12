@@ -87,6 +87,21 @@ html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
   font-weight:500!important;
 }
 
+/* FALL OFF — supprimer les petits repères bleus sous les libellés. */
+html.bos-suite-embed #bosMiniPlateau .bft-item-label::before,
+html.bos-suite-embed #bosMiniPlateau .bft-item-label::after{
+  content:none!important;
+  display:none!important;
+}
+
+/* FALL OFF — ne pas afficher une valeur en stops, seulement l'indication qualitative. */
+html.bos-suite-embed #bosMiniPlateau .bft-readout strong{
+  display:none!important;
+}
+html.bos-suite-embed #bosMiniPlateau .bft-readout{
+  justify-content:flex-start!important;
+}
+
 /* Même espace switch → 01 qu'en mode Applications : aucun retrait interne supplémentaire. */
 html.bos-light-split-embed.bos-light-section-technical #bosThreePointPanel{
   margin-top:0!important;
