@@ -158,6 +158,30 @@ html.bos-light-split-embed.bos-light-section-applications body.dark details.coll
 }
 
 /*
+  Chevron Applications — petit disque neutre pour rester lisible sur les photos.
+  On conserve exactement le même mouvement de rotation qu'avant.
+*/
+html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .chevron{
+  width:30px!important;
+  height:30px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:50%!important;
+  background:rgba(238,240,240,.94)!important;
+  border:1px solid rgba(21,25,27,.07)!important;
+  color:var(--bos-accent)!important;
+  box-shadow:0 1px 4px rgba(21,25,27,.08)!important;
+  z-index:5!important;
+}
+html[data-theme="dark"].bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .chevron,
+html.bos-light-split-embed.bos-light-section-applications body.dark details.collapsible-card > summary.collapsible-heading > .chevron{
+  background:rgba(48,52,54,.92)!important;
+  border-color:rgba(255,255,255,.10)!important;
+  color:#DCE8EA!important;
+  box-shadow:none!important;
+}
+
+/*
   MOBILE — retour à la hauteur compacte historique.
   La photo est plaquée au bord droit, du haut au bas de la tête de carte.
   Comme elle est en position absolue, elle ne peut plus agrandir la bulle.
@@ -214,8 +238,10 @@ html.bos-light-split-embed.bos-light-section-applications body.dark details.coll
   }
 
   html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .chevron{
-    right:14px!important;
-    z-index:4!important;
+    right:12px!important;
+    width:28px!important;
+    height:28px!important;
+    z-index:5!important;
   }
 }
 
