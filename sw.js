@@ -1,4 +1,4 @@
-const CACHE="bos-light-v2-0-25";
+const CACHE="bos-light-v2-0-26";
 const ASSETS=[
   "./",
   "./index.html",
@@ -41,7 +41,8 @@ const FRESH_ASSETS=[
   "/light-falloff-bridge.js",
   "/light-design-bridge.js",
   "/light-design.css",
-  "/light-bubbles.css"
+  "/light-bubbles.css",
+  "/modules/light/styles.css"
 ];
 
 self.addEventListener("install",e=>{
