@@ -59,6 +59,22 @@ html.bos-light-split-embed .bft-title small{
   font-size:9.5px!important;
 }
 
+/* FALL OFF — typographie stable et sobre sur toutes les plateformes. */
+html.bos-light-split-embed #bosMiniPlateau .bft-item-label{
+  font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-size:9.5px!important;
+  line-height:1.25!important;
+  font-weight:400!important;
+  letter-spacing:-.005em!important;
+  text-transform:uppercase!important;
+  transform:translateX(-50%)!important;
+}
+html.bos-light-split-embed #bosMiniPlateau .bft-hint,
+html.bos-light-split-embed #bosMiniPlateau .bft-distance span{
+  font-family:"Instrument Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-weight:400!important;
+}
+
 /* Même espace switch → 01 qu'en mode Applications : aucun retrait interne supplémentaire. */
 html.bos-light-split-embed.bos-light-section-technical #bosThreePointPanel{
   margin-top:0!important;
