@@ -50,17 +50,43 @@
     return true;
   }
 
+  function syncPanelChevron(section){
+    if(!section)return;
+    const chevron=section.querySelector('.bft-chevron');
+    if(!chevron)return;
+    const collapsed=section.classList.contains('bmp-collapsed');
+    chevron.textContent=collapsed?'⌄':'⌃';
+  }
+
+  function bindChevronState(section){
+    if(!section)return;
+    const toggle=section.querySelector('.bft-head');
+    syncPanelChevron(section);
+    if(!toggle||toggle.dataset.bosChevronBound==='1')return;
+    toggle.dataset.bosChevronBound='1';
+    toggle.addEventListener('click',()=>{
+      // Le toggle de FALL OFF vient d'EXPO : on attend la fin de son handler
+      // puis on lit l'état réel de la fiche pour choisir le sens du chevron.
+      setTimeout(()=>syncPanelChevron(section),0);
+    });
+  }
+
   function bindPanelToggle(section,toggleId){
     const toggle=section.querySelector('#'+toggleId);
-    if(!toggle||toggle.dataset.bosBound==='1')return;
-    toggle.dataset.bosBound='1';
-    toggle.addEventListener('click',()=>{
-      const collapsed=section.classList.toggle('bmp-collapsed');
-      toggle.setAttribute('aria-expanded',String(!collapsed));
-      setTimeout(fit,20);
-      setTimeout(fit,160);
-    });
-    section.querySelectorAll('img').forEach(el=>el.addEventListener('load',fit));
+    if(!toggle)return;
+    syncPanelChevron(section);
+    if(toggle.dataset.bosBound!=='1'){
+      toggle.dataset.bosBound='1';
+      toggle.addEventListener('click',()=>{
+        const collapsed=section.classList.toggle('bmp-collapsed');
+        toggle.setAttribute('aria-expanded',String(!collapsed));
+        syncPanelChevron(section);
+        setTimeout(fit,20);
+        setTimeout(fit,160);
+      });
+      section.querySelectorAll('img').forEach(el=>el.addEventListener('load',fit));
+    }
+    bindChevronState(section);
   }
 
   function ensureThreePointPanel(doc,panel){
@@ -154,6 +180,7 @@
 
     ensureThreePointPanel(doc,panel);
     ensureShadowHardnessPanel(doc,panel);
+    bindChevronState(panel);
 
     let style=doc.getElementById('bosLightFalloffSimpleStyle');
     if(!style){
