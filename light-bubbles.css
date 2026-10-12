@@ -39,7 +39,6 @@ html[data-theme="dark"],body.dark{
 /*
   FICHES TECHNIQUES — chevron strictement calqué sur les bulles Applications.
   Le glyphe reste toujours le même (⌄) et pivote à 180° en 0,2 s.
-  On masque le caractère historique injecté par EXPO pour éviter le système ⌄/⌃.
 */
 #bosThreePointPanel .bft-head,
 #bosShadowHardnessPanel .bft-head,
@@ -84,9 +83,10 @@ html[data-theme="dark"],body.dark{
 }
 
 /*
-  APPLICATIONS — vignettes visuelles intégrées sans toucher au DOM ni aux interactions.
-  Les quatre images sont locales au dépôt. Elles occupent une colonne purement décorative
-  entre le titre et le résumé, et ne capturent jamais les clics.
+  APPLICATIONS — vignettes visuelles locales, purement décoratives.
+  Sur grand écran elles restent dans une colonne dédiée. Sur téléphone,
+  elles passent en fond latéral absolu : elles ne participent donc plus
+  jamais au calcul de hauteur de la bulle.
 */
 html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading{
   display:grid!important;
@@ -106,7 +106,7 @@ html.bos-light-split-embed.bos-light-section-applications details.collapsible-ca
   grid-column:2!important;
   grid-row:1!important;
   min-width:0!important;
-  z-index:1!important;
+  z-index:2!important;
 }
 
 html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .summary-value{
@@ -118,7 +118,7 @@ html.bos-light-split-embed.bos-light-section-applications details.collapsible-ca
   min-width:0!important;
   white-space:normal!important;
   line-height:1.25!important;
-  z-index:1!important;
+  z-index:2!important;
 }
 
 html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before{
@@ -157,42 +157,77 @@ html.bos-light-split-embed.bos-light-section-applications body.dark details.coll
   opacity:.88!important;
 }
 
+/*
+  MOBILE — retour à la hauteur compacte historique.
+  La photo est plaquée au bord droit, du haut au bas de la tête de carte.
+  Comme elle est en position absolue, elle ne peut plus agrandir la bulle.
+*/
 @media(max-width:560px){
   html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading{
-    grid-template-columns:32px minmax(82px,1fr) 88px minmax(58px,74px)!important;
-    column-gap:8px!important;
+    display:flex!important;
+    grid-template-columns:none!important;
+    align-items:center!important;
+    column-gap:10px!important;
     padding-left:12px!important;
-    padding-right:50px!important;
+    padding-right:calc(clamp(104px,30vw,124px) + 34px)!important;
+    overflow:hidden!important;
   }
-  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before{
-    height:62px!important;
-    border-radius:10px!important;
+
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .step{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    flex:0 0 32px!important;
+    position:relative!important;
+    z-index:3!important;
   }
+
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .heading-copy{
+    grid-column:auto!important;
+    grid-row:auto!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    position:relative!important;
+    z-index:3!important;
+  }
+
   html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .summary-value{
-    font-size:9.4px!important;
+    display:none!important;
+  }
+
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before{
+    position:absolute!important;
+    z-index:1!important;
+    top:0!important;
+    right:0!important;
+    bottom:0!important;
+    left:auto!important;
+    width:clamp(104px,30vw,124px)!important;
+    height:auto!important;
+    min-height:100%!important;
+    margin:0!important;
+    align-self:stretch!important;
+    border-radius:0 18px 18px 0!important;
+    background-position:center!important;
+    background-size:cover!important;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%);
+    mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.72) 18%,#000 38%,#000 100%);
+  }
+
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .chevron{
+    right:14px!important;
+    z-index:4!important;
   }
 }
 
 @media(max-width:420px){
   html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading{
-    grid-template-columns:30px minmax(72px,1fr) 72px minmax(52px,62px)!important;
-    column-gap:7px!important;
+    column-gap:8px!important;
     padding-left:10px!important;
-    padding-right:46px!important;
+    padding-right:calc(clamp(94px,29vw,112px) + 32px)!important;
   }
+
   html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before{
-    height:56px!important;
-    border-radius:9px!important;
-  }
-  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .heading-copy h2{
-    font-size:13px!important;
-  }
-  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .heading-copy p{
-    font-size:9px!important;
-    line-height:1.2!important;
-  }
-  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .summary-value{
-    font-size:8.9px!important;
-    line-height:1.2!important;
+    width:clamp(94px,29vw,112px)!important;
+    border-radius:0 17px 17px 0!important;
   }
 }
