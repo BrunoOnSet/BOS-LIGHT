@@ -11,25 +11,17 @@
     try{return frame.contentDocument||null;}catch(_){return null;}
   }
 
+  // Une seule autorité de hauteur pour LIGHT.
+  // Ce bridge ne mesure plus scrollHeight/documentHeight : ces valeurs peuvent
+  // conserver la grande hauteur de l'iframe après fermeture d'une fiche.
   function fit(){
-    const doc=frameDoc();
-    if(!doc)return;
-    const root=doc.querySelector('.app-shell')||doc.body;
-    if(!root)return;
-
-    const rootRect=root.getBoundingClientRect();
-    const scrollHeight=Math.ceil(root.scrollHeight||0);
-    const rectHeight=Math.ceil(rootRect.height||0);
-    const bodyHeight=Math.ceil(doc.body?.scrollHeight||0);
-    const documentHeight=Math.ceil(doc.documentElement?.scrollHeight||0);
-
-    // Marge de sécurité volontaire : certains navigateurs tronquent de quelques
-    // pixels la dernière carte d'un iframe auto-dimensionné, surtout après
-    // changement d'onglet ou injection dynamique des fiches techniques.
-    const SAFE_BOTTOM=36;
-    const h=Math.max(1,scrollHeight,rectHeight,bodyHeight,documentHeight)+SAFE_BOTTOM;
-
-    if(Math.abs((parseFloat(frame.style.height)||0)-h)>1)frame.style.height=h+'px';
+    if(typeof window.BOSLightFit==='function'){
+      window.BOSLightFit();
+      return;
+    }
+    requestAnimationFrame(()=>{
+      if(typeof window.BOSLightFit==='function')window.BOSLightFit();
+    });
   }
 
   function prepareFrame(){
@@ -65,8 +57,6 @@
     if(!toggle||toggle.dataset.bosChevronBound==='1')return;
     toggle.dataset.bosChevronBound='1';
     toggle.addEventListener('click',()=>{
-      // Le toggle de FALL OFF vient d'EXPO : on attend la fin de son handler
-      // puis on lit l'état réel de la fiche pour choisir le sens du chevron.
       setTimeout(()=>syncPanelChevron(section),0);
     });
   }
