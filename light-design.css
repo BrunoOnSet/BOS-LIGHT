@@ -113,6 +113,10 @@ button,input,select,textarea{font-family:inherit!important}
 }
 .install-app-btn span,.project-contact-btn span{color:var(--bos-accent)!important;font-size:14px!important}
 .project-contact{margin-top:10px!important;margin-bottom:12px!important}
+html[data-theme="dark"] .project-contact-btn,
+body.dark .project-contact-btn{color:var(--bos-muted)!important}
+html[data-theme="dark"] .project-contact-btn span,
+body.dark .project-contact-btn span{color:var(--bos-muted)!important}
 
 /* ---------- APPLICATION / TECHNICAL SWITCH ---------- */
 .mode-switch.light-section-switch{
