@@ -82,3 +82,117 @@ html[data-theme="dark"],body.dark{
 #bosMiniPlateau:not(.bmp-collapsed) .bft-chevron::before{
   transform:rotate(180deg);
 }
+
+/*
+  APPLICATIONS — vignettes visuelles intégrées sans toucher au DOM ni aux interactions.
+  Les quatre images sont locales au dépôt. Elles occupent une colonne purement décorative
+  entre le titre et le résumé, et ne capturent jamais les clics.
+*/
+html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading{
+  display:grid!important;
+  grid-template-columns:32px minmax(105px,1fr) clamp(96px,24vw,170px) minmax(76px,112px)!important;
+  align-items:center!important;
+  column-gap:12px!important;
+  position:relative!important;
+  padding-right:56px!important;
+}
+
+html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .step{
+  grid-column:1!important;
+  grid-row:1!important;
+}
+
+html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .heading-copy{
+  grid-column:2!important;
+  grid-row:1!important;
+  min-width:0!important;
+  z-index:1!important;
+}
+
+html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .summary-value{
+  grid-column:4!important;
+  grid-row:1!important;
+  margin-left:0!important;
+  padding-right:0!important;
+  max-width:none!important;
+  min-width:0!important;
+  white-space:normal!important;
+  line-height:1.25!important;
+  z-index:1!important;
+}
+
+html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before{
+  content:"";
+  grid-column:3!important;
+  grid-row:1!important;
+  width:100%!important;
+  height:70px!important;
+  align-self:center!important;
+  border-radius:12px!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:cover!important;
+  pointer-events:none!important;
+  opacity:.96!important;
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 18%,#000 100%);
+  mask-image:linear-gradient(to right,transparent 0%,#000 18%,#000 100%);
+}
+
+html.bos-light-split-embed.bos-light-section-applications #cameraDetails > summary.collapsible-heading::before{
+  background-image:url("/BOS-LIGHT/assets/thumb-camera.webp?v=20261012-1")!important;
+}
+html.bos-light-split-embed.bos-light-section-applications #lightDetails > summary.collapsible-heading::before{
+  background-image:url("/BOS-LIGHT/assets/thumb-key.webp?v=20261012-1")!important;
+}
+html.bos-light-split-embed.bos-light-section-applications #fillDetails > summary.collapsible-heading::before{
+  background-image:url("/BOS-LIGHT/assets/thumb-fill.webp?v=20261012-1")!important;
+}
+html.bos-light-split-embed.bos-light-section-applications #gelDetails > summary.collapsible-heading::before{
+  background-image:url("/BOS-LIGHT/assets/thumb-gels.webp?v=20261012-1")!important;
+}
+
+html[data-theme="dark"].bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before,
+html.bos-light-split-embed.bos-light-section-applications body.dark details.collapsible-card > summary.collapsible-heading::before{
+  filter:brightness(.72) saturate(.86)!important;
+  opacity:.88!important;
+}
+
+@media(max-width:560px){
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading{
+    grid-template-columns:32px minmax(82px,1fr) 88px minmax(58px,74px)!important;
+    column-gap:8px!important;
+    padding-left:12px!important;
+    padding-right:50px!important;
+  }
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before{
+    height:62px!important;
+    border-radius:10px!important;
+  }
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .summary-value{
+    font-size:9.4px!important;
+  }
+}
+
+@media(max-width:420px){
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading{
+    grid-template-columns:30px minmax(72px,1fr) 72px minmax(52px,62px)!important;
+    column-gap:7px!important;
+    padding-left:10px!important;
+    padding-right:46px!important;
+  }
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading::before{
+    height:56px!important;
+    border-radius:9px!important;
+  }
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .heading-copy h2{
+    font-size:13px!important;
+  }
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .heading-copy p{
+    font-size:9px!important;
+    line-height:1.2!important;
+  }
+  html.bos-light-split-embed.bos-light-section-applications details.collapsible-card > summary.collapsible-heading > .summary-value{
+    font-size:8.9px!important;
+    line-height:1.2!important;
+  }
+}
