@@ -32,3 +32,31 @@ body>.app-shell{
   margin:0!important;
   transform:translateX(-50%)!important;
 }
+
+/*
+  Chemins portables : ces règles sont chargées après light-bubbles.css.
+  Elles remplacent les anciennes URL absolues /BOS-LIGHT/... et restent
+  valides aussi bien sous GitHub Pages que sur un domaine personnalisé.
+*/
+html.bos-light-split-embed.bos-light-section-applications #cameraDetails > summary.collapsible-heading::before{
+  background-image:url("../assets/thumb-camera.webp?v=20261012-1")!important;
+}
+html.bos-light-split-embed.bos-light-section-applications #lightDetails > summary.collapsible-heading::before{
+  background-image:url("../assets/thumb-key.webp?v=20261012-1")!important;
+}
+html.bos-light-split-embed.bos-light-section-applications #fillDetails > summary.collapsible-heading::before{
+  background-image:url("../assets/thumb-fill.webp?v=20261012-1")!important;
+}
+html.bos-light-split-embed.bos-light-section-applications #gelDetails > summary.collapsible-heading::before{
+  background-image:url("../assets/thumb-gels.webp?v=20261012-1")!important;
+}
+
+html.bos-light-split-embed.bos-light-section-technical #bosThreePointPanel .bft-head::after{
+  background-image:url("../assets/thumb-tech-3points.webp?v=20261012-3")!important;
+}
+html.bos-light-split-embed.bos-light-section-technical #bosShadowHardnessPanel .bft-head::after{
+  background-image:url("../assets/thumb-tech-shadow.webp?v=20261012-3")!important;
+}
+html.bos-light-split-embed.bos-light-section-technical #bosMiniPlateau .bft-head::after{
+  background-image:url("../assets/thumb-tech-falloff.webp?v=20261012-3")!important;
+}
