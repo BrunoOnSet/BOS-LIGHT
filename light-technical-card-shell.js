@@ -101,6 +101,30 @@ html.bos-light-split-embed .technical-application-card > summary .summary-value{
   min-width:0!important;
 }
 
+/*
+  Chevron Fiches techniques — COPIE EXACTE du chevron Applications.
+  Même dimensions, même couleur, même liseré blanc, même absence de fond/contour.
+*/
+html.bos-light-split-embed.bos-light-section-technical .technical-application-card > summary.collapsible-heading > .chevron{
+  right:14px!important;
+  width:24px!important;
+  height:24px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:var(--bos-accent)!important;
+  box-shadow:none!important;
+  text-shadow:
+    -.6px 0 rgba(255,255,255,.95),
+    .6px 0 rgba(255,255,255,.95),
+    0 -.6px rgba(255,255,255,.95),
+    0 .6px rgba(255,255,255,.95),
+    0 0 2px rgba(255,255,255,.72)!important;
+  z-index:5!important;
+}
+
 /* Le panneau technique historique devient uniquement le contenu de la bulle. */
 html.bos-light-split-embed .technical-application-card > .technical-source-panel{
   display:block!important;
