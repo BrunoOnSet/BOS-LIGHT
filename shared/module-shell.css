@@ -37,6 +37,7 @@ html.bos-light-split-embed details.controls-card.collapsible-card > summary.coll
   max-width:100%!important;
   min-width:0!important;
   box-sizing:border-box!important;
+  cursor:pointer!important;
 }
 html.bos-light-split-embed details.controls-card.collapsible-card > *{
   max-width:100%!important;
