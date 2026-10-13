@@ -4,6 +4,8 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
+  const appUrl=path=>window.BOS_PATHS?.url(path)||new URL(String(path||'').replace(/^\/+/,''),new URL('./',document.baseURI)).href;
+
   function frameDoc(){
     try{return frame.contentDocument||null;}catch(_){return null;}
   }
@@ -163,9 +165,9 @@ html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img[hidden]{displa
   }
 
   function applyTechnicalThumbs(doc){
-    ensureThumb(doc,'bosTechThreePointDetails','/BOS-LIGHT/assets/thumb-tech-3points.webp?v=20261012-3');
-    ensureThumb(doc,'bosTechShadowDetails','/BOS-LIGHT/assets/thumb-tech-shadow.webp?v=20261012-3');
-    ensureThumb(doc,'bosTechFalloffDetails','/BOS-LIGHT/assets/thumb-tech-falloff.webp?v=20261012-3');
+    ensureThumb(doc,'bosTechThreePointDetails',appUrl('assets/thumb-tech-3points.webp?v=20261012-3'));
+    ensureThumb(doc,'bosTechShadowDetails',appUrl('assets/thumb-tech-shadow.webp?v=20261012-3'));
+    ensureThumb(doc,'bosTechFalloffDetails',appUrl('assets/thumb-tech-falloff.webp?v=20261012-3'));
   }
 
   function applyShadowImages(doc){
@@ -173,11 +175,11 @@ html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img[hidden]{displa
     if(!panel)return;
     const images=panel.querySelectorAll('.bft-reference-images img');
     if(images[0]){
-      images[0].src='/BOS-LIGHT/assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=20261009-2';
+      images[0].src=appUrl('assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=20261009-2');
       images[0].alt='Dureté des ombres — schéma 1';
     }
     if(images[1]){
-      images[1].src='/BOS-LIGHT/assets/lighting/shadow-hardness/02-durete-des-ombres.jpg?v=20261009-2';
+      images[1].src=appUrl('assets/lighting/shadow-hardness/02-durete-des-ombres.jpg?v=20261009-2');
       images[1].alt='Dureté des ombres — schéma 2';
     }
   }
@@ -199,8 +201,8 @@ html.bos-suite-embed #bosMiniPlateau .bft-falloff-post-images img[hidden]{displa
     wrap.hidden=true;
 
     const sources=[
-      ['/BOS-LIGHT/assets/lighting/falloff/02-fall-off-fort.jpg?v=20261012-2','Fall Off fort'],
-      ['/BOS-LIGHT/assets/lighting/falloff/03-fall-off-doux.jpg?v=20261012-2','Fall Off doux']
+      [appUrl('assets/lighting/falloff/02-fall-off-fort.jpg?v=20261012-2'),'Fall Off fort'],
+      [appUrl('assets/lighting/falloff/03-fall-off-doux.jpg?v=20261012-2'),'Fall Off doux']
     ];
 
     const sync=()=>{
