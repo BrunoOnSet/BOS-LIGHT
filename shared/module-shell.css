@@ -44,6 +44,23 @@ html.bos-light-split-embed details.controls-card.collapsible-card > *{
   box-sizing:border-box!important;
 }
 
+/*
+  Séparation autoritaire des deux onglets.
+  APPLICATIONS = uniquement 01–04.
+  FICHES TECHNIQUES = uniquement les trois wrappers techniques.
+*/
+html.bos-light-split-embed.bos-light-section-applications #bosTechThreePointDetails,
+html.bos-light-split-embed.bos-light-section-applications #bosTechShadowDetails,
+html.bos-light-split-embed.bos-light-section-applications #bosTechFalloffDetails{
+  display:none!important;
+}
+html.bos-light-split-embed.bos-light-section-technical #cameraDetails,
+html.bos-light-split-embed.bos-light-section-technical #lightDetails,
+html.bos-light-split-embed.bos-light-section-technical #fillDetails,
+html.bos-light-split-embed.bos-light-section-technical #gelDetails{
+  display:none!important;
+}
+
 #cameraDetails{margin-top:0!important}
 
 /* The projector chooser is positioned relative to the visible parent viewport
