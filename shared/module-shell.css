@@ -23,9 +23,10 @@ body>.app-shell{
 /*
   Les bulles Applications gardent strictement la même largeur ouvertes ou fermées.
   Le contenu interne ne peut plus imposer une largeur intrinsèque différente.
+  IMPORTANT : ne jamais forcer display ici, car les fiches techniques utilisent
+  la même coque <details> et doivent rester pilotées par les onglets.
 */
 html.bos-light-split-embed details.controls-card.collapsible-card{
-  display:block!important;
   width:100%!important;
   max-width:100%!important;
   min-width:0!important;
