@@ -1,10 +1,14 @@
-const CACHE='bos-light-v2-1-clean20';
+const CACHE='bos-light-v2-1-clean21';
 
 const STATIC_ASSETS=[
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './assets/logo-bos-header.jpg',
+  './bos-paths.js?v=1.0.0',
+  './light-portable-paths.css?v=1.0.0',
+  './vendor/expo-mini-plateau.js?v=4.0.13',
+  './vendor/expo-falloff-reference-assets.js?v=4.0.13',
   './assets/lighting/3points/01-systeme-3-points.jpg?v=20261009-1',
   './assets/lighting/3points/02-key-light.jpg?v=20261009-1',
   './assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=20261009-2',
