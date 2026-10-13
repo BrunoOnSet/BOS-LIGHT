@@ -8,6 +8,15 @@ body{
   overflow-x:hidden;
 }
 
+/*
+  Garde exactement la même largeur utile quand une bulle longue est ouverte.
+  Sans ce gutter stable, l'apparition de la scrollbar verticale retire quelques
+  pixels au viewport et donne l'impression que les cartes changent de largeur.
+*/
+html{
+  scrollbar-gutter:stable;
+}
+
 body,
 .shell,
 .continuous-tools,
