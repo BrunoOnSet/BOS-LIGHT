@@ -61,6 +61,16 @@ html.bos-light-split-embed.bos-light-section-technical #gelDetails{
   display:none!important;
 }
 
+/* Titres de bulles : blanc pur en mode DARK, sous-titres inchangés. */
+html[data-theme="dark"].bos-light-split-embed .card-heading h2,
+html[data-theme="dark"].bos-light-split-embed .heading-copy h2,
+html[data-theme="dark"].bos-light-split-embed .bft-title strong,
+html.bos-light-split-embed body.dark .card-heading h2,
+html.bos-light-split-embed body.dark .heading-copy h2,
+html.bos-light-split-embed body.dark .bft-title strong{
+  color:#FFFFFF!important;
+}
+
 #cameraDetails{margin-top:0!important}
 
 /* The projector chooser is positioned relative to the visible parent viewport
