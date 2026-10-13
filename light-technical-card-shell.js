@@ -96,9 +96,7 @@ html.bos-light-split-embed .technical-application-card > summary.card-heading.co
   position:relative!important;
   overflow:hidden!important;
 }
-html.bos-light-split-embed .technical-application-card > summary .heading-copy{
-  min-width:0!important;
-}
+html.bos-light-split-embed .technical-application-card > summary .heading-copy,
 html.bos-light-split-embed .technical-application-card > summary .summary-value{
   min-width:0!important;
 }
@@ -132,18 +130,9 @@ html.bos-light-split-embed .technical-application-card > .technical-source-panel
   box-sizing:border-box!important;
 }
 
-/* La première fiche garde le même départ vertical que la bulle 01 Applications. */
-html.bos-light-split-embed.bos-light-section-technical #bosTechThreePointDetails{
-  margin-top:0!important;
-}
-
-/* Une seule section visible à la fois. */
-html.bos-light-split-embed.bos-light-section-applications .technical-application-card{
-  display:none!important;
-}
-html.bos-light-split-embed.bos-light-section-technical .technical-application-card{
-  display:block!important;
-}
+html.bos-light-split-embed.bos-light-section-technical #bosTechThreePointDetails{margin-top:0!important}
+html.bos-light-split-embed.bos-light-section-applications .technical-application-card{display:none!important}
+html.bos-light-split-embed.bos-light-section-technical .technical-application-card{display:block!important}
 
 /* Aucun élément interne ne doit agrandir la largeur du téléphone. */
 html.bos-light-split-embed .technical-application-card .bft-body,
@@ -158,6 +147,8 @@ html.bos-light-split-embed .technical-application-card img{
   box-sizing:border-box!important;
 }
 
+#bosTechnicalMountMarker{display:none!important}
+
 @media(max-width:560px){
   html.bos-light-split-embed .technical-application-card,
   html.bos-light-split-embed .technical-application-card > summary,
@@ -167,6 +158,24 @@ html.bos-light-split-embed .technical-application-card img{
   }
 }
 `;
+  }
+
+  function ensureMountMarker(doc){
+    const root=doc.querySelector('.app-shell')||doc.body;
+    if(!root)return null;
+
+    let marker=doc.getElementById('bosTechnicalMountMarker');
+    if(!marker){
+      marker=doc.createElement('div');
+      marker.id='bosTechnicalMountMarker';
+      marker.hidden=true;
+      const gel=doc.getElementById('gelDetails');
+      if(gel&&gel.parentElement===root)gel.insertAdjacentElement('afterend',marker);
+      else root.appendChild(marker);
+    }else if(marker.parentElement!==root){
+      root.appendChild(marker);
+    }
+    return {root,marker};
   }
 
   function unwrapObsoleteNativeCard(doc,meta){
@@ -198,30 +207,47 @@ html.bos-light-split-embed .technical-application-card img{
     panel=unwrapObsoleteNativeCard(doc,meta)||panel;
 
     let wrapper=doc.getElementById(meta.wrapperId);
-    if(wrapper){
-      if(panel.parentElement!==wrapper)wrapper.appendChild(panel);
-      panel.classList.add('technical-source-panel');
-      panel.classList.remove('bmp-collapsed');
-      return true;
+    if(!wrapper){
+      wrapper=doc.createElement('details');
+      wrapper.id=meta.wrapperId;
+      wrapper.className='controls-card collapsible-card technical-application-card';
+      wrapper.dataset.bosTechnicalWrapper='1';
+      wrapper.setAttribute('aria-label',`${meta.title} — ${meta.subtitle}`);
+      wrapper.appendChild(makeSummary(doc,meta));
+      panel.parentNode.insertBefore(wrapper,panel);
+      wrapper.appendChild(panel);
+      wrapper.addEventListener('toggle',()=>{
+        requestAnimationFrame(fit);
+        setTimeout(fit,80);
+      });
+    }else if(panel.parentElement!==wrapper){
+      wrapper.appendChild(panel);
     }
 
-    wrapper=doc.createElement('details');
-    wrapper.id=meta.wrapperId;
-    wrapper.className='controls-card collapsible-card technical-application-card';
-    wrapper.dataset.bosTechnicalWrapper='1';
-    wrapper.setAttribute('aria-label',`${meta.title} — ${meta.subtitle}`);
-    wrapper.appendChild(makeSummary(doc,meta));
-
-    panel.parentNode.insertBefore(wrapper,panel);
-    wrapper.appendChild(panel);
     panel.classList.add('technical-source-panel');
     panel.classList.remove('bmp-collapsed');
-
-    wrapper.addEventListener('toggle',()=>{
-      requestAnimationFrame(fit);
-      setTimeout(fit,80);
+    panel.querySelectorAll('img').forEach(img=>{
+      if(img.dataset.bosTechnicalFitBound==='1')return;
+      img.dataset.bosTechnicalFitBound='1';
+      img.addEventListener('load',fit);
     });
-    panel.querySelectorAll('img').forEach(img=>img.addEventListener('load',fit));
+    return true;
+  }
+
+  function mountWrappersTopLevel(doc){
+    const mount=ensureMountMarker(doc);
+    if(!mount)return false;
+    const {root,marker}=mount;
+
+    let cursor=marker;
+    for(let i=CARDS.length-1;i>=0;i--){
+      const wrapper=doc.getElementById(CARDS[i].wrapperId);
+      if(!wrapper)continue;
+      if(wrapper.parentElement!==root||wrapper.nextElementSibling!==cursor){
+        root.insertBefore(wrapper,cursor);
+      }
+      cursor=wrapper;
+    }
     return true;
   }
 
@@ -231,6 +257,7 @@ html.bos-light-split-embed .technical-application-card img{
     ensureStyle(doc);
     let ready=0;
     CARDS.forEach(meta=>{if(ensureWrapper(doc,meta))ready++;});
+    mountWrappersTopLevel(doc);
     if(ready)fit();
     return ready===CARDS.length;
   }
