@@ -20,6 +20,29 @@ body>.app-shell{
   padding:0!important;
 }
 
+/*
+  Les bulles Applications gardent strictement la même largeur ouvertes ou fermées.
+  Le contenu interne ne peut plus imposer une largeur intrinsèque différente.
+*/
+html.bos-light-split-embed details.controls-card.collapsible-card{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+html.bos-light-split-embed details.controls-card.collapsible-card > summary.collapsible-heading{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+html.bos-light-split-embed details.controls-card.collapsible-card > *{
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+
 #cameraDetails{margin-top:0!important}
 
 /* The projector chooser is positioned relative to the visible parent viewport
