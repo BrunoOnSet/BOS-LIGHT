@@ -4,10 +4,12 @@
   const frame=document.getElementById('lightFrame');
   if(!frame)return;
 
+  const appUrl=path=>window.BOS_PATHS?.url(path)||new URL(String(path||'').replace(/^\/+/,''),new URL('./',document.baseURI)).href;
+
   const CARDS=[
-    {panelId:'bosThreePointPanel',wrapperId:'bosTechThreePointDetails',number:'01',title:'POSITION',subtitle:'Système 3 points',thumb:'/BOS-LIGHT/assets/thumb-tech-3points.webp?v=20261012-3'},
-    {panelId:'bosShadowHardnessPanel',wrapperId:'bosTechShadowDetails',number:'02',title:'SHADOWS',subtitle:'Dureté des ombres',thumb:'/BOS-LIGHT/assets/thumb-tech-shadow.webp?v=20261012-3'},
-    {panelId:'bosMiniPlateau',wrapperId:'bosTechFalloffDetails',number:'03',title:'FALL OFF',subtitle:'Gestion du contraste',thumb:'/BOS-LIGHT/assets/thumb-tech-falloff.webp?v=20261012-3'}
+    {panelId:'bosThreePointPanel',wrapperId:'bosTechThreePointDetails',number:'01',title:'POSITION',subtitle:'Système 3 points',thumb:appUrl('assets/thumb-tech-3points.webp?v=20261012-3')},
+    {panelId:'bosShadowHardnessPanel',wrapperId:'bosTechShadowDetails',number:'02',title:'SHADOWS',subtitle:'Dureté des ombres',thumb:appUrl('assets/thumb-tech-shadow.webp?v=20261012-3')},
+    {panelId:'bosMiniPlateau',wrapperId:'bosTechFalloffDetails',number:'03',title:'FALL OFF',subtitle:'Gestion du contraste',thumb:appUrl('assets/thumb-tech-falloff.webp?v=20261012-3')}
   ];
 
   function frameDoc(){
