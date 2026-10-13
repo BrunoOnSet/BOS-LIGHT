@@ -5,6 +5,7 @@
   if(!frame)return;
 
   const EXPO_FALLOFF_VERSION='4.0.13';
+  const appUrl=path=>window.BOS_PATHS?.url(path)||new URL(String(path||'').replace(/^\/+/,''),new URL('./',document.baseURI)).href;
   let booted=false;
 
   function frameDoc(){
@@ -105,7 +106,7 @@
     }
 
     const img=wrap.querySelector('img');
-    const src='/BOS-LIGHT/assets/lighting/falloff/01-fall-off.jpg?v=20261012-1';
+    const src=appUrl('assets/lighting/falloff/01-fall-off.jpg?v=20261012-1');
     if(img&&img.getAttribute('src')!==src)img.setAttribute('src',src);
     return true;
   }
@@ -125,8 +126,8 @@
         </button>
         <div class="bft-body">
           <div class="bft-reference-images">
-            <img src="/BOS-LIGHT/assets/lighting/3points/01-systeme-3-points.jpg?v=20261009-1" alt="Système 3 points">
-            <img src="/BOS-LIGHT/assets/lighting/3points/02-key-light.jpg?v=20261009-1" alt="Schémas d’éclairage portrait">
+            <img src="${appUrl('assets/lighting/3points/01-systeme-3-points.jpg?v=20261009-1')}" alt="Système 3 points">
+            <img src="${appUrl('assets/lighting/3points/02-key-light.jpg?v=20261009-1')}" alt="Schémas d’éclairage portrait">
           </div>
         </div>`;
       panel.parentNode.insertBefore(three,panel);
@@ -162,8 +163,8 @@
         </button>
         <div class="bft-body">
           <div class="bft-reference-images">
-            <img src="/BOS-LIGHT/assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=1" alt="Dureté des ombres — schéma 1">
-            <img src="/BOS-LIGHT/assets/lighting/shadow-hardness/02-gestion-de-la-source.jpg?v=1" alt="Dureté des ombres — schéma 2">
+            <img src="${appUrl('assets/lighting/shadow-hardness/01-durete-des-ombres.jpg?v=1')}" alt="Dureté des ombres — schéma 1">
+            <img src="${appUrl('assets/lighting/shadow-hardness/02-durete-des-ombres.jpg?v=1')}" alt="Dureté des ombres — schéma 2">
           </div>
         </div>`;
       panel.parentNode.insertBefore(shadow,panel);
@@ -407,8 +408,8 @@ html.bos-suite-embed .bft-reference-images img{display:block;width:100%;height:a
     window.BOSExpoHostFit=fit;
 
     try{
-      await loadScript('/BOS-EXPO/expo-mini-plateau.js?v='+EXPO_FALLOFF_VERSION);
-      await loadScript('/BOS-EXPO/expo-falloff-reference-assets.js?v='+EXPO_FALLOFF_VERSION);
+      await loadScript(appUrl('vendor/expo-mini-plateau.js?v='+EXPO_FALLOFF_VERSION));
+      await loadScript(appUrl('vendor/expo-falloff-reference-assets.js?v='+EXPO_FALLOFF_VERSION));
       customizeFalloff();
     }catch(err){
       console.error('[BOS LIGHT fall-off]',err);
