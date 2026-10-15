@@ -1,4 +1,8 @@
 {
+  "schema": 1,
+  "module": "LIGHT",
   "version": "V2.0.0",
-  "build": 19
+  "build": 19,
+  "access": "free",
+  "accessProvider": "none"
 }
