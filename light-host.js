@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='2.0.7';
+  const VERSION='2.0.8';
   const THEME_KEY='bos-light-split-theme-v1';
   const BUBBLE_KEY='bos-light-split-bubbles-v1';
   const INSTALLED_KEY='bos-light-split-installed-v1';
@@ -26,6 +26,9 @@
   }
   function isIOS(){
     return /iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  }
+  function isAndroid(){
+    return /android/i.test(navigator.userAgent);
   }
 
   function savedBubbles(){
@@ -307,20 +310,54 @@ html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed > .bft-head{
     }
     installRow.hidden=localStorage.getItem(INSTALLED_KEY)==='1';
   }
-  installBtn?.addEventListener('click',async()=>{
-    if(deferredInstallPrompt){
+  installBtn?.addEventListener('click',()=>{
+    const ios=isIOS();
+    const android=isAndroid();
+
+    if(installHelpText){
+      installHelpText.textContent=ios
+        ?'Installation sur iPhone / iPad'
+        :android
+          ?'Installation sur Android'
+          :'Installation depuis votre navigateur';
+    }
+
+    if(installHelpBody){
+      if(ios){
+        installHelpBody.innerHTML=
+          '<p><strong>Sur iPhone / iPad :</strong></p>'+
+          '<p><strong>1.</strong> Ouvrez cette page dans <strong>Safari</strong>.</p>'+
+          '<p><strong>2.</strong> Touchez le bouton <strong>Partager</strong> (le carré avec la flèche vers le haut).</p>'+
+          '<p><strong>3.</strong> Faites défiler le menu puis choisissez <strong>Ajouter à l’écran d’accueil</strong>.</p>'+
+          '<p><strong>4.</strong> Touchez <strong>Ajouter</strong>. LIGHT apparaîtra alors comme une application sur votre écran d’accueil.</p>'+
+          '<p>Si la page est ouverte depuis Instagram, Gmail ou une autre application, ouvrez-la d’abord dans <strong>Safari</strong>.</p>';
+      }else if(android){
+        installHelpBody.innerHTML=
+          '<p><strong>Sur Android :</strong></p>'+
+          (deferredInstallPrompt
+            ?'<p><strong>1.</strong> Appuyez sur <strong>Installer maintenant</strong> ci-dessous.</p>'+
+             '<p><strong>2.</strong> Confirmez avec <strong>Installer</strong>. LIGHT apparaîtra ensuite parmi vos applications.</p>'+
+             '<p><button type="button" class="primary" id="bosInstallNowBtn">Installer maintenant</button></p>'
+            :'<p><strong>1.</strong> Dans <strong>Chrome</strong>, touchez le menu <strong>⋮</strong> en haut à droite.</p>'+
+             '<p><strong>2.</strong> Choisissez <strong>Installer l’application</strong> ou <strong>Ajouter à l’écran d’accueil</strong>.</p>'+
+             '<p><strong>3.</strong> Confirmez avec <strong>Installer</strong>.</p>')+
+          '<p>Sur <strong>Samsung Internet</strong> : menu <strong>☰</strong> → <strong>Ajouter la page à</strong> → <strong>Écran d’accueil</strong>.</p>';
+      }else{
+        installHelpBody.innerHTML=
+          '<p>Ouvrez le menu de votre navigateur puis choisissez <strong>Installer l’application</strong> ou <strong>Ajouter à l’écran d’accueil</strong>.</p>';
+      }
+    }
+
+    installDialog?.showModal();
+
+    const installNowBtn=document.getElementById('bosInstallNowBtn');
+    installNowBtn?.addEventListener('click',async()=>{
+      if(!deferredInstallPrompt)return;
       deferredInstallPrompt.prompt();
       try{await deferredInstallPrompt.userChoice;}catch(_){ }
       deferredInstallPrompt=null;
-      return;
-    }
-    if(installHelpText)installHelpText.textContent=isIOS()?'Installation sur iPhone / iPad':'Installation depuis votre navigateur';
-    if(installHelpBody){
-      installHelpBody.innerHTML=isIOS()
-        ?'<p><strong>Safari :</strong> touchez <strong>Partager</strong>, puis <strong>Ajouter à l’écran d’accueil</strong>.</p>'
-        :'<p>Ouvrez le menu du navigateur puis choisissez <strong>Installer l’application</strong> ou <strong>Ajouter à l’écran d’accueil</strong>.</p>';
-    }
-    installDialog?.showModal();
+      installDialog?.close();
+    },{once:true});
   });
 
   applyTheme(localStorage.getItem(THEME_KEY)||'light');
