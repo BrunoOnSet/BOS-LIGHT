@@ -310,7 +310,19 @@ html.bos-light-split-embed #bosMiniPlateau.bmp-collapsed > .bft-head{
     }
     installRow.hidden=localStorage.getItem(INSTALLED_KEY)==='1';
   }
-  installBtn?.addEventListener('click',()=>{
+  installBtn?.addEventListener('click',async()=>{
+    // Sur les navigateurs compatibles, le bouton déclenche directement
+    // la demande d'installation native, comme dans BOS REMIND.
+    if(deferredInstallPrompt){
+      const promptEvent=deferredInstallPrompt;
+      deferredInstallPrompt=null;
+      try{
+        promptEvent.prompt();
+        await promptEvent.userChoice;
+        if(installRow)installRow.hidden=true;
+        return;
+      }catch(_){ /* En cas d'échec, utiliser l'aide existante ci-dessous. */ }
+    }
     const ios=isIOS();
     const android=isAndroid();
 
