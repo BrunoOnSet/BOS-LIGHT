@@ -1,0 +1,7 @@
+.git
+.git/**
+.github
+.github/**
+wrangler.jsonc
+README.txt
+README_PROJECTEURS_DB.md
