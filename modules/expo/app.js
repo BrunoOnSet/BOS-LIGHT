@@ -1141,7 +1141,7 @@ function simpleRenderReference(){
     el.querySelector("strong").textContent=value;
   };
   set("simpleRefAperture","Diaph",simpleValueText("aperture",v.aperture));
-  set("simpleRefIso",unit,simpleValueText("iso",v.iso));
+  set("simpleRefIso",sensitivityMode==="gain"?"Gain":unit,sensitivityMode==="gain"?fmtGain(num(inputs.refIso.value),true):simpleValueText("iso",v.iso));
   set("simpleRefShutter","Shutter",simpleValueText("shutter",v.shutter));
   set("simpleRefNd","ND",`${fmt(v.nd,1)} ${Math.abs(v.nd-1)<1e-9?"stop":"stops"}`);
 }
@@ -1149,6 +1149,20 @@ function simpleTotal(v=simplePhysicalValues()){return simpleStopFor("aperture",v
 // Sélection autoritaire du seul réglage de compensation (pas de répartition multi-paramètres).
 function simpleSoloName(key){
   return {aperture:"Diaph",iso:currentSensitivityUnit()||"ISO",shutter:"Shutter",nd:"ND"}[key]||key;
+}
+function simpleRenderSoloUnit(){
+  const available=!!currentGainSupported()&&currentBaseIsos().length>0;
+  document.querySelectorAll("[data-solo-unit]").forEach(btn=>{
+    const gain=btn.dataset.soloUnit==="gain";
+    const active=(gain?"gain":"iso")===sensitivityMode;
+    btn.disabled=gain&&!available;
+    btn.classList.toggle("is-active",active);
+    btn.setAttribute("aria-pressed",String(active));
+    if(gain){
+      btn.title=available?"Afficher et modifier la sensibilité en décibels":"Gain non documenté pour ce profil caméra";
+      btn.setAttribute("aria-label",available?"Afficher la sensibilité en Gain":"Gain non disponible pour ce profil caméra");
+    }
+  });
 }
 function simpleRenderSolo(){
   const map={aperture:"simpleRefAperture",iso:"simpleRefIso",shutter:"simpleRefShutter",nd:"simpleRefNd"};
@@ -2120,6 +2134,10 @@ function renderCompactExpoTools(guide,cam,p,bases){
   const readV=Math.round(Math.max(0,Math.min(100,Number(compactExpoState.read)||0)));
   if($("quickReadSlider")&&document.activeElement!==$("quickReadSlider"))$("quickReadSlider").value=String(readV);
   if($("quickReadValue"))$("quickReadValue").textContent=String(Math.round(readV));
+  if($("quickWaveformScale")){
+    $("quickWaveformScale").setAttribute("aria-valuenow",String(readV));
+    $("quickWaveformScale").setAttribute("aria-valuetext",readV+" pour cent");
+  }
   if($("quickWaveformCursor"))$("quickWaveformCursor").style.left=`${readV}%`;
   const readInfo=scenePointInfo(guide,readV,0);
   const advice=waveformExplorerAdvice(readInfo.zone,readV,guide);
@@ -2266,6 +2284,66 @@ document.querySelectorAll("#sceneShiftPresets button").forEach(btn=>btn.addEvent
 
 $("quickHighInput")?.addEventListener("input",e=>{waveformScene.high=Math.max(0,Math.min(100,Number(String(e.target.value).replace(",","."))||0));renderExposureGuide();});
 $("quickHighSlider")?.addEventListener("input",e=>{waveformScene.high=Math.max(0,Math.min(100,Number(String(e.target.value).replace(",","."))||0));renderExposureGuide();});
+function setWaveformRead(value){
+  const next=Math.round(Math.max(0,Math.min(100,Number(value)||0)));
+  if(compactExpoState.read===next)return;
+  compactExpoState.read=next;
+  renderExposureGuide();
+}
+// Les cinq exemples terrain amènent directement au niveau le plus haut
+// réellement associé au repère dans la courbe et le profil choisis.
+function waveformTerrainUpperPoint(guide,key){
+  if(!guide)return null;
+  for(let v=100;v>=0;v--){
+    const info=scenePointInfo(guide,v,0);
+    if(waveformTerrainKey(info.zone,v,guide,info.stop)===key)return v;
+  }
+  // Certains profils ne comportent pas toutes les cinq catégories.
+  // Utilise une position indicative et garde les conseils non prescriptifs.
+  const fallback={"shadow-low":12,"shadow-detail":32,"dark-face":52,"bright-face":74,"window":92};
+  return Object.hasOwn(fallback,key)?fallback[key]:null;
+}
+document.querySelectorAll("#quickReadTerrainExamples [data-terrain]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const value=waveformTerrainUpperPoint(exposureProfileGuide(),btn.dataset.terrain);
+    if(value!=null)setWaveformRead(value);
+  });
+});
+const waveformScale=$("quickWaveformScale");
+if(waveformScale){
+  let draggingPointer=null;
+  const percentAt=(clientX)=>{
+    const rect=waveformScale.getBoundingClientRect();
+    return rect.width>0?Math.round(100*Math.max(0,Math.min(1,(clientX-rect.left)/rect.width))):compactExpoState.read;
+  };
+  waveformScale.addEventListener("pointerdown",event=>{
+    if(event.button!==0 && event.pointerType==="mouse")return;
+    draggingPointer=event.pointerId;
+    try{waveformScale.setPointerCapture(event.pointerId);}catch(_){}
+    setWaveformRead(percentAt(event.clientX));
+    event.preventDefault();
+    waveformScale.focus({preventScroll:true});
+  });
+  waveformScale.addEventListener("pointermove",event=>{
+    if(draggingPointer!==event.pointerId)return;
+    setWaveformRead(percentAt(event.clientX));
+  });
+  const stopDrag=event=>{
+    if(draggingPointer!==event.pointerId)return;
+    setWaveformRead(percentAt(event.clientX));
+    draggingPointer=null;
+    try{waveformScale.releasePointerCapture(event.pointerId);}catch(_){}
+  };
+  waveformScale.addEventListener("pointerup",stopDrag);
+  waveformScale.addEventListener("pointercancel",event=>{if(draggingPointer===event.pointerId)draggingPointer=null;});
+  waveformScale.addEventListener("keydown",event=>{
+    const current=compactExpoState.read;
+    const map={ArrowLeft:current-1,ArrowDown:current-1,ArrowRight:current+1,ArrowUp:current+1,PageDown:current-10,PageUp:current+10,Home:0,End:100};
+    if(!Object.hasOwn(map,event.key))return;
+    event.preventDefault();
+    setWaveformRead(map[event.key]);
+  });
+}
 $("quickReadSlider")?.addEventListener("input",e=>{compactExpoState.read=Math.round(Math.max(0,Math.min(100,Number(String(e.target.value).replace(",","."))||0)));renderExposureGuide();});
 document.querySelectorAll("#placeStopPresets button").forEach(btn=>btn.addEventListener("click",()=>{compactExpoState.placeStop=Number(btn.dataset.stop)||0;renderExposureGuide();}));
 
@@ -2281,7 +2359,7 @@ updateUI=function(){
   simpleRenderLocks();
   renderExposureGuide();
   // Le nouveau mode n'applique plus les anciennes limites personnalisées.
-  simpleRenderRows();simpleRenderReference();simpleRenderSolo();updateBaseIsoNote();renderExposureGuide();
+  simpleRenderRows();simpleRenderReference();simpleRenderSolo();simpleRenderSoloUnit();updateBaseIsoNote();renderExposureGuide();
   if(methodChanged){
     // Sur changement caméra/profil, garde une référence valide et lisible.
     const r=simpleReferenceValues();
@@ -2303,6 +2381,23 @@ updateUI=function(){
 };
 
 simpleLoadRoles();
+document.querySelectorAll("[data-solo-unit]").forEach(btn=>btn.addEventListener("click",()=>{
+  const next=btn.dataset.soloUnit;
+  if(!["iso","gain"].includes(next)||next===sensitivityMode||btn.disabled)return;
+  const hiddenChoice=$("sensitivityMode")?.querySelector('button[data-value="'+next+'"]');
+  if(!hiddenChoice||hiddenChoice.disabled)return;
+  // Conserve la cible et la référence physique en ISO pendant le changement
+  // d'unité. Le handler déjà présent sur EXPO effectue la conversion ISO/dB.
+  const originalTotal=simpleSoloTotal,originalValue=simpleSoloOriginal;
+  hiddenChoice.click();
+  if(sensitivityMode===next){
+    simpleSoloTotal=originalTotal;
+    simpleSoloOriginal=originalValue;
+    simpleSave();
+    updateUI();
+    simpleSoloStatus();
+  }
+}));
 document.querySelectorAll("[data-solo-auto]").forEach(btn=>btn.addEventListener("click",()=>{
   const key=btn.dataset.soloAuto;
   if(!["aperture","iso","shutter","nd"].includes(key))return;
