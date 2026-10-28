@@ -1020,6 +1020,8 @@ let simpleLocks={aperture:false,iso:false,shutter:false,nd:false};
 // Référence unique : un seul réglage compense les modifications des trois autres.
 let simpleSoloAuto=null;
 let simpleSoloTotal=null;
+// Valeur de départ conservée pendant tout le calcul automatique.
+let simpleSoloOriginal=null;
 let simpleLimitsLoadedFor="";
 
 function simpleMethodSig(){return `${cameraMode}|${gammaMode}|${sensitivityMode}|${shutterMode}|${currentFps}`;}
@@ -1076,6 +1078,7 @@ function simpleSave(){
     saved.roles=simpleRoles;
     saved.soloAuto=simpleSoloAuto;
     saved.soloTotal=simpleSoloTotal;
+    saved.soloOriginal=simpleSoloOriginal;
     saved.locks={...simpleLocks};
     saved.limits=saved.limits||{};
     saved.limits[simpleLimitKey()]={min:simpleIsoMin,max:simpleIsoMax,apMin:simpleApertureMin,apMax:simpleApertureMax};
@@ -1089,6 +1092,7 @@ function simpleLoadRoles(){
     if(["aperture","iso","shutter","nd"].includes(saved?.soloAuto)){
       simpleSoloAuto=saved.soloAuto;
       simpleSoloTotal=saved.soloTotal!=null&&Number.isFinite(Number(saved.soloTotal))?Number(saved.soloTotal):null;
+      simpleSoloOriginal=saved.soloOriginal!=null&&Number.isFinite(Number(saved.soloOriginal))?Number(saved.soloOriginal):null;
     }
     if(saved?.locks&&typeof saved.locks==="object"){
       Object.keys(simpleLocks).forEach(k=>{simpleLocks[k]=!!saved.locks[k];});
@@ -1155,6 +1159,25 @@ function simpleRenderSolo(){
     if(!btn)return;
     const active=key===simpleSoloAuto;
     btn.classList.toggle("solo-automatic",active);
+    // Petit rappel de la valeur initiale, sous la valeur devenue bleue.
+    // On réutilise le même noeud pour éviter une accumulation à chaque render.
+    let original=btn.querySelector(".expo-solo-original");
+    if(active){
+      if(!original){
+        original=document.createElement("small");
+        original.className="expo-solo-original";
+        btn.appendChild(original);
+      }
+      const originalValue=simpleSoloOriginal!=null?simpleSoloOriginal:simpleReferenceValues()[key];
+      const label=key==="nd"
+        ?`${fmt(originalValue,1)} ${Math.abs(originalValue-1)<1e-9?"stop":"stops"}`
+        :simpleValueText(key,originalValue);
+      original.textContent="Réf. "+label;
+      original.hidden=false;
+    }else if(original){
+      original.hidden=true;
+      original.remove();
+    }
     btn.disabled=active;
     btn.setAttribute("aria-disabled",String(active));
     btn.title=active?"Valeur calculée automatiquement pour conserver l'exposition":"Modifier "+simpleSoloName(key);
@@ -2257,6 +2280,7 @@ updateUI=function(){
     simpleRenderReference();
     // Nouveau profil : la nouvelle exposition de référence est le point de départ.
     simpleSoloTotal=simpleTotal(simpleReferenceValues());
+    if(simpleSoloAuto) simpleSoloOriginal=simpleReferenceValues()[simpleSoloAuto];
     simpleSave();
     simpleSoloStatus();
   }
@@ -2266,8 +2290,19 @@ simpleLoadRoles();
 document.querySelectorAll("[data-solo-auto]").forEach(btn=>btn.addEventListener("click",()=>{
   const key=btn.dataset.soloAuto;
   if(!["aperture","iso","shutter","nd"].includes(key))return;
-  simpleSoloAuto=key;
-  simpleSoloTotal=simpleTotal(simpleReferenceValues());
+  if(simpleSoloAuto===key){
+    // Second clic : la valeur calculée redevient librement éditable.
+    // On garde sa valeur affichée pour pouvoir définir une nouvelle référence.
+    simpleSoloAuto=null;
+    simpleSoloTotal=null;
+    simpleSoloOriginal=null;
+  }else{
+    // Un seul bouton bleu à la fois : mémoriser sa valeur avant compensation.
+    const reference=simpleReferenceValues();
+    simpleSoloAuto=key;
+    simpleSoloTotal=simpleTotal(reference);
+    simpleSoloOriginal=reference[key];
+  }
   simpleSetCurrentFromValues(simpleReferenceValues());
   simpleLastRecap=null;
   simpleSave();
