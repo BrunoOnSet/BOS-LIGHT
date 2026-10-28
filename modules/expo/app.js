@@ -1133,7 +1133,7 @@ function simpleRenderReference(){
   set("simpleRefAperture","Diaph",simpleValueText("aperture",v.aperture));
   set("simpleRefIso",unit,simpleValueText("iso",v.iso));
   set("simpleRefShutter","Shutter",simpleValueText("shutter",v.shutter));
-  set("simpleRefNd","ND",simpleValueText("nd",v.nd));
+  set("simpleRefNd","ND",`${fmt(v.nd,1)} ${Math.abs(v.nd-1)<1e-9?"stop":"stops"}`);
 }
 function simpleTotal(v=simplePhysicalValues()){return simpleStopFor("aperture",v.aperture)+simpleStopFor("iso",v.iso)+simpleStopFor("shutter",v.shutter)+simpleStopFor("nd",v.nd);}
 // Sélection autoritaire du seul réglage de compensation (pas de répartition multi-paramètres).
