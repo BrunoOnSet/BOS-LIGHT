@@ -126,3 +126,102 @@
     margin-top:4px;
   }
 }
+
+/* Compenser — petit choix ISO / Gain, intégré à la ligne Référence. */
+#simpleExpoPanel .expo-solo-unit-switch{
+  display:inline-flex;
+  align-items:center;
+  flex:0 0 auto;
+  gap:2px;
+  padding:3px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--panel);
+}
+#simpleExpoPanel .expo-solo-unit-choice{
+  border:0!important;
+  border-radius:7px!important;
+  background:transparent!important;
+  color:var(--muted)!important;
+  min-height:27px;
+  min-width:43px;
+  padding:5px 8px!important;
+  font:600 10px/1.1 "Instrument Sans",Inter,Arial,sans-serif!important;
+  cursor:pointer;
+}
+#simpleExpoPanel .expo-solo-unit-choice.is-active{
+  background:var(--accent-soft)!important;
+  color:var(--accent)!important;
+}
+#simpleExpoPanel .expo-solo-unit-choice:disabled{
+  opacity:.36!important;
+  cursor:not-allowed!important;
+}
+#simpleExpoPanel .expo-solo-unit-choice:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+/* Dynamique — les cinq repères sont de vrais boutons, même présentation. */
+#readToolPanel .terrain-example-strip > button{
+  display:block;
+  min-width:0;
+  padding:8px 7px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--panel);
+  color:var(--text);
+  text-align:left;
+  font:inherit;
+  opacity:.65;
+  cursor:pointer;
+  transition:opacity .15s ease,border-color .15s ease,background .15s ease;
+}
+#readToolPanel .terrain-example-strip > button b{
+  display:block;font-size:8px;line-height:1.18;font-weight:900;
+}
+#readToolPanel .terrain-example-strip > button small{
+  display:block;margin-top:3px;font-size:6.8px;line-height:1.2;color:var(--muted);
+}
+#readToolPanel .terrain-example-strip > button.active{
+  opacity:1;
+  border-color:var(--accent);
+  background:var(--accent-soft);
+  box-shadow:0 0 0 1px var(--accent-soft);
+}
+#readToolPanel .terrain-example-strip > button:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+/* La barre graduée est le curseur : interaction native souris / tactile. */
+#readToolPanel #quickWaveformScale{
+  cursor:crosshair;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  outline-offset:5px;
+}
+#readToolPanel #quickWaveformScale:focus-visible{
+  outline:2px solid var(--accent);
+}
+#readToolPanel #quickWaveformScale > *{
+  pointer-events:none;
+}
+#readToolPanel #quickReadSlider{
+  display:none!important;
+}
+@media(max-width:540px){
+  #readToolPanel .terrain-example-strip > button{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:7px 9px;
+  }
+  #readToolPanel .terrain-example-strip > button small{margin-top:0;text-align:right}
+  #simpleExpoPanel .expo-solo-unit-choice{
+    min-height:26px;
+    min-width:38px;
+    padding:5px 6px!important;
+    font-size:9px!important;
+  }
+}
