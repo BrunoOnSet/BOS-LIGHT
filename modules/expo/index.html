@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=3.65-light1" />
+  <link rel="stylesheet" href="expo-solo.css?v=1" />
 </head>
 <body>
   <main class="app" id="mainApp">
@@ -153,17 +154,17 @@
 
     <section class="panel expose-unsupported hidden" id="exposeUnsupported">Cette courbe n’est pas encore renseignée de façon suffisamment fiable pour ces outils. EXPO préfère ne rien extrapoler.</section>
 
-    <section class="panel simple-expo-panel" id="simpleExpoPanel" data-default-open="true">
+    <section class="panel simple-expo-panel expo-solo-panel" id="simpleExpoPanel" data-default-open="true">
       <div class="compact-section-head simple-expo-head">
         <div>
           <div class="panel-kicker">COMPENSER</div>
-          <div class="panel-subtitle">Change un réglage ; EXPO conserve la même exposition avec les paramètres déverrouillés.</div>
+          <div class="panel-subtitle">Choisis le paramètre qui compense automatiquement les autres.</div>
         </div>
         <button class="small-action" id="simpleResetBtn" type="button">RESET</button>
       </div>
 
 
-      <div class="compensate-limits-block">
+      <div class="compensate-limits-block" hidden aria-hidden="true">
         <div class="simple-section-kicker">LIMITES DE COMPENSATION</div>
         <div class="simple-section-note">EXPO ne proposera pas de valeur en dehors de ces limites.</div>
 
@@ -204,7 +205,15 @@
         </div>
       </div>
 
-      <div class="simple-reference-block simple-calc-block">
+      <div class="expo-solo-controls" role="group" aria-label="Paramètre de compensation automatique">
+        <button type="button" class="expo-solo-choice" data-solo-auto="aperture" aria-pressed="false">Diaph</button>
+        <button type="button" class="expo-solo-choice" data-solo-auto="iso" aria-pressed="false">ISO</button>
+        <button type="button" class="expo-solo-choice" data-solo-auto="shutter" aria-pressed="false">Shutter</button>
+        <button type="button" class="expo-solo-choice" data-solo-auto="nd" aria-pressed="false">ND</button>
+      </div>
+      <div class="simple-calc-summary expo-solo-status" id="simpleCalcSummary" role="status" aria-live="polite">Sélectionne la valeur qui compensera les trois autres.</div>
+
+      <div class="simple-reference-block simple-calc-block" hidden aria-hidden="true">
         <div class="simple-reference-head">
           <div>
             <div class="simple-section-kicker">CALCUL</div>
@@ -246,7 +255,6 @@
 
       <div class="simple-priority-note" id="simplePriorityNote">Assombrir : Diaph ↑ → ISO ↓ → ND ↑ → Shutter · Éclaircir : Diaph ↓ → ND ↓ → ISO ↑ → Shutter.</div>
 
-      <div class="simple-calc-summary" id="simpleCalcSummary" aria-live="polite">Change un réglage dans CALCUL : les autres s’adaptent automatiquement.</div>
     </section>
 
     <section class="panel exposure-workflow-panel">
@@ -511,6 +519,6 @@
   <script src="../../shared/analytics.js?v=1"></script>
   <script src="adapters/integrated.js?v=1"></script>
   <script src="../../shared/module-host.js?v=1"></script>
-  <script src="app.js?v=3.65-light1"></script>
+  <script src="app.js?v=3.66-solo1"></script>
 </body>
 </html>
