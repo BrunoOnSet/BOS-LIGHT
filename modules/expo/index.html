@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=3.65-light1" />
-  <link rel="stylesheet" href="expo-solo.css?v=2" />
+  <link rel="stylesheet" href="expo-solo.css?v=3" />
 </head>
 <body>
   <main class="app" id="mainApp">
@@ -114,7 +114,7 @@
         </div>
 
         <div class="waveform-explorer-shell" aria-label="Curseur de lecture du waveform de 0 à 100 %">
-          <div class="waveform-explorer-scale">
+          <div class="waveform-explorer-scale" id="quickWaveformScale" role="slider" tabindex="0" aria-label="Niveau du signal sur le waveform" aria-valuemin="0" aria-valuemax="100" aria-valuenow="70" aria-valuetext="70 pour cent">
             <div class="quick-waveform-segments" id="quickWaveformSegments"></div>
             <div class="waveform-stop-bands" id="quickWaveformStopBands"></div>
             <div class="quick-waveform-markers" id="quickWaveformMarkers"></div>
@@ -123,8 +123,7 @@
           </div>
           <div class="quick-waveform-axis"><span>0</span><span>25</span><span>50</span><span>75</span><span>100 %</span></div>
           <div class="waveform-stop-help" id="quickWaveformStopHelp">—</div>
-          <label class="waveform-explorer-slider-label" for="quickReadSlider">NIVEAU LU SUR LE WAVEFORM</label>
-          <input id="quickReadSlider" class="waveform-explorer-slider" type="range" min="0" max="100" step="1" value="70">
+          <input id="quickReadSlider" class="waveform-explorer-slider" type="range" min="0" max="100" step="1" value="70" hidden aria-hidden="true" tabindex="-1">
         </div>
 
         <div class="waveform-explorer-summary">
@@ -137,12 +136,12 @@
           </div>
           <div class="waveform-explorer-info terrain-examples-card">
             <span>REPÈRES TERRAIN · EXEMPLES INDICATIFS</span>
-            <div class="terrain-example-strip" id="quickReadTerrainExamples" aria-label="Exemples typiques du plus sombre au plus clair">
-              <div data-terrain="shadow-low"><b>Ombre avec peu de détails</b><small>Très sombre</small></div>
-              <div data-terrain="shadow-detail"><b>Ombre avec détails</b><small>Sombre</small></div>
-              <div data-terrain="dark-face"><b>Visage sombre</b><small>Médium bas</small></div>
-              <div data-terrain="bright-face"><b>Visage lumineux</b><small>Clair</small></div>
-              <div data-terrain="window"><b>Fenêtre / ciel</b><small>Très clair</small></div>
+            <div class="terrain-example-strip" id="quickReadTerrainExamples" aria-label="Choisir directement un repère de placement du waveform">
+              <button type="button" data-terrain="shadow-low"><b>Ombre avec peu de détails</b><small>Très sombre</small></button>
+              <button type="button" data-terrain="shadow-detail"><b>Ombre avec détails</b><small>Sombre</small></button>
+              <button type="button" data-terrain="dark-face"><b>Visage sombre</b><small>Médium bas</small></button>
+              <button type="button" data-terrain="bright-face"><b>Visage lumineux</b><small>Clair</small></button>
+              <button type="button" data-terrain="window"><b>Fenêtre / ciel</b><small>Très clair</small></button>
             </div>
             <small class="terrain-examples-note" id="quickReadTerrainNote">Exemples de placement possibles, pas des valeurs d’exposition imposées.</small>
           </div>
@@ -195,6 +194,10 @@
           <div class="situation-one-title">
             <div class="simple-section-kicker">RÉFÉRENCE</div>
             <div class="simple-section-note">Réglage de départ que tu considères correctement exposé.</div>
+          </div>
+          <div class="expo-solo-unit-switch" role="group" aria-label="Afficher la sensibilité en ISO ou en Gain">
+            <button type="button" class="expo-solo-unit-choice is-active" data-solo-unit="iso" aria-pressed="true">ISO</button>
+            <button type="button" class="expo-solo-unit-choice" data-solo-unit="gain" aria-pressed="false">Gain</button>
           </div>
         </div>
         <div class="simple-reference-grid">
@@ -519,6 +522,6 @@
   <script src="../../shared/analytics.js?v=1"></script>
   <script src="adapters/integrated.js?v=1"></script>
   <script src="../../shared/module-host.js?v=1"></script>
-  <script src="app.js?v=3.66-solo3"></script>
+  <script src="app.js?v=3.67-curve1"></script>
 </body>
 </html>
