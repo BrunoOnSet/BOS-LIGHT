@@ -1148,7 +1148,7 @@ function simpleRenderReference(){
 function simpleTotal(v=simplePhysicalValues()){return simpleStopFor("aperture",v.aperture)+simpleStopFor("iso",v.iso)+simpleStopFor("shutter",v.shutter)+simpleStopFor("nd",v.nd);}
 // Sélection autoritaire du seul réglage de compensation (pas de répartition multi-paramètres).
 function simpleSoloName(key){
-  return {aperture:"Diaph",iso:currentSensitivityUnit()||"ISO",shutter:"Shutter",nd:"ND"}[key]||key;
+  return {aperture:"Diaph",iso:sensitivityMode==="gain"?"Gain":(currentSensitivityUnit()||"ISO"),shutter:"Shutter",nd:"ND"}[key]||key;
 }
 function simpleRenderSoloUnit(){
   const available=!!currentGainSupported()&&currentBaseIsos().length>0;
@@ -1172,7 +1172,7 @@ function simpleRenderSolo(){
     btn.classList.toggle("is-active",active);
     btn.setAttribute("aria-pressed",String(active));
     btn.setAttribute("aria-label",simpleSoloName(key)+(active?" : compensation automatique":" : sélectionner pour compenser"));
-    if(key==="iso")btn.textContent=currentSensitivityUnit()||"ISO";
+    if(key==="iso")btn.textContent=sensitivityMode==="gain"?"Gain":(currentSensitivityUnit()||"ISO");
   });
   Object.entries(map).forEach(([key,id])=>{
     const btn=$(id);
