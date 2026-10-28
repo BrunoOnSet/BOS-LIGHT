@@ -658,15 +658,15 @@ function pickerConfig(target){
     target==="refNd"||target==="newNd"?"nd":null
   );
   if(key==="aperture"){
-    return {title:"Ouverture",values:simpleAvailableApertureValues().filter(v=>v>=simpleApertureMin-1e-9&&v<=simpleApertureMax+1e-9),label:v=>`f/${fmt(v,2)}`};
+    return {title:"Ouverture",values:simpleAvailableApertureValues(),label:v=>`f/${fmt(v,2)}`};
   }
   if(key==="iso"){
     const unit=currentSensitivityUnit();
     if(sensitivityMode==="gain"){
-      const vals=GAIN_VALUES.filter(v=>{const iso=gainBaseIso>0?gainDbToIso(v):NaN;return iso>=simpleIsoMin-1e-9&&iso<=simpleIsoMax+1e-9;});
+      const vals=GAIN_VALUES;
       return {title:"Gain",values:vals,label:v=>fmtGain(v,true)};
     }
-    const vals=simpleAvailableIsoValues().filter(v=>v>=simpleIsoMin-1e-9&&v<=simpleIsoMax+1e-9);
+    const vals=simpleAvailableIsoValues();
     return {title:unit,values:vals,label:v=>`${unit} ${formatThousands(v)}`,native:v=>isNativeIso(v)};
   }
   if(key==="shutter"){
@@ -687,6 +687,8 @@ function situationPickerCurrent(target){
 }
 
 function openPicker(target){
+  const soloKey={refAperture:"aperture",refIso:"iso",refShutter:"shutter",refNd:"nd"}[target];
+  if(simpleSoloAuto&&soloKey===simpleSoloAuto)return;
   const cfg=pickerConfig(target);
   if(!cfg)return;
   activePickerTarget=target;
@@ -752,10 +754,11 @@ pickerGrid.addEventListener("click",e=>{
 
   pickerDialog.close();
   if(referenceEdited){
+    const soloResult=simpleSoloCompensate();
     simpleSetCurrentFromValues(simpleReferenceValues());
     simpleLastRecap=null;
     updateUI();
-    simpleSetCalcSummary("Référence modifiée : CALCUL a été réaligné automatiquement.","ok");
+    simpleSoloStatus(soloResult);
   }else{
     updateUI();
     if(simpleChangedKey)simpleCalculateNow(simpleChangedKey);
@@ -1014,6 +1017,9 @@ let simpleBaselineValues=null;
 let simpleLastMethodSig="";
 let simpleLastRecap=null;
 let simpleLocks={aperture:false,iso:false,shutter:false,nd:false};
+// Référence unique : un seul réglage compense les modifications des trois autres.
+let simpleSoloAuto=null;
+let simpleSoloTotal=null;
 let simpleLimitsLoadedFor="";
 
 function simpleMethodSig(){return `${cameraMode}|${gammaMode}|${sensitivityMode}|${shutterMode}|${currentFps}`;}
@@ -1068,6 +1074,8 @@ function simpleSave(){
   try{
     const saved=JSON.parse(localStorage.getItem(SIMPLE_EXPO_STORAGE_KEY)||"{}");
     saved.roles=simpleRoles;
+    saved.soloAuto=simpleSoloAuto;
+    saved.soloTotal=simpleSoloTotal;
     saved.locks={...simpleLocks};
     saved.limits=saved.limits||{};
     saved.limits[simpleLimitKey()]={min:simpleIsoMin,max:simpleIsoMax,apMin:simpleApertureMin,apMax:simpleApertureMax};
@@ -1078,6 +1086,10 @@ function simpleLoadRoles(){
   try{
     const saved=JSON.parse(localStorage.getItem(SIMPLE_EXPO_STORAGE_KEY)||"null");
     if(saved?.roles)Object.keys(simpleRoles).forEach(k=>{if(["manual","auto"].includes(saved.roles[k]))simpleRoles[k]=saved.roles[k];});
+    if(["aperture","iso","shutter","nd"].includes(saved?.soloAuto)){
+      simpleSoloAuto=saved.soloAuto;
+      simpleSoloTotal=Number.isFinite(Number(saved.soloTotal))?Number(saved.soloTotal):null;
+    }
     if(saved?.locks&&typeof saved.locks==="object"){
       Object.keys(simpleLocks).forEach(k=>{simpleLocks[k]=!!saved.locks[k];});
     }
@@ -1124,6 +1136,80 @@ function simpleRenderReference(){
   set("simpleRefNd","ND",simpleValueText("nd",v.nd));
 }
 function simpleTotal(v=simplePhysicalValues()){return simpleStopFor("aperture",v.aperture)+simpleStopFor("iso",v.iso)+simpleStopFor("shutter",v.shutter)+simpleStopFor("nd",v.nd);}
+// Sélection autoritaire du seul réglage de compensation (pas de répartition multi-paramètres).
+function simpleSoloName(key){
+  return {aperture:"Diaph",iso:currentSensitivityUnit()||"ISO",shutter:"Shutter",nd:"ND"}[key]||key;
+}
+function simpleRenderSolo(){
+  const map={aperture:"simpleRefAperture",iso:"simpleRefIso",shutter:"simpleRefShutter",nd:"simpleRefNd"};
+  document.querySelectorAll("[data-solo-auto]").forEach(btn=>{
+    const key=btn.dataset.soloAuto;
+    const active=key===simpleSoloAuto;
+    btn.classList.toggle("is-active",active);
+    btn.setAttribute("aria-pressed",String(active));
+    btn.setAttribute("aria-label",simpleSoloName(key)+(active?" : compensation automatique":" : sélectionner pour compenser"));
+    if(key==="iso")btn.textContent=currentSensitivityUnit()||"ISO";
+  });
+  Object.entries(map).forEach(([key,id])=>{
+    const btn=$(id);
+    if(!btn)return;
+    const active=key===simpleSoloAuto;
+    btn.classList.toggle("solo-automatic",active);
+    btn.disabled=active;
+    btn.setAttribute("aria-disabled",String(active));
+    btn.title=active?"Valeur calculée automatiquement pour conserver l'exposition":"Modifier "+simpleSoloName(key);
+  });
+}
+function simpleSoloCandidates(key){
+  if(key==="aperture")return simpleAvailableApertureValues();
+  if(key==="iso"){
+    if(sensitivityMode==="gain"&&gainBaseIso>0)return GAIN_VALUES.map(gainDbToIso).filter(v=>v>0&&Number.isFinite(v));
+    return simpleAvailableIsoValues();
+  }
+  if(key==="shutter")return shutterMode==="speed"?SHUTTER_SPEEDS:SHUTTER_ANGLES;
+  if(key==="nd")return ND_STOPS;
+  return [];
+}
+function simpleSoloCompensate(){
+  if(!simpleSoloAuto)return null;
+  const reference=simpleReferenceValues();
+  if(!Number.isFinite(simpleSoloTotal))simpleSoloTotal=simpleTotal(reference);
+  const key=simpleSoloAuto;
+  const remaining=["aperture","iso","shutter","nd"]
+    .filter(k=>k!==key)
+    .reduce((total,k)=>total+simpleStopFor(k,reference[k]),0);
+  const desiredStop=simpleSoloTotal-remaining;
+  const candidates=simpleSoloCandidates(key).filter(v=>Number.isFinite(simpleStopFor(key,v)));
+  let best=reference[key],bestError=Infinity;
+  candidates.forEach(v=>{
+    const error=Math.abs(simpleStopFor(key,v)-desiredStop);
+    if(error<bestError-1e-10){bestError=error;best=v;}
+  });
+  // Conserve toujours les trois valeurs manuelles strictement identiques.
+  if(candidates.length){
+    const updated={...reference,[key]:best};
+    simpleSetReferenceFromValues(updated);
+  }
+  const residual=simpleSoloTotal-simpleTotal(simpleReferenceValues());
+  simpleSave();
+  return {key,residual,found:!!candidates.length,choice:best};
+}
+function simpleSoloStatus(result=null){
+  if(!simpleSoloAuto){
+    simpleSetCalcSummary("Choisis le paramètre qui compensera les trois autres.");
+    return;
+  }
+  const name=simpleSoloName(simpleSoloAuto);
+  if(!result){
+    simpleSetCalcSummary(name+" compense automatiquement. Modifie les trois autres réglages.","ok");
+  }else if(!result.found){
+    simpleSetCalcSummary("Aucune valeur de "+name+" disponible pour compenser.","warning");
+  }else if(Math.abs(result.residual)<.08){
+    simpleSetCalcSummary(name+" ajusté · exposition équivalente conservée.","ok");
+  }else{
+    simpleSetCalcSummary(name+" ajusté · écart résiduel "+fmtStop(result.residual)+" (valeurs disponibles limitées).","warning");
+  }
+}
 function simpleCandidates(key){
   if(key==="aperture")return simpleAvailableApertureValues().filter(v=>v>=simpleApertureMin-1e-9&&v<=simpleApertureMax+1e-9);
   if(key==="iso")return simpleAvailableIsoValues().filter(v=>v>=simpleIsoMin-1e-9&&v<=simpleIsoMax+1e-9);
@@ -2160,10 +2246,8 @@ updateUI=function(){
   simpleRenderLimits();
   simpleRenderLocks();
   renderExposureGuide();
-  // Garde les valeurs de référence et de calcul dans les limites choisies, sans lancer de compensation.
-  simpleClampReferenceToLimits();
-  simpleClampCurrentToLimits();
-  simpleRenderRows();simpleRenderReference();updateBaseIsoNote();renderExposureGuide();
+  // Le nouveau mode n'applique plus les anciennes limites personnalisées.
+  simpleRenderRows();simpleRenderReference();simpleRenderSolo();updateBaseIsoNote();renderExposureGuide();
   if(methodChanged){
     // Sur changement caméra/profil, garde une référence valide et lisible.
     const r=simpleReferenceValues();
@@ -2171,11 +2255,25 @@ updateUI=function(){
       const v=simplePhysicalValues();simpleSetReferenceFromValues(v);
     }
     simpleRenderReference();
-    simpleSetCalcSummary("Change un réglage dans CALCUL : les autres s’adaptent automatiquement.");
+    // Nouveau profil : la nouvelle exposition de référence est le point de départ.
+    simpleSoloTotal=simpleTotal(simpleReferenceValues());
+    simpleSave();
+    simpleSoloStatus();
   }
 };
 
 simpleLoadRoles();
+document.querySelectorAll("[data-solo-auto]").forEach(btn=>btn.addEventListener("click",()=>{
+  const key=btn.dataset.soloAuto;
+  if(!["aperture","iso","shutter","nd"].includes(key))return;
+  simpleSoloAuto=key;
+  simpleSoloTotal=simpleTotal(simpleReferenceValues());
+  simpleSetCurrentFromValues(simpleReferenceValues());
+  simpleLastRecap=null;
+  simpleSave();
+  updateUI();
+  simpleSoloStatus();
+}));
 $("isoMinSelect")?.addEventListener("change",e=>{simpleIsoMin=Number(e.target.value);if(simpleIsoMin>simpleIsoMax)simpleIsoMax=simpleIsoMin;simpleSave();updateUI();});
 $("isoMaxSelect")?.addEventListener("change",e=>{simpleIsoMax=Number(e.target.value);if(simpleIsoMax<simpleIsoMin)simpleIsoMin=simpleIsoMax;simpleSave();updateUI();});
 $("apertureMinSelect")?.addEventListener("change",e=>{simpleApertureMin=Number(e.target.value);if(simpleApertureMin>simpleApertureMax)simpleApertureMax=simpleApertureMin;simpleSave();updateUI();});
