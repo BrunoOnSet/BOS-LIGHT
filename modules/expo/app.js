@@ -1088,7 +1088,7 @@ function simpleLoadRoles(){
     if(saved?.roles)Object.keys(simpleRoles).forEach(k=>{if(["manual","auto"].includes(saved.roles[k]))simpleRoles[k]=saved.roles[k];});
     if(["aperture","iso","shutter","nd"].includes(saved?.soloAuto)){
       simpleSoloAuto=saved.soloAuto;
-      simpleSoloTotal=Number.isFinite(Number(saved.soloTotal))?Number(saved.soloTotal):null;
+      simpleSoloTotal=saved.soloTotal!=null&&Number.isFinite(Number(saved.soloTotal))?Number(saved.soloTotal):null;
     }
     if(saved?.locks&&typeof saved.locks==="object"){
       Object.keys(simpleLocks).forEach(k=>{simpleLocks[k]=!!saved.locks[k];});
@@ -1163,7 +1163,7 @@ function simpleRenderSolo(){
 function simpleSoloCandidates(key){
   if(key==="aperture")return simpleAvailableApertureValues();
   if(key==="iso"){
-    if(sensitivityMode==="gain"&&gainBaseIso>0)return GAIN_VALUES.map(gainDbToIso).filter(v=>v>0&&Number.isFinite(v));
+    if(sensitivityMode==="gain"&&gainBaseIso>0)return GAIN_VALUES.map(v=>gainDbToIso(v)).filter(v=>v>0&&Number.isFinite(v));
     return simpleAvailableIsoValues();
   }
   if(key==="shutter")return shutterMode==="speed"?SHUTTER_SPEEDS:SHUTTER_ANGLES;
