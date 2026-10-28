@@ -2052,6 +2052,13 @@ function waveformExplorerLatitude(guide,info,sensorRange){
 
 function waveformTerrainKey(zone,value,guide,stop){
   const label=String(zone?.label||zone?.title||'').toUpperCase();
+  // S-Cinetone : "visage lumineux" doit rester en MÉDIUMS HAUTS (50–70 %).
+  // Au début du roll-off (70 %), on passe au repère "Fenêtre / ciel".
+  // Ne pas modifier la répartition des autres courbes.
+  if(guide?.key==="scinetone"){
+    if(/ROLL-OFF/.test(label))return 'window';
+    if(/MÉDIUMS HAUTS/.test(label))return 'bright-face';
+  }
   const zMin=Number(zone?.min),zMax=Number(zone?.max);
   const progress=Number.isFinite(zMin)&&Number.isFinite(zMax)&&zMax>zMin?Math.max(0,Math.min(1,(Number(value)-zMin)/(zMax-zMin))):.5;
   if(/SOUS LE NOIR|PIED|TRÈS BASSES/.test(label))return 'shadow-low';
