@@ -2272,7 +2272,8 @@ document.querySelectorAll("#placeStopPresets button").forEach(btn=>btn.addEventL
 updateUI=function(){
   ensureProfileValid();ensureGainBaseValid();
   const methodSig=simpleMethodSig();
-  const methodChanged=methodSig!==simpleLastMethodSig;
+  const previousMethodSig=simpleLastMethodSig;
+  const methodChanged=methodSig!==previousMethodSig;
   if(methodChanged){simpleLastMethodSig=methodSig;simpleLimitsLoadedFor="";simpleLoadLimits(true);}
   simpleRenderLimits();
   simpleRenderLocks();
@@ -2286,9 +2287,14 @@ updateUI=function(){
       const v=simplePhysicalValues();simpleSetReferenceFromValues(v);
     }
     simpleRenderReference();
-    // Nouveau profil : la nouvelle exposition de référence est le point de départ.
-    simpleSoloTotal=simpleTotal(simpleReferenceValues());
-    if(simpleSoloAuto) simpleSoloOriginal=simpleReferenceValues()[simpleSoloAuto];
+    // Ne pas écraser la référence d'origine mémorisée lors du tout premier
+    // chargement. La recalibrer uniquement si la caméra ou le profil change.
+    if(previousMethodSig){
+      simpleSoloTotal=simpleTotal(simpleReferenceValues());
+      if(simpleSoloAuto) simpleSoloOriginal=simpleReferenceValues()[simpleSoloAuto];
+    }else if(simpleSoloAuto&&simpleSoloTotal===null){
+      simpleSoloTotal=simpleTotal(simpleReferenceValues());
+    }
     simpleSave();
     simpleSoloStatus();
   }
