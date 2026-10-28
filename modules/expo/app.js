@@ -1179,7 +1179,9 @@ function simpleRenderSolo(){
         ?`${fmt(originalValue,1)} ${Math.abs(originalValue-1)<1e-9?"stop":"stops"}`
         :key==="iso"&&sensitivityMode==="gain"&&gainBaseIso>0
           ?fmtGain(isoToGainDb(originalValue),true)
-          :simpleValueText(key,originalValue);
+          :key==="iso"
+            ?fmtIso(originalValue)
+            :simpleValueText(key,originalValue);
       original.textContent="Réf. "+label;
       original.hidden=false;
     }else if(original){
