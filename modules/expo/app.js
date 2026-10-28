@@ -1093,6 +1093,12 @@ function simpleLoadRoles(){
       simpleSoloAuto=saved.soloAuto;
       simpleSoloTotal=saved.soloTotal!=null&&Number.isFinite(Number(saved.soloTotal))?Number(saved.soloTotal):null;
       simpleSoloOriginal=saved.soloOriginal!=null&&Number.isFinite(Number(saved.soloOriginal))?Number(saved.soloOriginal):null;
+      // Migration des réglages déjà sélectionnés avant l'ajout du rappel.
+      if(simpleSoloOriginal===null){
+        const reference=simpleReferenceValues();
+        const v=reference[simpleSoloAuto];
+        if(Number.isFinite(v))simpleSoloOriginal=v;
+      }
     }
     if(saved?.locks&&typeof saved.locks==="object"){
       Object.keys(simpleLocks).forEach(k=>{simpleLocks[k]=!!saved.locks[k];});
@@ -1171,7 +1177,9 @@ function simpleRenderSolo(){
       const originalValue=simpleSoloOriginal!=null?simpleSoloOriginal:simpleReferenceValues()[key];
       const label=key==="nd"
         ?`${fmt(originalValue,1)} ${Math.abs(originalValue-1)<1e-9?"stop":"stops"}`
-        :simpleValueText(key,originalValue);
+        :key==="iso"&&sensitivityMode==="gain"&&gainBaseIso>0
+          ?fmtGain(isoToGainDb(originalValue),true)
+          :simpleValueText(key,originalValue);
       original.textContent="Réf. "+label;
       original.hidden=false;
     }else if(original){
