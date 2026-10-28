@@ -97,3 +97,32 @@
   #simpleExpoPanel .expo-solo-controls{gap:5px}
   #simpleExpoPanel .expo-solo-choice{font-size:10px;min-height:38px}
 }
+
+/* Valeur mémorisée avant l'ajustement, uniquement sous le paramètre bleu. */
+#simpleExpoPanel .simple-reference-value .expo-solo-original{
+  display:block;
+  width:100%;
+  min-width:0;
+  margin-top:5px;
+  color:var(--muted)!important;
+  font-family:"Instrument Sans",Inter,Arial,sans-serif;
+  font-size:9px!important;
+  font-weight:400!important;
+  line-height:1.2!important;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  opacity:.88;
+}
+#simpleExpoPanel .simple-reference-value .expo-solo-original[hidden]{display:none!important}
+#simpleExpoPanel .simple-reference-value.solo-automatic:disabled{
+  opacity:1!important;
+  -webkit-text-fill-color:initial;
+}
+@media(max-width:540px){
+  #simpleExpoPanel .simple-reference-value .expo-solo-original{
+    font-size:8px!important;
+    margin-top:4px;
+  }
+}
